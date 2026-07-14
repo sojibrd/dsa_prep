@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "export",
-  basePath: "/dsa_prep",
+  basePath: process.env.GITHUB_ACTIONS ? "/dsa_prep" : "",
   images: {
     unoptimized: true,
   },
