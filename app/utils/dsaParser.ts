@@ -124,9 +124,18 @@ export function parseDsaWorkbook(): Topic[] {
       continue;
     }
 
-    // Parse Demo Statement: "**Statement (Demo):** ..."
+    // Parse Demo Statement: "**Statement (Demo):** ..." with উদাহরণ: peek
     if (line.startsWith('**Statement (Demo):**')) {
-      currentPattern.demoStatement = line.replace('**Statement (Demo):**', '').trim();
+      let stmt = line.replace('**Statement (Demo):**', '').trim();
+      // Peek at next line — if it's the উদাহরণ: continuation, append it
+      if (i + 1 < lines.length) {
+        const nextTrimmed = lines[i + 1].trim();
+        if (nextTrimmed.startsWith('উদাহরণ:')) {
+          stmt += '\n' + nextTrimmed;
+          i++; // skip consumed line
+        }
+      }
+      currentPattern.demoStatement = stmt;
       continue;
     }
     
@@ -165,33 +174,17 @@ export function parseDsaWorkbook(): Topic[] {
       continue;
     }
 
-    // Parse problem statement: "→ Statement: ..."
+    // Parse problem statement: "→ Statement: ..." with উদাহরণ: peek
     if (line.startsWith('→ Statement:') && currentProblem) {
       let stmt = line.replace('→ Statement:', '').trim();
-      // Peek at next line — if it's the উদাহরণ: continuation, append it
       if (i + 1 < lines.length) {
         const nextTrimmed = lines[i + 1].trim();
         if (nextTrimmed.startsWith('উদাহরণ:')) {
           stmt += '\n' + nextTrimmed;
-          i++; // skip consumed line
+          i++;
         }
       }
       currentProblem.statement = stmt;
-      continue;
-    }
-
-    // Parse demo statement continuation: "**Statement (Demo):** ..."
-    if (line.startsWith('**Statement (Demo):**')) {
-      let stmt = line.replace('**Statement (Demo):**', '').trim();
-      // Peek at next line — if it's the উদাহরণ: continuation, append it
-      if (i + 1 < lines.length) {
-        const nextTrimmed = lines[i + 1].trim();
-        if (nextTrimmed.startsWith('উদাহরণ:')) {
-          stmt += '\n' + nextTrimmed;
-          i++; // skip consumed line
-        }
-      }
-      currentPattern.demoStatement = stmt;
       continue;
     }
   }

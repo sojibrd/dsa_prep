@@ -78,8 +78,7 @@
 **Demo: Trapping Rain Water** — [LC 42](https://leetcode.com/problems/trapping-rain-water/) _(Hard — Amazon/Google/Meta High)_
 
 **Statement (Demo):** `height` নামের একটা integer array দেওয়া যেখানে প্রতিটা মান একটা উল্লম্ব বারের উচ্চতা। বারগুলোর মাঝে বৃষ্টির পানি কতটুকু আটকে থাকবে তার মোট পরিমাণ বের করুন।
-উদাহরণ: `height = [0,1,0,2,1,0,1,3,2,1,2,1]` → Output: `6`
-⚡ Constraint: `n ≤ 2×10⁴`, `0 ≤ height[i] ≤ 10⁵`
+উদাহরণ: `[0,1,0,2,1,0,1,3,2,1,2,1]` → `6` | ⚡ `n ≤ 2×10⁴`, `0 ≤ height[i] ≤ 10⁵`
 
 **Approach:** প্রতিটা ঘরে পানি জমে `min(leftMax, rightMax) - height[i]`। দুই প্রান্ত থেকে pointer চালান — যেদিকের height ছোট সেদিকটা আগান, কারণ ছোট দিকের max-ই bottleneck, অন্য পাশে যত বড়ই থাকুক পানির উচ্চতা এই দিকেই আটকে।
 
@@ -157,8 +156,7 @@ function trap(height) {
 **Demo: Minimum Window Substring** — [LC 76](https://leetcode.com/problems/minimum-window-substring/) _(Hard — Google/Meta/Apple High)_
 
 **Statement (Demo):** string `s` ও `t` দেওয়া — `s`-এর সবচেয়ে ছোট substring বের করুন যাতে `t`-এর সব character (সংখ্যা সহ) থাকে। যদি না থাকে, `""` return করুন।
-উদাহরণ: `s="ADOBECODEBANC", t="ABC"` → `"BANC"`
-⚡ Constraint: `len(s), len(t) ≤ 10⁵`
+উদাহরণ: `s="ADOBECODEBANC", t="ABC"` → `"BANC"` | ⚡ `len(s), len(t) ≤ 10⁵`
 
 **Approach:** `t`-এর প্রতিটা char-এর দরকারি count একটা map-এ রাখুন। ডান দিকে window বাড়ান; সব char পাওয়া গেলে (`missing === 0`) বাম দিক থেকে যত পারা যায় ছোট করুন আর best উত্তর আপডেট করুন। ছোট করতে গিয়ে কোনো দরকারি char হারালে আবার ডানে বাড়ানো শুরু।
 
@@ -228,8 +226,7 @@ function minWindow(s, t) {
 **Demo: Subarray Sum Equals K** — [LC 560](https://leetcode.com/problems/subarray-sum-equals-k/) _(Medium)_
 
 **Statement (Demo):** integer array `nums` ও integer `k` দেওয়া — যোগফল `k` এমন contiguous subarray-এর মোট সংখ্যা বের করুন। (negative number থাকতে পারে।)
-উদাহরণ: `nums=[1,1,1], k=2` → `2`
-⚡ Constraint: `n ≤ 2×10⁴`, `-1000 ≤ nums[i] ≤ 1000`
+উদাহরণ: `nums=[1,1,1], k=2` → `2` | ⚡ `n ≤ 2×10⁴`, `-1000 ≤ nums[i] ≤ 1000`
 
 **Approach:** চলতে চলতে running prefix sum রাখুন। `sum[i..j] = k` মানে `prefix[j] - prefix[i-1] = k`, অর্থাৎ আগে কোথাও `prefix - k` মানের prefix দেখা গেছে কি না — সেটা hashmap-এ count সহ রাখলেই হয়। (negative number থাকলেও কাজ করে, যেখানে sliding window ব্যর্থ।)
 
@@ -269,8 +266,7 @@ function subarraySum(nums, k) {
 **Demo: Longest Consecutive Sequence** — [LC 128](https://leetcode.com/problems/longest-consecutive-sequence/) _(Medium)_
 
 **Statement (Demo):** unsorted integer array `nums` দেওয়া — সবচেয়ে দীর্ঘ consecutive sequence (পর পর সংখ্যা) কতটুকু বলুন। O(n) সময়ে সমাধান করতে হবে।
-উদাহরণ: `[100,4,200,1,3,2]` → `4` (1,2,3,4)
-⚡ Constraint: `n ≤ 10⁵`, `-10⁹ ≤ nums[i] ≤ 10⁹`
+উদাহরণ: `[100,4,200,1,3,2]` → `4` | ⚡ `n ≤ 10⁵`, `-10⁹ ≤ nums[i] ≤ 10⁹`
 
 **Approach:** সব সংখ্যা Set-এ ঢুকান। কেবল সেই সংখ্যা থেকে গোনা শুরু করুন যার `x-1` নেই (মানে সেটাই sequence-এর শুরু) — তাহলে প্রতিটা এলিমেন্ট সর্বোচ্চ দুবার দেখা হয়, sort ছাড়াই O(n)।
 
@@ -335,8 +331,7 @@ function longestConsecutive(nums) {
 **Demo: Merge Intervals** — [LC 56](https://leetcode.com/problems/merge-intervals/) _(Medium — সব কোম্পানিতে ঘন ঘন)_
 
 **Statement (Demo):** `intervals` array দেওয়া যেখানে প্রতিটা `intervals[i] = [startᵢ, endᵢ]`। সব overlapping interval merge করে non-overlapping interval-এর array return করুন।
-উদাহরণ: `[[1,3],[2,6],[8,10],[15,18]]` → `[[1,6],[8,10],[15,18]]`
-⚡ Constraint: `n ≤ 10⁴`, `0 ≤ startᵢ ≤ endᵢ ≤ 10⁴`
+উদাহরণ: `[[1,3],[2,6],[8,10],[15,18]]` → `[[1,6],[8,10],[15,18]]` | ⚡ `n ≤ 10⁴`, `0 ≤ startᵢ ≤ endᵢ ≤ 10⁴`
 
 **Approach:** start অনুযায়ী sort করুন। এরপর এক পাস — নতুন interval-এর start যদি result-এর শেষ interval-এর end-এর ভেতরে পড়ে, end বাড়িয়ে merge; নাহলে নতুন করে push।
 
@@ -382,8 +377,7 @@ function merge(intervals) {
 **Demo: Maximum Subarray** — [LC 53](https://leetcode.com/problems/maximum-subarray/) _(Medium)_
 
 **Statement (Demo):** integer array `nums` দেওয়া — সবচেয়ে বড় যোগফল সম্পন্ন contiguous subarray খুঁজে বের করুন এবং সেই যোগফল return করুন।
-উদাহরণ: `[-2,1,-3,4,-1,2,1,-5,4]` → `6` ([4,-1,2,1])
-⚡ Constraint: `n ≤ 10⁵`, `-10⁴ ≤ nums[i] ≤ 10⁴`
+উদাহরণ: `[-2,1,-3,4,-1,2,1,-5,4]` → `6` | ⚡ `n ≤ 10⁵`, `-10⁴ ≤ nums[i] ≤ 10⁴`
 
 **Approach:** প্রতিটা index-এ সিদ্ধান্ত — আগের চলমান sum positive contribution দিলে যোগ করুন, নাহলে এখান থেকে নতুন subarray শুরু। global best আলাদা রাখুন।
 
@@ -416,8 +410,7 @@ function maxSubArray(nums) {
 **Demo: Spiral Matrix** — [LC 54](https://leetcode.com/problems/spiral-matrix/) _(Medium)_
 
 **Statement (Demo):** `m × n` integer matrix দেওয়া — spiral order-এ (ডান → নিচ → বাম → উপর) সব element-এর list return করুন।
-উদাহরণ: `[[1,2,3],[4,5,6],[7,8,9]]` → `[1,2,3,6,9,8,7,4,5]`
-⚡ Constraint: `m,n ≤ 10`
+উদাহরণ: `[[1,2,3],[4,5,6],[7,8,9]]` → `[1,2,3,6,9,8,7,4,5]` | ⚡ `m,n ≤ 10`
 
 **Approach:** চারটা boundary (`top/bottom/left/right`) রাখুন। এক layer ঘুরে boundary গুটিয়ে আনুন। ভেতরের দিকের single row/column-এ ডাবল-কাউন্ট এড়াতে নিচ ও বাম পাসের আগে boundary চেক জরুরি।
 
