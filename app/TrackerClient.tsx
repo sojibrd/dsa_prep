@@ -78,13 +78,20 @@ function StatementBox({ raw }: { raw: string }) {
 
 export default function TrackerClient({ topics }: TrackerClientProps) {
   const [selectedPatternId, setSelectedPatternId] = useState<string>('1.1');
-  const [solvedIds, setSolvedIds] = useLocalStorage<string[]>('dsa_solved_ids', []);
-  const [notes, setNotes] = useLocalStorage<Record<string, ProblemNote>>('dsa_problem_notes', {});
+  const [solvedIds, setSolvedIds] = useState<string[]>([]);
+  const [notes, setNotes] = useState<Record<string, ProblemNote>>({});
   const [darkMode, setDarkMode] = useLocalStorage<boolean>('dsa_dark_mode', false);
   const [expandedProblemId, setExpandedProblemId] = useState<string | null>(null);
   const [expandedStatementId, setExpandedStatementId] = useState<string | null>(null);
   const [demoStatementOpen, setDemoStatementOpen] = useState<boolean>(false);
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+
+  // Google Sheets integration state
+  const [sheetUrl, setSheetUrl] = useLocalStorage<string>('dsa_sheet_script_url', '');
+  const [showSyncModal, setShowSyncModal] = useState<boolean>(false);
+  const [initialLoading, setInitialLoading] = useState<boolean>(false);
+  const [syncLoading, setSyncLoading] = useState<boolean>(false);
+  const [syncStatus, setSyncStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   // Sync dark mode class
   useEffect(() => {
@@ -139,6 +146,108 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
 
   const progressPercent = totalProblems > 0 ? Math.round((solvedProblemsCount / totalProblems) * 100) : 0;
 
+  // Load Data from Google Sheets on Mount or when URL changes
+  useEffect(() => {
+    if (!sheetUrl.trim()) return;
+
+    const loadData = async () => {
+      setInitialLoading(true);
+      try {
+        const res = await fetch(sheetUrl, {
+          method: 'GET',
+          mode: 'cors'
+        });
+        const resData = await res.json();
+        
+        // If sheet is empty/new, initialize it with current problems database structure
+        if (resData.status === 'success' && resData.isNew) {
+          const initPayload = {
+            action: 'init_sheet',
+            problems: allProblems.map((prob) => ({
+              id: prob.id,
+              name: prob.name,
+              solved: false,
+              noteIdea: '',
+              noteObstacle: ''
+            }))
+          };
+          await fetch(sheetUrl, {
+            method: 'POST',
+            mode: 'cors',
+            headers: {
+              'Content-Type': 'text/plain;charset=utf-8',
+            },
+            body: JSON.stringify(initPayload)
+          });
+          setSolvedIds([]);
+          setNotes({});
+        } else if (resData.status === 'success' && Array.isArray(resData.data)) {
+          const restoredSolvedIds: string[] = [];
+          const restoredNotes: Record<string, ProblemNote> = {};
+
+          resData.data.forEach((item: any) => {
+            if (item.solved) {
+              restoredSolvedIds.push(item.id);
+            }
+            if (item.noteIdea || item.noteObstacle) {
+              restoredNotes[item.id] = {
+                solution: item.noteIdea || '',
+                obstacle: item.noteObstacle || ''
+              };
+            }
+          });
+
+          setSolvedIds(restoredSolvedIds);
+          setNotes(restoredNotes);
+        }
+      } catch (err) {
+        console.error('Failed to load initial data from Sheet:', err);
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+
+    loadData();
+  }, [sheetUrl]);
+
+  // Auto-sync row-level helper
+  const syncRowToCloud = async (problemId: string, isSolved: boolean, note: ProblemNote) => {
+    if (!sheetUrl.trim()) return;
+    setSyncLoading(true);
+
+    const problemObj = allProblems.find(p => p.id === problemId);
+    if (!problemObj) {
+      setSyncLoading(false);
+      return;
+    }
+
+    const payload = {
+      action: 'update_row',
+      problem: {
+        id: problemObj.id,
+        name: problemObj.name,
+        solved: isSolved,
+        noteIdea: note.solution || '',
+        noteObstacle: note.obstacle || ''
+      }
+    };
+
+    try {
+      await fetch(sheetUrl, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'text/plain;charset=utf-8',
+        },
+        body: JSON.stringify(payload)
+      });
+    } catch (err) {
+      console.error('Row auto-sync failed:', err);
+    } finally {
+      setSyncLoading(false);
+    }
+  };
+
   // Find currently selected pattern
   let selectedPattern: Pattern | null = null;
   let selectedTopicName = '';
@@ -158,21 +267,35 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
   }
 
   const toggleSolved = (id: string) => {
+    const willBeSolved = !solvedIds.includes(id);
+    let updatedSolvedIds: string[];
     if (solvedIds.includes(id)) {
-      setSolvedIds(solvedIds.filter((x) => x !== id));
+      updatedSolvedIds = solvedIds.filter((x) => x !== id);
     } else {
-      setSolvedIds([...solvedIds, id]);
+      updatedSolvedIds = [...solvedIds, id];
     }
+    setSolvedIds(updatedSolvedIds);
+    
+    // Sync specific row only
+    const problemNote = notes[id] || { solution: '', obstacle: '' };
+    syncRowToCloud(id, willBeSolved, problemNote);
   };
 
   const handleNoteChange = (problemId: string, field: keyof ProblemNote, value: string) => {
-    setNotes((prev) => ({
-      ...prev,
-      [problemId]: {
-        ...((prev && prev[problemId]) || { solution: '', obstacle: '' }),
-        [field]: value,
-      },
-    }));
+    const updatedProblemNote = {
+      ...((notes && notes[problemId]) || { solution: '', obstacle: '' }),
+      [field]: value,
+    };
+    
+    const updatedNotes = {
+      ...notes,
+      [problemId]: updatedProblemNote,
+    };
+    setNotes(updatedNotes);
+    
+    // Sync specific row only
+    const isSolved = solvedIds.includes(problemId);
+    syncRowToCloud(problemId, isSolved, updatedProblemNote);
   };
 
   const getTopicProgress = (topic: Topic) => {
@@ -330,6 +453,20 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
             </div>
           </div>
 
+          {/* Sync indicator */}
+          {syncLoading && (
+            <span className="text-xs text-zinc-400 animate-pulse">Saving... 🔄</span>
+          )}
+
+          {/* Cloud Sync Button */}
+          <button
+            onClick={() => setShowSyncModal(true)}
+            className="p-2 rounded-lg glass-panel hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-sm"
+            title="Cloud Sync settings"
+          >
+            ☁️
+          </button>
+
           {/* Theme Toggle */}
           <button
             onClick={() => setDarkMode(!darkMode)}
@@ -340,6 +477,43 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
           </button>
         </div>
       </header>
+
+      {/* ── Google Sheets Sync Modal ── */}
+      {showSyncModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowSyncModal(false)} />
+          <div className="glass-panel max-w-md w-full rounded-3xl p-6 relative z-10 animate-fade-in text-zinc-900 dark:text-zinc-100">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold">Cloud Sync Settings ☁️</h3>
+              <button onClick={() => setShowSyncModal(false)} className="text-zinc-400 hover:text-zinc-200">✕</button>
+            </div>
+            
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-4 leading-relaxed">
+              আপনার গুগল শিটের Apps Script Web App URL টি এখানে ইনপুট দিন। এর ফলে আপনার প্রগ্রেস এবং নোটসমূহ সরাসরি গুগল শিটে রিয়েলটাইমে অটো-সেভ হবে এবং অ্যাপ ওপেন করার সময় সেখান থেকে লোড হবে।
+            </p>
+
+            <div className="flex flex-col gap-2 mb-4">
+              <label className="text-xs font-semibold">Google Apps Script URL:</label>
+              <input
+                type="text"
+                value={sheetUrl}
+                onChange={(e) => setSheetUrl(e.target.value)}
+                placeholder="https://script.google.com/macros/s/.../exec"
+                className="w-full text-xs p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+              />
+            </div>
+
+            <div className="flex justify-end">
+              <button
+                onClick={() => setShowSyncModal(false)}
+                className="py-2.5 px-6 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition-colors"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Mobile Drawer Overlay ── */}
       {sidebarOpen && (
@@ -392,7 +566,26 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
 
         {/* ── Content Area ── */}
         <main className="flex-1 flex flex-col gap-6 min-w-0">
-          {selectedPattern ? (
+          {!sheetUrl.trim() ? (
+            <div className="glass-panel p-8 rounded-3xl text-center flex flex-col items-center justify-center gap-4">
+              <span className="text-4xl">☁️</span>
+              <h3 className="text-lg font-bold">গুগল শিট কানেকশন প্রয়োজন</h3>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400 max-w-md">
+                অ্যাপের ডাটা সরাসরি ক্লাউডে সেভ করার জন্য প্রথমে আপনার Google Apps Script URL-টি দিতে হবে। উপরে ডানদিকের মেঘ (☁️) আইকন বাটনে ক্লিক করে URL টি পেস্ট করুন।
+              </p>
+              <button
+                onClick={() => setShowSyncModal(true)}
+                className="mt-2 py-2 px-6 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition-colors"
+              >
+                Set App Script URL
+              </button>
+            </div>
+          ) : initialLoading ? (
+            <div className="glass-panel p-8 rounded-3xl text-center flex flex-col items-center justify-center gap-3">
+              <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400">গুগল শিট থেকে প্রগ্রেস ডাটা লোড হচ্ছে...</p>
+            </div>
+          ) : selectedPattern ? (
             <div className="glass-panel p-4 sm:p-6 md:p-8 rounded-3xl flex flex-col gap-6">
               {/* Pattern Header */}
               <div>
