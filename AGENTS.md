@@ -1,6 +1,6 @@
 # MANDATORY CONTEXT LOADING — Read Before Anything Else
 
-> **CRITICAL**: At the start of EVERY conversation, you MUST read ALL the following context files in the exact sequence listed below. Do not skip any file. Do not reorder. Do not respond to the user until all files have been fully read and internalized.
+> **CRITICAL**: At the start of EVERY conversation, you MUST read ALL the following context files in the exact sequence listed below. Do not skip any file. Do not reorder. Do not respond to the user until all files have been fully read and internalized
 
 ## Required Reading Sequence
 
