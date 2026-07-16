@@ -13,6 +13,69 @@ interface ProblemNote {
   obstacle: string;
 }
 
+// Parse statement text into description, example parts, and constraint
+function parseStatement(raw: string): {
+  description: string;
+  input: string;
+  output: string;
+  constraint: string;
+} {
+  const lines = raw.split('\n');
+  const description = lines[0].trim();
+  let input = '', output = '', constraint = '';
+
+  if (lines.length > 1) {
+    // e.g. "উদাহরণ: `[-1,0,1,2,-1,-4]` → `[[-1,-1,2],[-1,0,1]]` | ⚡ `n ≤ 3000`"
+    const exampleLine = lines[1].replace('উদাহরণ:', '').trim();
+    // Split by " | ⚡ " to get example and constraint
+    const [examplePart, constraintPart] = exampleLine.split(' | ⚡ ');
+    constraint = constraintPart ? constraintPart.trim() : '';
+    // Split example by " → " to get input and output
+    const arrowIdx = examplePart.indexOf(' → ');
+    if (arrowIdx !== -1) {
+      input = examplePart.slice(0, arrowIdx).trim();
+      output = examplePart.slice(arrowIdx + 3).trim();
+    } else {
+      input = examplePart.trim();
+    }
+  }
+
+  return { description, input, output, constraint };
+}
+
+// Styled statement display component
+function StatementBox({ raw }: { raw: string }) {
+  const { description, input, output, constraint } = parseStatement(raw);
+  return (
+    <div className="flex flex-col gap-3">
+      <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
+        {description}
+      </p>
+      {(input || output) && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {input && (
+            <div className="bg-zinc-900 dark:bg-black rounded-xl p-3 flex flex-col gap-1">
+              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Input</span>
+              <code className="text-xs text-emerald-400 font-mono break-all">{input}</code>
+            </div>
+          )}
+          {output && (
+            <div className="bg-zinc-900 dark:bg-black rounded-xl p-3 flex flex-col gap-1">
+              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Output</span>
+              <code className="text-xs text-cyan-400 font-mono break-all">{output}</code>
+            </div>
+          )}
+        </div>
+      )}
+      {constraint && (
+        <div className="text-[11px] text-zinc-500 dark:text-zinc-400 font-mono">
+          ⚡ {constraint}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function TrackerClient({ topics }: TrackerClientProps) {
   const [selectedPatternId, setSelectedPatternId] = useState<string>('1.1');
   const [solvedIds, setSolvedIds] = useLocalStorage<string[]>('dsa_solved_ids', []);
@@ -386,13 +449,11 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
 
                   {/* Demo Statement (expandable) */}
                   {demoStatementOpen && selectedPattern.demoStatement && (
-                    <div className="p-4 rounded-xl bg-violet-500/5 border border-violet-500/20 text-sm">
-                      <h4 className="font-bold text-violet-600 dark:text-violet-400 mb-2 flex items-center gap-1.5">
-                        📋 সমস্যার বিবরণ:
+                    <div className="p-4 rounded-xl bg-violet-500/5 border border-violet-500/20">
+                      <h4 className="font-bold text-violet-600 dark:text-violet-400 mb-3 flex items-center gap-1.5 text-sm">
+                        📋 সমস্যার বিবরণ
                       </h4>
-                      <p className="text-zinc-700 dark:text-zinc-300 leading-relaxed whitespace-pre-line">
-                        {selectedPattern.demoStatement}
-                      </p>
+                      <StatementBox raw={selectedPattern.demoStatement} />
                     </div>
                   )}
 
@@ -520,10 +581,8 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
                         {/* Inline Statement (expandable) */}
                         {expandedStatementId === problem.id && problem.statement && (
                           <div className="px-4 pb-4 border-t border-violet-200/40 dark:border-violet-800/30 pt-3 bg-violet-500/5 rounded-b-2xl">
-                            <h4 className="text-xs font-bold text-violet-600 dark:text-violet-400 uppercase tracking-wider mb-2">📋 সমস্যার বিবরণ</h4>
-                            <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed whitespace-pre-line">
-                              {problem.statement}
-                            </p>
+                            <h4 className="text-[10px] font-bold text-violet-600 dark:text-violet-400 uppercase tracking-wider mb-3">📋 সমস্যার বিবরণ</h4>
+                            <StatementBox raw={problem.statement} />
                           </div>
                         )}
 

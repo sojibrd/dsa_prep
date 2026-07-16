@@ -142,32 +142,21 @@ export function parseDsaWorkbook(): Topic[] {
       continue;
     }
     
-    // Parse Practice Problems
+    // Parse practice problems
     if (line.startsWith('- [ ]') || line.startsWith('- [x]')) {
-      // Find problem name inside **
       const nameMatch = line.match(/\*\*([^*]+)\*\*/);
       const name = nameMatch ? nameMatch[1].trim() : '';
-      
-      // Find URL
       const urlMatch = line.match(/\((https?:\/\/[^)]+)\)/);
       const leetcodeUrl = urlMatch ? urlMatch[1].trim() : '';
-      
       const isMustDo = line.includes('🔥');
-      
-      // Notes or extra label
       let notesLabel = '';
       const notesMatch = line.match(/_([^_]+)_$/);
-      if (notesMatch) {
-        notesLabel = notesMatch[1].trim();
-      }
-      
+      if (notesMatch) notesLabel = notesMatch[1].trim();
+
       if (name && leetcodeUrl) {
         const id = `${currentPattern.id}-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
         currentProblem = {
-          id,
-          name,
-          leetcodeUrl,
-          isMustDo,
+          id, name, leetcodeUrl, isMustDo,
           notesLabel: notesLabel || undefined,
           statement: undefined,
         };
@@ -177,9 +166,32 @@ export function parseDsaWorkbook(): Topic[] {
     }
 
     // Parse problem statement: "→ Statement: ..."
-    // This line appears directly after a problem entry
     if (line.startsWith('→ Statement:') && currentProblem) {
-      currentProblem.statement = line.replace('→ Statement:', '').trim();
+      let stmt = line.replace('→ Statement:', '').trim();
+      // Peek at next line — if it's the উদাহরণ: continuation, append it
+      if (i + 1 < lines.length) {
+        const nextTrimmed = lines[i + 1].trim();
+        if (nextTrimmed.startsWith('উদাহরণ:')) {
+          stmt += '\n' + nextTrimmed;
+          i++; // skip consumed line
+        }
+      }
+      currentProblem.statement = stmt;
+      continue;
+    }
+
+    // Parse demo statement continuation: "**Statement (Demo):** ..."
+    if (line.startsWith('**Statement (Demo):**')) {
+      let stmt = line.replace('**Statement (Demo):**', '').trim();
+      // Peek at next line — if it's the উদাহরণ: continuation, append it
+      if (i + 1 < lines.length) {
+        const nextTrimmed = lines[i + 1].trim();
+        if (nextTrimmed.startsWith('উদাহরণ:')) {
+          stmt += '\n' + nextTrimmed;
+          i++; // skip consumed line
+        }
+      }
+      currentPattern.demoStatement = stmt;
       continue;
     }
   }
