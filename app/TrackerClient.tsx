@@ -19,6 +19,7 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
   const [notes, setNotes] = useLocalStorage<Record<string, ProblemNote>>('dsa_problem_notes', {});
   const [darkMode, setDarkMode] = useLocalStorage<boolean>('dsa_dark_mode', false);
   const [expandedProblemId, setExpandedProblemId] = useState<string | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
   // Sync dark mode class
   useEffect(() => {
@@ -28,6 +29,27 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
       document.documentElement.classList.remove('dark');
     }
   }, [darkMode]);
+
+  // Close sidebar on resize to desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setSidebarOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Lock body scroll when sidebar is open on mobile
+  useEffect(() => {
+    if (sidebarOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [sidebarOpen]);
 
   // Find all patterns for easy flat searching/stats
   const allProblems: PracticeProblem[] = [];
@@ -96,28 +118,140 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
     return { solved, total };
   };
 
+  const handlePatternSelect = (patternId: string) => {
+    setSelectedPatternId(patternId);
+    setSidebarOpen(false); // close drawer on mobile after selection
+  };
+
+  // Sidebar content (shared between desktop sidebar and mobile drawer)
+  const SidebarContent = () => (
+    <div className="flex flex-col h-full">
+      {/* Mobile drawer header */}
+      <div className="lg:hidden flex items-center justify-between px-5 py-4 border-b border-zinc-200/80 dark:border-zinc-800/80 shrink-0">
+        <span className="text-sm font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
+          টপিক ও প্যাটার্নসমূহ
+        </span>
+        <button
+          onClick={() => setSidebarOpen(false)}
+          className="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-zinc-500"
+          aria-label="Close sidebar"
+        >
+          ✕
+        </button>
+      </div>
+
+      {/* Progress dashboard summary — mobile only (inside drawer) */}
+      <div className="lg:hidden px-4 pt-4 pb-2 shrink-0">
+        <div className="glass-panel p-4 rounded-2xl flex items-center justify-between">
+          <div>
+            <span className="text-xs text-zinc-500 dark:text-zinc-400">সর্বমোট অগ্রগতি</span>
+            <h2 className="text-xl font-bold mt-0.5 text-indigo-600 dark:text-indigo-400">
+              {solvedProblemsCount} / {totalProblems} Solved
+            </h2>
+          </div>
+          <div className="relative w-14 h-14 flex items-center justify-center font-bold text-xs">
+            <svg className="w-full h-full transform -rotate-90">
+              <circle cx="28" cy="28" r="24" stroke="currentColor" className="text-zinc-200 dark:text-zinc-800" strokeWidth="4" fill="transparent" />
+              <circle cx="28" cy="28" r="24" stroke="currentColor" className="text-indigo-500" strokeWidth="4" fill="transparent"
+                strokeDasharray={150}
+                strokeDashoffset={150 - (150 * progressPercent) / 100}
+              />
+            </svg>
+            <span className="absolute">{progressPercent}%</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Topic/pattern list */}
+      <div className="flex-1 overflow-y-auto px-4 py-3 lg:py-0 lg:px-0">
+        {/* Desktop heading */}
+        <h3 className="hidden lg:block text-sm font-semibold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase mb-4">
+          টপিক ও প্যাটার্নসমূহ
+        </h3>
+
+        <div className="flex flex-col gap-5">
+          {topics.map((topic) => {
+            const { solved, total } = getTopicProgress(topic);
+
+            return (
+              <div key={topic.id} className="border-b border-zinc-100 dark:border-zinc-900 pb-4 last:border-0 last:pb-0">
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="font-semibold text-sm text-zinc-800 dark:text-zinc-200">
+                    {topic.id}. {topic.name}
+                  </h4>
+                  <span className="text-xs font-bold text-zinc-500 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded-full">
+                    {solved}/{total}
+                  </span>
+                </div>
+
+                <div className="flex flex-col gap-1.5 pl-2 border-l border-zinc-200 dark:border-zinc-800 ml-1">
+                  {topic.patterns.map((pattern) => {
+                    const isSelected = pattern.id === selectedPatternId;
+                    const patternSolved = pattern.problems.filter(p => solvedIds.includes(p.id)).length;
+                    const patternTotal = pattern.problems.length;
+
+                    return (
+                      <button
+                        key={pattern.id}
+                        onClick={() => handlePatternSelect(pattern.id)}
+                        className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-all flex items-center justify-between ${
+                          isSelected
+                            ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-semibold border-l-2 border-indigo-500 pl-2'
+                            : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900'
+                        }`}
+                      >
+                        <span className="truncate mr-2">{pattern.id} {pattern.name}</span>
+                        <span className="text-[10px] text-zinc-400 shrink-0">
+                          ({patternSolved}/{patternTotal})
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen flex flex-col bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50 transition-colors duration-300">
-      {/* Top Navbar */}
-      <header className="sticky top-0 z-40 w-full glass-panel border-b border-zinc-200/80 dark:border-zinc-800/80 py-4 px-6 md:px-12 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <span className="text-2xl">📚</span>
-          <div>
-            <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-500 bg-clip-text text-transparent">
+
+      {/* ── Top Navbar ── */}
+      <header className="sticky top-0 z-40 w-full glass-panel border-b border-zinc-200/80 dark:border-zinc-800/80 py-3 px-4 sm:px-6 md:px-12 flex items-center justify-between gap-3">
+
+        <div className="flex items-center gap-3 min-w-0">
+          {/* Hamburger — mobile only */}
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="lg:hidden p-2 rounded-lg glass-panel hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors shrink-0"
+            aria-label="Open navigation"
+          >
+            <svg className="w-5 h-5 text-zinc-600 dark:text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+
+          <span className="text-2xl shrink-0">📚</span>
+          <div className="min-w-0">
+            <h1 className="text-base sm:text-xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-500 bg-clip-text text-transparent truncate">
               DSA Practice Workbook
             </h1>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400">Spot → Solve → Revise</p>
+            <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400 hidden sm:block">Spot → Solve → Revise</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-6">
-          {/* Progress Pill */}
-          <div className="hidden sm:flex items-center gap-3 glass-panel px-4 py-1.5 rounded-full text-sm">
-            <span className="text-zinc-500 dark:text-zinc-400 font-medium">Progress:</span>
+        <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+          {/* Progress Pill — hidden on small mobile */}
+          <div className="hidden sm:flex items-center gap-2 sm:gap-3 glass-panel px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm">
+            <span className="text-zinc-500 dark:text-zinc-400 font-medium hidden md:inline">Progress:</span>
             <span className="font-bold text-indigo-600 dark:text-indigo-400">
-              {solvedProblemsCount}/{totalProblems} ({progressPercent}%)
+              {solvedProblemsCount}/{totalProblems}
+              <span className="hidden md:inline"> ({progressPercent}%)</span>
             </span>
-            <div className="w-20 bg-zinc-200 dark:bg-zinc-800 h-2 rounded-full overflow-hidden">
+            <div className="w-16 sm:w-20 bg-zinc-200 dark:bg-zinc-800 h-2 rounded-full overflow-hidden">
               <div
                 className="bg-gradient-to-r from-indigo-500 to-cyan-500 h-full rounded-full transition-all duration-500"
                 style={{ width: `${progressPercent}%` }}
@@ -128,20 +262,40 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
           {/* Theme Toggle */}
           <button
             onClick={() => setDarkMode(!darkMode)}
-            className="p-2 rounded-lg glass-panel hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+            className="p-2 rounded-lg glass-panel hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-sm"
             title="Toggle theme"
           >
-            {darkMode ? '☀️ Light' : '🌙 Dark'}
+            {darkMode ? '☀️' : '🌙'}
           </button>
         </div>
       </header>
 
-      {/* Main Body */}
-      <div className="flex-1 flex flex-col lg:flex-row max-w-[1600px] w-full mx-auto p-4 md:p-6 lg:p-8 gap-6">
-        {/* Sidebar */}
-        <aside className="w-full lg:w-[360px] flex flex-col gap-4 shrink-0">
-          {/* Progress dashboard summary for small viewports */}
-          <div className="lg:hidden glass-panel p-5 rounded-2xl flex items-center justify-between">
+      {/* ── Mobile Drawer Overlay ── */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-50 lg:hidden"
+          aria-modal="true"
+        >
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setSidebarOpen(false)}
+          />
+
+          {/* Drawer panel */}
+          <aside className="absolute left-0 top-0 h-full w-[300px] sm:w-[340px] bg-zinc-50 dark:bg-zinc-950 border-r border-zinc-200/80 dark:border-zinc-800/80 flex flex-col shadow-2xl animate-slide-in-left">
+            <SidebarContent />
+          </aside>
+        </div>
+      )}
+
+      {/* ── Main Body ── */}
+      <div className="flex-1 flex flex-row max-w-[1600px] w-full mx-auto p-4 md:p-6 lg:p-8 gap-6">
+
+        {/* ── Desktop Sidebar ── */}
+        <aside className="hidden lg:flex w-[360px] flex-col gap-4 shrink-0">
+          {/* Desktop progress dashboard */}
+          <div className="glass-panel p-5 rounded-2xl flex items-center justify-between">
             <div>
               <span className="text-sm text-zinc-500 dark:text-zinc-400">সর্বমোট অগ্রগতি</span>
               <h2 className="text-2xl font-bold mt-1 text-indigo-600 dark:text-indigo-400">
@@ -160,70 +314,23 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
             </div>
           </div>
 
-          <div className="glass-panel p-5 rounded-2xl flex-1 flex flex-col max-h-[calc(100vh-160px)] overflow-y-auto">
-            <h3 className="text-sm font-semibold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase mb-4">
-              টপিক ও প্যাটার্নসমূহ
-            </h3>
-
-            <div className="flex flex-col gap-5">
-              {topics.map((topic) => {
-                const { solved, total } = getTopicProgress(topic);
-                const percent = total > 0 ? Math.round((solved / total) * 100) : 0;
-                
-                return (
-                  <div key={topic.id} className="border-b border-zinc-100 dark:border-zinc-900 pb-4 last:border-0 last:pb-0">
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-semibold text-sm text-zinc-800 dark:text-zinc-200">
-                        {topic.id}. {topic.name}
-                      </h4>
-                      <span className="text-xs font-bold text-zinc-500 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded-full">
-                        {solved}/{total}
-                      </span>
-                    </div>
-
-                    <div className="flex flex-col gap-1.5 pl-2 border-l border-zinc-200 dark:border-zinc-800 ml-1">
-                      {topic.patterns.map((pattern) => {
-                        const isSelected = pattern.id === selectedPatternId;
-                        const patternSolved = pattern.problems.filter(p => solvedIds.includes(p.id)).length;
-                        const patternTotal = pattern.problems.length;
-                        
-                        return (
-                          <button
-                            key={pattern.id}
-                            onClick={() => setSelectedPatternId(pattern.id)}
-                            className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-all flex items-center justify-between ${
-                              isSelected
-                                ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-semibold border-l-2 border-indigo-500 pl-2'
-                                : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900'
-                            }`}
-                          >
-                            <span className="truncate mr-2">{pattern.id} {pattern.name}</span>
-                            <span className="text-[10px] text-zinc-400">
-                              ({patternSolved}/{patternTotal})
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+          <div className="glass-panel p-5 rounded-2xl flex-1 flex flex-col max-h-[calc(100vh-220px)] overflow-y-auto">
+            <SidebarContent />
           </div>
         </aside>
 
-        {/* Content Area */}
-        <main className="flex-1 flex flex-col gap-6">
+        {/* ── Content Area ── */}
+        <main className="flex-1 flex flex-col gap-6 min-w-0">
           {selectedPattern ? (
-            <div className="glass-panel p-6 md:p-8 rounded-3xl flex flex-col gap-6">
+            <div className="glass-panel p-4 sm:p-6 md:p-8 rounded-3xl flex flex-col gap-6">
               {/* Pattern Header */}
               <div>
-                <div className="flex items-center gap-2 text-xs font-bold text-indigo-500 dark:text-indigo-400 uppercase tracking-wider">
+                <div className="flex items-center gap-2 text-xs font-bold text-indigo-500 dark:text-indigo-400 uppercase tracking-wider flex-wrap">
                   <span>{selectedTopicName}</span>
                   <span>•</span>
                   <span>Pattern {selectedPattern.id}</span>
                 </div>
-                <h2 className="text-2xl md:text-3xl font-extrabold mt-1 text-zinc-900 dark:text-white">
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold mt-1 text-zinc-900 dark:text-white">
                   {selectedPattern.name}
                 </h2>
               </div>
@@ -243,8 +350,8 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
               {/* Demo Section */}
               {selectedPattern.demoName && (
                 <div className="flex flex-col gap-4 border-t border-zinc-100 dark:border-zinc-800 pt-6">
-                  <div className="flex items-center justify-between flex-wrap gap-2">
-                    <h3 className="text-lg font-bold text-zinc-800 dark:text-zinc-200">
+                  <div className="flex items-start sm:items-center justify-between flex-col sm:flex-row gap-2">
+                    <h3 className="text-base sm:text-lg font-bold text-zinc-800 dark:text-zinc-200">
                       Demo: {selectedPattern.demoName}
                     </h3>
                     {selectedPattern.demoLink && (
@@ -252,7 +359,7 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
                         href={selectedPattern.demoLink}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs font-semibold text-indigo-500 hover:text-indigo-600 dark:text-indigo-400 flex items-center gap-1 bg-indigo-500/5 px-2.5 py-1 rounded-full border border-indigo-500/10"
+                        className="text-xs font-semibold text-indigo-500 hover:text-indigo-600 dark:text-indigo-400 flex items-center gap-1 bg-indigo-500/5 px-2.5 py-1 rounded-full border border-indigo-500/10 self-start sm:self-auto"
                       >
                         LeetCode Link ↗
                       </a>
@@ -270,7 +377,7 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
 
                   {selectedPattern.demoCode && (
                     <div className="relative group">
-                      <div className="absolute right-4 top-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute right-3 top-3 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                         <button
                           onClick={() => {
                             if (selectedPattern) {
@@ -282,8 +389,8 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
                           Copy
                         </button>
                       </div>
-                      <pre className="bg-zinc-900 text-zinc-100 dark:bg-black border border-zinc-800 p-5 rounded-2xl overflow-x-auto">
-                        <code className="text-xs md:text-sm font-mono block">
+                      <pre className="bg-zinc-900 text-zinc-100 dark:bg-black border border-zinc-800 p-4 sm:p-5 rounded-2xl overflow-x-auto">
+                        <code className="text-xs sm:text-sm font-mono block">
                           {selectedPattern.demoCode}
                         </code>
                       </pre>
@@ -302,7 +409,7 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
 
               {/* Practice Problems */}
               <div className="border-t border-zinc-100 dark:border-zinc-800 pt-6 flex flex-col gap-4">
-                <h3 className="text-lg font-bold text-zinc-800 dark:text-zinc-200">
+                <h3 className="text-base sm:text-lg font-bold text-zinc-800 dark:text-zinc-200">
                   Practice Problems ({selectedPattern.problems.length})
                 </h3>
 
@@ -311,7 +418,7 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
                     const isSolved = solvedIds.includes(problem.id);
                     const note = notes[problem.id] || { solution: '', obstacle: '' };
                     const isExpanded = expandedProblemId === problem.id;
-                    
+
                     return (
                       <div
                         key={problem.id}
@@ -321,15 +428,16 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
                             : 'bg-zinc-100/30 border-zinc-200/60 dark:bg-zinc-900/30 dark:border-zinc-800/60 hover:border-zinc-300 dark:hover:border-zinc-700'
                         }`}
                       >
-                        <div className="p-4 flex items-center justify-between gap-4 flex-wrap sm:flex-nowrap">
-                          <div className="flex items-center gap-3">
+                        <div className="p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+                          {/* Left: checkbox + name */}
+                          <div className="flex items-start sm:items-center gap-3 flex-1 min-w-0">
                             <input
                               type="checkbox"
                               checked={isSolved}
                               onChange={() => toggleSolved(problem.id)}
-                              className="w-5 h-5 rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-900 cursor-pointer"
+                              className="w-5 h-5 rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-900 cursor-pointer shrink-0 mt-0.5 sm:mt-0"
                             />
-                            <div>
+                            <div className="min-w-0">
                               <a
                                 href={problem.leetcodeUrl}
                                 target="_blank"
@@ -338,8 +446,8 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
                                   isSolved ? 'text-zinc-500 line-through' : 'text-zinc-800 dark:text-zinc-200'
                                 }`}
                               >
-                                {problem.name}
-                                <span className="text-[10px] text-zinc-400 font-normal">↗</span>
+                                <span className="truncate">{problem.name}</span>
+                                <span className="text-[10px] text-zinc-400 font-normal shrink-0">↗</span>
                               </a>
                               {problem.notesLabel && (
                                 <span className="text-[10px] text-zinc-500 dark:text-zinc-400 block italic mt-0.5">
@@ -349,7 +457,8 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-3 ml-8 sm:ml-0">
+                          {/* Right: badge + notes toggle */}
+                          <div className="flex items-center gap-2 sm:gap-3 pl-8 sm:pl-0 shrink-0">
                             {problem.isMustDo ? (
                               <span className="text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded-full border border-amber-500/10 flex items-center gap-0.5">
                                 🔥 Must-do
@@ -362,9 +471,9 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
 
                             <button
                               onClick={() => setExpandedProblemId(isExpanded ? null : problem.id)}
-                              className="text-xs font-semibold text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 flex items-center gap-0.5"
+                              className="text-xs font-semibold text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 flex items-center gap-0.5 whitespace-nowrap"
                             >
-                              {isExpanded ? 'Collapse ▲' : 'Notes / Revise ▼'}
+                              {isExpanded ? 'Collapse ▲' : 'Notes ▼'}
                             </button>
                           </div>
                         </div>

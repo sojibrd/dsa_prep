@@ -78,3 +78,24 @@ pre code {
   font-size: 0.9rem;
   line-height: 1.5;
 }
+
+/* Mobile Drawer Slide-in Animation */
+@keyframes slide-in-left {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Ensure tap targets are large enough on mobile */
+@media (max-width: 1023px) {
+  button, a {
+    min-height: 36px;
+  }
+}
