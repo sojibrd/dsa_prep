@@ -7,6 +7,7 @@ export interface PracticeProblem {
   leetcodeUrl: string;
   isMustDo: boolean;
   notesLabel?: string;
+  statement?: string; // inline problem statement (optional)
 }
 
 export interface Pattern {
@@ -15,6 +16,7 @@ export interface Pattern {
   recognize: string;
   demoName: string;
   demoLink: string;
+  demoStatement?: string; // inline statement for the demo problem
   approach: string;
   demoCode: string;
   complexity: string;
@@ -36,11 +38,13 @@ export function parseDsaWorkbook(): Topic[] {
   
   let currentTopic: Topic | null = null;
   let currentPattern: Pattern | null = null;
+  let currentProblem: PracticeProblem | null = null;
   let inCodeBlock = false;
   let codeBlockLines: string[] = [];
   
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
+    const rawLine = lines[i]; // preserve original indentation
     
     // Check for code block boundary
     if (line.startsWith('```')) {
@@ -57,7 +61,7 @@ export function parseDsaWorkbook(): Topic[] {
     }
     
     if (inCodeBlock) {
-      codeBlockLines.push(lines[i]); // Keep original formatting/indentation
+      codeBlockLines.push(rawLine); // Keep original formatting/indentation
       continue;
     }
     
@@ -69,6 +73,7 @@ export function parseDsaWorkbook(): Topic[] {
       currentTopic = { id, name, patterns: [] };
       topics.push(currentTopic);
       currentPattern = null;
+      currentProblem = null;
       continue;
     }
     
@@ -83,11 +88,13 @@ export function parseDsaWorkbook(): Topic[] {
         recognize: '',
         demoName: '',
         demoLink: '',
+        demoStatement: '',
         approach: '',
         demoCode: '',
         complexity: '',
         problems: []
       };
+      currentProblem = null;
       if (currentTopic) {
         currentTopic.patterns.push(currentPattern);
       }
@@ -105,7 +112,6 @@ export function parseDsaWorkbook(): Topic[] {
     }
     
     // Parse Demo name & link
-    // e.g. "**Demo: Trapping Rain Water** — [LC 42](https://leetcode.com/problems/trapping-rain-water/) _(Hard — Amazon/Google/Meta High)_"
     if (line.startsWith('**Demo:')) {
       const demoNameMatch = line.match(/^\*\*Demo:\s*([^*]+)\*\*/);
       if (demoNameMatch) {
@@ -115,6 +121,12 @@ export function parseDsaWorkbook(): Topic[] {
       if (linkMatch) {
         currentPattern.demoLink = linkMatch[1];
       }
+      continue;
+    }
+
+    // Parse Demo Statement: "**Statement (Demo):** ..."
+    if (line.startsWith('**Statement (Demo):**')) {
+      currentPattern.demoStatement = line.replace('**Statement (Demo):**', '').trim();
       continue;
     }
     
@@ -131,8 +143,6 @@ export function parseDsaWorkbook(): Topic[] {
     }
     
     // Parse Practice Problems
-    // e.g. "- [ ] **3Sum** — [LC 15](https://leetcode.com/problems/3sum/) — 🔥 Must-do"
-    // or "- [ ] **Online Stock Span** — [LC 901](https://leetcode.com/problems/online-stock-span/) — ⚪ Bonus"
     if (line.startsWith('- [ ]') || line.startsWith('- [x]')) {
       // Find problem name inside **
       const nameMatch = line.match(/\*\*([^*]+)\*\*/);
@@ -144,7 +154,7 @@ export function parseDsaWorkbook(): Topic[] {
       
       const isMustDo = line.includes('🔥');
       
-      // Notes or extra label (e.g. "circular -> two pass")
+      // Notes or extra label
       let notesLabel = '';
       const notesMatch = line.match(/_([^_]+)_$/);
       if (notesMatch) {
@@ -153,14 +163,24 @@ export function parseDsaWorkbook(): Topic[] {
       
       if (name && leetcodeUrl) {
         const id = `${currentPattern.id}-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
-        currentPattern.problems.push({
+        currentProblem = {
           id,
           name,
           leetcodeUrl,
           isMustDo,
-          notesLabel: notesLabel || undefined
-        });
+          notesLabel: notesLabel || undefined,
+          statement: undefined,
+        };
+        currentPattern.problems.push(currentProblem);
       }
+      continue;
+    }
+
+    // Parse problem statement: "→ Statement: ..."
+    // This line appears directly after a problem entry
+    if (line.startsWith('→ Statement:') && currentProblem) {
+      currentProblem.statement = line.replace('→ Statement:', '').trim();
+      continue;
     }
   }
   

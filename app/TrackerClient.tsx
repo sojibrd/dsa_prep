@@ -19,6 +19,8 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
   const [notes, setNotes] = useLocalStorage<Record<string, ProblemNote>>('dsa_problem_notes', {});
   const [darkMode, setDarkMode] = useLocalStorage<boolean>('dsa_dark_mode', false);
   const [expandedProblemId, setExpandedProblemId] = useState<string | null>(null);
+  const [expandedStatementId, setExpandedStatementId] = useState<string | null>(null);
+  const [demoStatementOpen, setDemoStatementOpen] = useState<boolean>(false);
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
   // Sync dark mode class
@@ -40,6 +42,12 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // Close demo statement when pattern changes
+  useEffect(() => {
+    setDemoStatementOpen(false);
+    setExpandedStatementId(null);
+  }, [selectedPatternId]);
 
   // Lock body scroll when sidebar is open on mobile
   useEffect(() => {
@@ -351,9 +359,19 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
               {selectedPattern.demoName && (
                 <div className="flex flex-col gap-4 border-t border-zinc-100 dark:border-zinc-800 pt-6">
                   <div className="flex items-start sm:items-center justify-between flex-col sm:flex-row gap-2">
-                    <h3 className="text-base sm:text-lg font-bold text-zinc-800 dark:text-zinc-200">
-                      Demo: {selectedPattern.demoName}
-                    </h3>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className="text-base sm:text-lg font-bold text-zinc-800 dark:text-zinc-200">
+                        Demo: {selectedPattern.demoName}
+                      </h3>
+                      {selectedPattern.demoStatement && (
+                        <button
+                          onClick={() => setDemoStatementOpen(!demoStatementOpen)}
+                          className="text-[10px] font-bold bg-violet-500/10 text-violet-600 dark:text-violet-400 px-2 py-0.5 rounded-full border border-violet-500/20 hover:bg-violet-500/20 transition-colors"
+                        >
+                          {demoStatementOpen ? '📋 Statement ▲' : '📋 Statement ▼'}
+                        </button>
+                      )}
+                    </div>
                     {selectedPattern.demoLink && (
                       <a
                         href={selectedPattern.demoLink}
@@ -365,6 +383,18 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
                       </a>
                     )}
                   </div>
+
+                  {/* Demo Statement (expandable) */}
+                  {demoStatementOpen && selectedPattern.demoStatement && (
+                    <div className="p-4 rounded-xl bg-violet-500/5 border border-violet-500/20 text-sm">
+                      <h4 className="font-bold text-violet-600 dark:text-violet-400 mb-2 flex items-center gap-1.5">
+                        📋 সমস্যার বিবরণ:
+                      </h4>
+                      <p className="text-zinc-700 dark:text-zinc-300 leading-relaxed whitespace-pre-line">
+                        {selectedPattern.demoStatement}
+                      </p>
+                    </div>
+                  )}
 
                   {selectedPattern.approach && (
                     <div className="text-sm bg-zinc-100/50 dark:bg-zinc-900/50 p-4 rounded-xl border border-zinc-200/50 dark:border-zinc-800/50">
@@ -457,8 +487,8 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
                             </div>
                           </div>
 
-                          {/* Right: badge + notes toggle */}
-                          <div className="flex items-center gap-2 sm:gap-3 pl-8 sm:pl-0 shrink-0">
+                          {/* Right: badge + toggles */}
+                          <div className="flex items-center gap-2 sm:gap-3 pl-8 sm:pl-0 shrink-0 flex-wrap justify-end">
                             {problem.isMustDo ? (
                               <span className="text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded-full border border-amber-500/10 flex items-center gap-0.5">
                                 🔥 Must-do
@@ -469,6 +499,15 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
                               </span>
                             )}
 
+                            {problem.statement && (
+                              <button
+                                onClick={() => setExpandedStatementId(expandedStatementId === problem.id ? null : problem.id)}
+                                className="text-[10px] font-bold bg-violet-500/10 text-violet-600 dark:text-violet-400 px-2 py-0.5 rounded-full border border-violet-500/20 hover:bg-violet-500/20 transition-colors"
+                              >
+                                {expandedStatementId === problem.id ? '📋 ▲' : '📋 ▼'}
+                              </button>
+                            )}
+
                             <button
                               onClick={() => setExpandedProblemId(isExpanded ? null : problem.id)}
                               className="text-xs font-semibold text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 flex items-center gap-0.5 whitespace-nowrap"
@@ -477,6 +516,16 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
                             </button>
                           </div>
                         </div>
+
+                        {/* Inline Statement (expandable) */}
+                        {expandedStatementId === problem.id && problem.statement && (
+                          <div className="px-4 pb-4 border-t border-violet-200/40 dark:border-violet-800/30 pt-3 bg-violet-500/5 rounded-b-2xl">
+                            <h4 className="text-xs font-bold text-violet-600 dark:text-violet-400 uppercase tracking-wider mb-2">📋 সমস্যার বিবরণ</h4>
+                            <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed whitespace-pre-line">
+                              {problem.statement}
+                            </p>
+                          </div>
+                        )}
 
                         {/* Expanded Notes Section */}
                         {isExpanded && (

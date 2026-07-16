@@ -77,6 +77,10 @@
 
 **Demo: Trapping Rain Water** — [LC 42](https://leetcode.com/problems/trapping-rain-water/) _(Hard — Amazon/Google/Meta High)_
 
+**Statement (Demo):** `height` নামের একটা integer array দেওয়া যেখানে প্রতিটা মান একটা উল্লম্ব বারের উচ্চতা। বারগুলোর মাঝে বৃষ্টির পানি কতটুকু আটকে থাকবে তার মোট পরিমাণ বের করুন।
+উদাহরণ: `height = [0,1,0,2,1,0,1,3,2,1,2,1]` → Output: `6`
+⚡ Constraint: `n ≤ 2×10⁴`, `0 ≤ height[i] ≤ 10⁵`
+
 **Approach:** প্রতিটা ঘরে পানি জমে `min(leftMax, rightMax) - height[i]`। দুই প্রান্ত থেকে pointer চালান — যেদিকের height ছোট সেদিকটা আগান, কারণ ছোট দিকের max-ই bottleneck, অন্য পাশে যত বড়ই থাকুক পানির উচ্চতা এই দিকেই আটকে।
 
 ```js
@@ -106,27 +110,43 @@ function trap(height) {
 **প্রবলেম লিস্ট:**
 
 - [ ] **3Sum** — [LC 15](https://leetcode.com/problems/3sum/) — 🔥 Must-do
+      → Statement: integer array `nums` দেওয়া — তিনটা আলাদা index-এর সংখ্যা খুঁজুন যাদের যোগফল `0`। Duplicate triplet ছাড়া সব unique triplet return করুন।
+      উদাহরণ: `[-1,0,1,2,-1,-4]` → `[[-1,-1,2],[-1,0,1]]` | ⚡ `n ≤ 3000`
       → আমার সমাধান:
       → যে সমস্যা হয়েছিল:
 - [ ] **Container With Most Water** — [LC 11](https://leetcode.com/problems/container-with-most-water/) — 🔥 Must-do
+      → Statement: `n`টা উল্লম্ব রেখা আছে, `i`-তম রেখার উচ্চতা `height[i]`। দুটো রেখা বেছে নিন যাতে তারা x-axis সহ সবচেয়ে বেশি পানি ধরতে পারে।
+      উদাহরণ: `[1,8,6,2,5,4,8,3,7]` → `49` | ⚡ `n ≤ 10⁵`
       → আমার সমাধান:
       → যে সমস্যা হয়েছিল:
 - [ ] **Two Sum II (Sorted Array)** — [LC 167](https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/) — ⚪ Bonus
+      → Statement: 1-indexed sorted array `numbers` দেওয়া — দুটো সংখ্যার index বের করুন যাদের যোগফল `target`। একই element দুবার ব্যবহার করা যাবে না, O(1) extra space।
+      উদাহরণ: `numbers=[2,7,11,15], target=9` → `[1,2]` | ⚡ `n ≤ 3×10⁴`
       → আমার সমাধান:
       → যে সমস্যা হয়েছিল:
 - [ ] **Valid Palindrome** — [LC 125](https://leetcode.com/problems/valid-palindrome/) — 🔥 Must-do
+      → Statement: string `s` দেওয়া — শুধু alphanumeric character রেখে lowercase-এ নামিয়ে palindrome কিনা বলুন।
+      উদাহরণ: `"A man, a plan, a canal: Panama"` → `true` | ⚡ `len ≤ 2×10⁵`
       → আমার সমাধান:
       → যে সমস্যা হয়েছিল:
 - [ ] **Remove Duplicates from Sorted Array** — [LC 26](https://leetcode.com/problems/remove-duplicates-from-sorted-array/) — ⚪ Bonus
+      → Statement: sorted integer array `nums` দেওয়া — in-place unique element রাখুন (extra array নয়) এবং unique element-এর সংখ্যা `k` return করুন।
+      উদাহরণ: `[1,1,2]` → `k=2`, `nums=[1,2,_]` | ⚡ `n ≤ 3×10⁴`
       → আমার সমাধান:
       → যে সমস্যা হয়েছিল:
 - [ ] **Sort Colors** — [LC 75](https://leetcode.com/problems/sort-colors/) — ⚪ Bonus _(তিন pointer / Dutch flag)_
+      → Statement: `0`, `1`, `2` সম্বলিত array `nums` দেওয়া — in-place sort করুন যাতে সব `0` আগে, তারপর `1`, তারপর `2`। Built-in sort ব্যবহার করা যাবে না।
+      উদাহরণ: `[2,0,2,1,1,0]` → `[0,0,1,1,2,2]` | ⚡ `n ≤ 300`
       → আমার সমাধান:
       → যে সমস্যা হয়েছিল:
 - [ ] **Merge Sorted Array** — [LC 88](https://leetcode.com/problems/merge-sorted-array/) — ⚪ Bonus _(পেছন থেকে merge)_
+      → Statement: দুটো sorted array `nums1` (size `m+n`) ও `nums2` (size `n`) দেওয়া — `nums1`-এ in-place merge করুন।
+      উদাহরণ: `nums1=[1,2,3,0,0,0], m=3, nums2=[2,5,6], n=3` → `[1,2,2,3,5,6]` | ⚡ `m,n ≤ 200`
       → আমার সমাধান:
       → যে সমস্যা হয়েছিল:
 - [ ] **Reverse String** — [LC 344](https://leetcode.com/problems/reverse-string/) — ⚪ Bonus
+      → Statement: character array `s` দেওয়া — in-place reverse করুন। O(1) extra memory ব্যবহার করতে হবে।
+      উদাহরণ: `['h','e','l','l','o']` → `['o','l','l','e','h']` | ⚡ `n ≤ 10⁵`
       → আমার সমাধান:
       → যে সমস্যা হয়েছিল:
 
@@ -135,6 +155,10 @@ function trap(height) {
 **চিনবেন কীভাবে:** "longest/shortest substring/subarray with X", contiguous, "subarray of size k", max/min sum — O(n²) nested loop-কে O(n) window-এ নামানো
 
 **Demo: Minimum Window Substring** — [LC 76](https://leetcode.com/problems/minimum-window-substring/) _(Hard — Google/Meta/Apple High)_
+
+**Statement (Demo):** string `s` ও `t` দেওয়া — `s`-এর সবচেয়ে ছোট substring বের করুন যাতে `t`-এর সব character (সংখ্যা সহ) থাকে। যদি না থাকে, `""` return করুন।
+উদাহরণ: `s="ADOBECODEBANC", t="ABC"` → `"BANC"`
+⚡ Constraint: `len(s), len(t) ≤ 10⁵`
 
 **Approach:** `t`-এর প্রতিটা char-এর দরকারি count একটা map-এ রাখুন। ডান দিকে window বাড়ান; সব char পাওয়া গেলে (`missing === 0`) বাম দিক থেকে যত পারা যায় ছোট করুন আর best উত্তর আপডেট করুন। ছোট করতে গিয়ে কোনো দরকারি char হারালে আবার ডানে বাড়ানো শুরু।
 
@@ -171,18 +195,28 @@ function minWindow(s, t) {
 **প্রবলেম লিস্ট:**
 
 - [ ] **Longest Substring Without Repeating Characters** — [LC 3](https://leetcode.com/problems/longest-substring-without-repeating-characters/) — 🔥 Must-do _(hashing-ও লাগে — primary এখানেই)_
+      → Statement: string `s` দেওয়া — repeating character ছাড়া সবচেয়ে দীর্ঘ substring-এর দৈর্ঘ্য বের করুন।
+      উদাহরণ: `"abcabcbb"` → `3` ("abc") | ⚡ `len ≤ 5×10⁴`
       → আমার সমাধান:
       → যে সমস্যা হয়েছিল:
 - [ ] **Longest Repeating Character Replacement** — [LC 424](https://leetcode.com/problems/longest-repeating-character-replacement/) — 🔥 Must-do
+      → Statement: uppercase string `s` ও integer `k` দেওয়া — সর্বোচ্চ `k`টা character পরিবর্তন করে সবচেয়ে দীর্ঘ same-letter substring-এর দৈর্ঘ্য বের করুন।
+      উদাহরণ: `s="AABABBA", k=1` → `4` | ⚡ `len ≤ 10⁵`
       → আমার সমাধান:
       → যে সমস্যা হয়েছিল:
 - [ ] **Fruit Into Baskets** — [LC 904](https://leetcode.com/problems/fruit-into-baskets/) — ⚪ Bonus _(at most 2 distinct)_
+      → Statement: `fruits` array দেওয়া যেখানে `fruits[i]` = i-তম গাছের ফলের ধরন। দুটো basket নিয়ে যেকোনো একটানা গাছ থেকে সর্বোচ্চ কতটা ফল নেওয়া যায় বলুন (প্রতি basket-এ এক ধরনের ফল)।
+      উদাহরণ: `[1,2,1,2,3]` → `4` | ⚡ `n ≤ 10⁵`
       → আমার সমাধান:
       → যে সমস্যা হয়েছিল:
 - [ ] **Minimum Size Subarray Sum** — [LC 209](https://leetcode.com/problems/minimum-size-subarray-sum/) — 🔥 Must-do
+      → Statement: positive integer `target` ও array `nums` দেওয়া — যোগফল `≥ target` এমন সবচেয়ে ছোট contiguous subarray-এর দৈর্ঘ্য বের করুন। না থাকলে `0`।
+      উদাহরণ: `target=7, nums=[2,3,1,2,4,3]` → `2` ([4,3]) | ⚡ `n ≤ 10⁵`
       → আমার সমাধান:
       → যে সমস্যা হয়েছিল:
 - [ ] **Find All Anagrams in a String** — [LC 438](https://leetcode.com/problems/find-all-anagrams-in-a-string/) — ⚪ Bonus _(fixed-size window + freq compare)_
+      → Statement: string `s` ও `p` দেওয়া — `s`-এ `p`-এর সব anagram-এর starting index-গুলো বের করুন।
+      উদাহরণ: `s="cbaebabacd", p="abc"` → `[0,6]` | ⚡ `len(s),len(p) ≤ 3×10⁴`
       → আমার সমাধান:
       → যে সমস্যা হয়েছিল:
 - _Sliding Window Maximum → দেখুন **4.4** (Stacks & Queues — monotonic deque)_
@@ -192,6 +226,10 @@ function minWindow(s, t) {
 **চিনবেন কীভাবে:** "subarray sum", range sum query, cumulative, একই array-তে বারবার sum জিজ্ঞেস — precompute O(n), query O(1)
 
 **Demo: Subarray Sum Equals K** — [LC 560](https://leetcode.com/problems/subarray-sum-equals-k/) _(Medium)_
+
+**Statement (Demo):** integer array `nums` ও integer `k` দেওয়া — যোগফল `k` এমন contiguous subarray-এর মোট সংখ্যা বের করুন। (negative number থাকতে পারে।)
+উদাহরণ: `nums=[1,1,1], k=2` → `2`
+⚡ Constraint: `n ≤ 2×10⁴`, `-1000 ≤ nums[i] ≤ 1000`
 
 **Approach:** চলতে চলতে running prefix sum রাখুন। `sum[i..j] = k` মানে `prefix[j] - prefix[i-1] = k`, অর্থাৎ আগে কোথাও `prefix - k` মানের prefix দেখা গেছে কি না — সেটা hashmap-এ count সহ রাখলেই হয়। (negative number থাকলেও কাজ করে, যেখানে sliding window ব্যর্থ।)
 
@@ -214,9 +252,13 @@ function subarraySum(nums, k) {
 **প্রবলেম লিস্ট:**
 
 - [ ] **Range Sum Query — Immutable** — [LC 303](https://leetcode.com/problems/range-sum-query-immutable/) — ⚪ Bonus
+      → Statement: integer array `nums` দিয়ে একটা class তৈরি করুন। `sumRange(left, right)` method index `left` থেকে `right` পর্যন্ত সব element-এর যোগফল O(1)-এ return করবে।
+      উদাহরণ: `nums=[-2,0,3,-5,2,-1]`, `sumRange(0,2)` → `1` | ⚡ `n ≤ 10⁴`, query ≤ `10⁴`
       → আমার সমাধান:
       → যে সমস্যা হয়েছিল:
 - [ ] **Count of Range Sum** — [LC 327](https://leetcode.com/problems/count-of-range-sum/) — ⚪ Bonus _(Hard — prefix + merge sort/BIT)_
+      → Statement: integer array `nums` ও `lower`, `upper` দেওয়া — যোগফল `lower ≤ sum ≤ upper` এমন সব subarray-এর সংখ্যা বের করুন।
+      উদাহরণ: `nums=[-2,5,-1], lower=-2, upper=2` → `3` | ⚡ `n ≤ 10⁵`
       → আমার সমাধান:
       → যে সমস্যা হয়েছিল:
 
@@ -225,6 +267,10 @@ function subarraySum(nums, k) {
 **চিনবেন কীভাবে:** "count", "frequency", "group by", "duplicate", "complement/pair sum", "first unique", O(1) lookup দরকার — O(n²) scan-কে O(n) এ নামানো
 
 **Demo: Longest Consecutive Sequence** — [LC 128](https://leetcode.com/problems/longest-consecutive-sequence/) _(Medium)_
+
+**Statement (Demo):** unsorted integer array `nums` দেওয়া — সবচেয়ে দীর্ঘ consecutive sequence (পর পর সংখ্যা) কতটুকু বলুন। O(n) সময়ে সমাধান করতে হবে।
+উদাহরণ: `[100,4,200,1,3,2]` → `4` (1,2,3,4)
+⚡ Constraint: `n ≤ 10⁵`, `-10⁹ ≤ nums[i] ≤ 10⁹`
 
 **Approach:** সব সংখ্যা Set-এ ঢুকান। কেবল সেই সংখ্যা থেকে গোনা শুরু করুন যার `x-1` নেই (মানে সেটাই sequence-এর শুরু) — তাহলে প্রতিটা এলিমেন্ট সর্বোচ্চ দুবার দেখা হয়, sort ছাড়াই O(n)।
 
@@ -247,24 +293,38 @@ function longestConsecutive(nums) {
 **প্রবলেম লিস্ট:**
 
 - [ ] **Two Sum** — [LC 1](https://leetcode.com/problems/two-sum/) — 🔥 Must-do _(complement lookup — সবার আগে এটা)_
+      → Statement: integer array `nums` ও integer `target` দেওয়া — দুটো সংখ্যার index বের করুন যাদের যোগফল `target`। একটাই solution আছে, একই index দুবার ব্যবহার করা যাবে না।
+      উদাহরণ: `nums=[2,7,11,15], target=9` → `[0,1]` | ⚡ `n ≤ 10⁴`
       → আমার সমাধান:
       → যে সমস্যা হয়েছিল:
 - [ ] **Group Anagrams** — [LC 49](https://leetcode.com/problems/group-anagrams/) — 🔥 Must-do _(sorted string / freq-signature key)_
+      → Statement: string array `strs` দেওয়া — anagram-গুলোকে একসাথে গ্রুপ করুন। উত্তরের ক্রম যেকোনো হতে পারে।
+      উদাহরণ: `["eat","tea","tan","ate","nat","bat"]` → `[["bat"],["nat","tan"],["ate","eat","tea"]]` | ⚡ `n ≤ 10⁴`
       → আমার সমাধান:
       → যে সমস্যা হয়েছিল:
 - [ ] **Valid Anagram** — [LC 242](https://leetcode.com/problems/valid-anagram/) — ⚪ Bonus
+      → Statement: দুটো string `s` ও `t` দেওয়া — `t` যদি `s`-এর anagram হয় `true`, নাহলে `false` return করুন। (Anagram মানে same character, same count।)
+      উদাহরণ: `s="anagram", t="nagaram"` → `true` | ⚡ `len ≤ 5×10⁴`
       → আমার সমাধান:
       → যে সমস্যা হয়েছিল:
 - [ ] **First Unique Character in a String** — [LC 387](https://leetcode.com/problems/first-unique-character-in-a-string/) — ⚪ Bonus
+      → Statement: lowercase string `s` দেওয়া — প্রথম non-repeating character-এর index বের করুন। না থাকলে `-1`।
+      উদাহরণ: `s="leetcode"` → `0` | ⚡ `len ≤ 10⁵`
       → আমার সমাধান:
       → যে সমস্যা হয়েছিল:
 - [ ] **First Missing Positive** — [LC 41](https://leetcode.com/problems/first-missing-positive/) — 🔥 Must-do _(Hard — Meta High; index-as-hash trick, O(1) space)_
+      → Statement: unsorted integer array `nums` দেওয়া — সবচেয়ে ছোট missing positive integer বের করুন। O(n) time ও O(1) extra space।
+      উদাহরণ: `[3,4,-1,1]` → `2` | ⚡ `n ≤ 10⁵`, `-2³¹ ≤ nums[i] ≤ 2³¹-1`
       → আমার সমাধান:
       → যে সমস্যা হয়েছিল:
 - [ ] **Max Points on a Line** — [LC 149](https://leetcode.com/problems/max-points-on-a-line/) — 🔥 Must-do _(Hard — Google High; slope-কে hashmap key বানানো)_
+      → Statement: 2D plane-এ `points` array দেওয়া — একটা সরলরেখার উপর সর্বোচ্চ কতটা point থাকতে পারে বলুন।
+      উদাহরণ: `[[1,1],[2,2],[3,3]]` → `3` | ⚡ `n ≤ 300`
       → আমার সমাধান:
       → যে সমস্যা হয়েছিল:
 - [ ] **Find the Index of the First Occurrence (strStr)** — [LC 28](https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/) — ⚪ Bonus _(advanced string matching: KMP/Z-algorithm শেখার entry point)_
+      → Statement: দুটো string `haystack` ও `needle` দেওয়া — `haystack`-এ `needle`-এর প্রথম occurrence-এর index বের করুন। না থাকলে `-1`।
+      উদাহরণ: `haystack="sadbutsad", needle="sad"` → `0` | ⚡ `len ≤ 10⁴`
       → আমার সমাধান:
       → যে সমস্যা হয়েছিল:
 
@@ -273,6 +333,10 @@ function longestConsecutive(nums) {
 **চিনবেন কীভাবে:** (start, end) pair, "overlap", "merge", "meeting rooms", scheduling — প্রায় সবসময় **আগে start দিয়ে sort**
 
 **Demo: Merge Intervals** — [LC 56](https://leetcode.com/problems/merge-intervals/) _(Medium — সব কোম্পানিতে ঘন ঘন)_
+
+**Statement (Demo):** `intervals` array দেওয়া যেখানে প্রতিটা `intervals[i] = [startᵢ, endᵢ]`। সব overlapping interval merge করে non-overlapping interval-এর array return করুন।
+উদাহরণ: `[[1,3],[2,6],[8,10],[15,18]]` → `[[1,6],[8,10],[15,18]]`
+⚡ Constraint: `n ≤ 10⁴`, `0 ≤ startᵢ ≤ endᵢ ≤ 10⁴`
 
 **Approach:** start অনুযায়ী sort করুন। এরপর এক পাস — নতুন interval-এর start যদি result-এর শেষ interval-এর end-এর ভেতরে পড়ে, end বাড়িয়ে merge; নাহলে নতুন করে push।
 
@@ -296,12 +360,18 @@ function merge(intervals) {
 **প্রবলেম লিস্ট:**
 
 - [ ] **Insert Interval** — [LC 57](https://leetcode.com/problems/insert-interval/) — 🔥 Must-do
+      → Statement: non-overlapping sorted intervals আর একটা নতুন interval দেওয়া — নতুনটা insert করে (দরকার হলে merge করে) আবার non-overlapping sorted list return করুন।
+      উদাহরণ: `intervals=[[1,3],[6,9]], newInterval=[2,5]` → `[[1,5],[6,9]]` | ⚡ `n ≤ 10⁴`
       → আমার সমাধান:
       → যে সমস্যা হয়েছিল:
 - [ ] **Non-overlapping Intervals** — [LC 435](https://leetcode.com/problems/non-overlapping-intervals/) — 🔥 Must-do _(greedy: end অনুযায়ী sort — দেখুন 10.1-ও)_
+      → Statement: intervals array দেওয়া — সব interval non-overlapping করতে minimum কয়টা interval সরাতে হবে বলুন।
+      উদাহরণ: `[[1,2],[2,3],[3,4],[1,3]]` → `1` ([1,3] সরালেই হয়) | ⚡ `n ≤ 10⁵`
       → আমার সমাধান:
       → যে সমস্যা হয়েছিল:
 - [ ] **Meeting Rooms** — [LC 252](https://leetcode.com/problems/meeting-rooms/) — ⚪ Bonus _(Premium; ফ্রি বিকল্প: GfG "meeting rooms")_
+      → Statement: meeting time intervals `[start, end]` দেওয়া — একজন মানুষ সব meeting attend করতে পারবে কিনা বলুন (কোনো দুটো meeting overlap করলে পারবে না)।
+      উদাহরণ: `[[0,30],[5,10],[15,20]]` → `false` | ⚡ `n ≤ 10⁴`
       → আমার সমাধান:
       → যে সমস্যা হয়েছিল:
 
@@ -310,6 +380,10 @@ function merge(intervals) {
 **চিনবেন কীভাবে:** "maximum/minimum subarray sum", contiguous, এক পাসে চলমান best — আসলে ১-ভেরিয়েবল DP: "আগেরটা টেনে নেব, না নতুন শুরু করব?"
 
 **Demo: Maximum Subarray** — [LC 53](https://leetcode.com/problems/maximum-subarray/) _(Medium)_
+
+**Statement (Demo):** integer array `nums` দেওয়া — সবচেয়ে বড় যোগফল সম্পন্ন contiguous subarray খুঁজে বের করুন এবং সেই যোগফল return করুন।
+উদাহরণ: `[-2,1,-3,4,-1,2,1,-5,4]` → `6` ([4,-1,2,1])
+⚡ Constraint: `n ≤ 10⁵`, `-10⁴ ≤ nums[i] ≤ 10⁴`
 
 **Approach:** প্রতিটা index-এ সিদ্ধান্ত — আগের চলমান sum positive contribution দিলে যোগ করুন, নাহলে এখান থেকে নতুন subarray শুরু। global best আলাদা রাখুন।
 
@@ -330,6 +404,8 @@ function maxSubArray(nums) {
 **প্রবলেম লিস্ট:**
 
 - [ ] **Maximum Product Subarray** — [LC 152](https://leetcode.com/problems/maximum-product-subarray/) — ⚪ Bonus _(negative × negative = positive → min-ও ট্র্যাক করুন)_
+      → Statement: integer array `nums` দেওয়া — সবচেয়ে বড় গুণফল সম্পন্ন contiguous subarray খুঁজে সেই গুণফল return করুন।
+      উদাহরণ: `[2,3,-2,4]` → `6` ([2,3]) | ⚡ `n ≤ 2×10⁴`, `-10 ≤ nums[i] ≤ 10`
       → আমার সমাধান:
       → যে সমস্যা হয়েছিল:
 
@@ -338,6 +414,10 @@ function maxSubArray(nums) {
 **চিনবেন কীভাবে:** 2D grid, "spiral", "rotate", boundary ধরে ধরে হাঁটা, layer-by-layer — direction/boundary ভেরিয়েবল দিয়ে simulation
 
 **Demo: Spiral Matrix** — [LC 54](https://leetcode.com/problems/spiral-matrix/) _(Medium)_
+
+**Statement (Demo):** `m × n` integer matrix দেওয়া — spiral order-এ (ডান → নিচ → বাম → উপর) সব element-এর list return করুন।
+উদাহরণ: `[[1,2,3],[4,5,6],[7,8,9]]` → `[1,2,3,6,9,8,7,4,5]`
+⚡ Constraint: `m,n ≤ 10`
 
 **Approach:** চারটা boundary (`top/bottom/left/right`) রাখুন। এক layer ঘুরে boundary গুটিয়ে আনুন। ভেতরের দিকের single row/column-এ ডাবল-কাউন্ট এড়াতে নিচ ও বাম পাসের আগে boundary চেক জরুরি।
 
@@ -371,6 +451,8 @@ function spiralOrder(matrix) {
 **প্রবলেম লিস্ট:**
 
 - [ ] **Rotate Image** — [LC 48](https://leetcode.com/problems/rotate-image/) — ⚪ Bonus _(transpose + reverse)_
+      → Statement: `n × n` 2D integer matrix দেওয়া — এটাকে in-place clockwise 90° ঘুরান। Extra matrix ব্যবহার করা যাবে না।
+      উদাহরণ: `[[1,2,3],[4,5,6],[7,8,9]]` → `[[7,4,1],[8,5,2],[9,6,3]]` | ⚡ `n ≤ 20`
       → আমার সমাধান:
       → যে সমস্যা হয়েছিল:
 - \*Grid-এ BFS/DFS (islands, flood fill) → দেখুন **8.1\***
