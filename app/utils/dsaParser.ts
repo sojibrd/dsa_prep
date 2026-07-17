@@ -34,7 +34,26 @@ export function parseDsaWorkbook(): Topic[] {
   const content = fs.readFileSync(filePath, 'utf-8');
   
   const topics: Topic[] = [];
-  const lines = content.split('\n');
+  // Recursively resolve @[filepath] references
+  function resolveRefs(text: string): string[] {
+    const result: string[] = [];
+    for (const line of text.split('\n')) {
+      const refMatch = line.trim().match(/^@\[([^\]]+)\]$/);
+      if (refMatch) {
+        const refPath = path.join(process.cwd(), refMatch[1].trim());
+        if (fs.existsSync(refPath)) {
+          result.push(...resolveRefs(fs.readFileSync(refPath, 'utf-8')));
+        } else {
+          result.push(line);
+        }
+      } else {
+        result.push(line);
+      }
+    }
+    return result;
+  }
+
+  let lines = resolveRefs(content);
   
   let currentTopic: Topic | null = null;
   let currentPattern: Pattern | null = null;
