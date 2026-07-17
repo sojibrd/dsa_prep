@@ -38,7 +38,7 @@ Do not ask about anything already clearly answered by existing documentation. A 
 
 ## Step 2 — Align on Language
 
-Every project has its own vocabulary. Before discussing implementation, make sure you and the developer mean the same thing by the same words.
+Every project has its own vocabulary. Before discussing implementation or making any code changes, make sure you and the developer mean the same thing by the same words.
 
 Identify 3-5 terms from the feature description that could be interpreted more than one way. Define each one based on what you understand from the context. Present them to the developer for confirmation.
 
@@ -54,8 +54,9 @@ we are speaking the same language:
 Correct anything that is off before we go further.
 ```
 
-Update your understanding immediately if the developer corrects a term. Do not continue until the language is aligned.
+Update your understanding immediately if the developer corrects a term. Do NOT write, modify, propose, or apply any code changes in any files until the language alignment is fully completed and confirmed by the developer.
 
 # Invariants
 
 - Always give response in bangla.
+- Strictly do not make or propose any code changes before language alignment is completed and confirmed by the developer.

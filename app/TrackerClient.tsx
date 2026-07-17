@@ -77,7 +77,7 @@ function StatementBox({ raw }: { raw: string }) {
 }
 
 export default function TrackerClient({ topics }: TrackerClientProps) {
-  const [selectedPatternId, setSelectedPatternId] = useState<string>('1.1');
+  const [selectedPatternId, setSelectedPatternId] = useLocalStorage<string>('dsa_selected_pattern_id', '1.1');
   const [solvedIds, setSolvedIds] = useState<string[]>([]);
   const [notes, setNotes] = useState<Record<string, ProblemNote>>({});
   const [darkMode, setDarkMode] = useLocalStorage<boolean>('dsa_dark_mode', false);
@@ -118,6 +118,57 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
     setDemoStatementOpen(false);
     setExpandedStatementId(null);
   }, [selectedPatternId]);
+
+  // Sync selectedPatternId with URL query param (?pattern=X.X)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const patternFromUrl = params.get('pattern');
+    const activePatternId = patternFromUrl || null;
+
+    if (patternFromUrl) {
+      setSelectedPatternId(patternFromUrl);
+    }
+
+    // On initial load, scroll the sidebar to show the active pattern button
+    const timer = setTimeout(() => {
+      const targetId = activePatternId || selectedPatternId;
+      const activeBtn = document.getElementById(`pattern-btn-${targetId}`);
+      if (activeBtn) {
+        const scrollContainer = activeBtn.closest('.overflow-y-auto');
+        if (scrollContainer) {
+          const containerRect = scrollContainer.getBoundingClientRect();
+          const elemRect = activeBtn.getBoundingClientRect();
+          const isAbove = elemRect.top < containerRect.top;
+          const isBelow = elemRect.bottom > containerRect.bottom;
+          if (isAbove || isBelow) {
+            const relativeTop = elemRect.top - containerRect.top;
+            let targetScrollTop = scrollContainer.scrollTop + relativeTop;
+            if (isBelow) {
+              targetScrollTop = targetScrollTop - containerRect.height + elemRect.height;
+            }
+            scrollContainer.scrollTo({ top: targetScrollTop, behavior: 'smooth' });
+          }
+        }
+      }
+    }, 100);
+
+    // Handle browser back/forward button
+    const handlePopState = () => {
+      const p = new URLSearchParams(window.location.search);
+      const pid = p.get('pattern');
+      if (pid) {
+        setSelectedPatternId(pid);
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+
+
+
 
   // Lock body scroll when sidebar is open on mobile
   useEffect(() => {
@@ -376,6 +427,10 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
   const handlePatternSelect = (patternId: string) => {
     setSelectedPatternId(patternId);
     setSidebarOpen(false); // close drawer on mobile after selection
+    // Update URL with query param without page reload
+    const url = new URL(window.location.href);
+    url.searchParams.set('pattern', patternId);
+    window.history.pushState(null, '', url.toString());
   };
 
   // Sidebar content (shared between desktop sidebar and mobile drawer)
@@ -448,6 +503,7 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
                     return (
                       <button
                         key={pattern.id}
+                        id={`pattern-btn-${pattern.id}`}
                         onClick={() => handlePatternSelect(pattern.id)}
                         className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-all flex items-center justify-between ${
                           isSelected
@@ -462,10 +518,10 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
                       </button>
                     );
                   })}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
         </div>
       </div>
     </div>
@@ -590,7 +646,7 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
 
           {/* Drawer panel */}
           <aside className="absolute left-0 top-0 h-full w-[300px] sm:w-[340px] bg-zinc-50 dark:bg-zinc-950 border-r border-zinc-200/80 dark:border-zinc-800/80 flex flex-col shadow-2xl animate-slide-in-left">
-            <SidebarContent />
+            {SidebarContent()}
           </aside>
         </div>
       )}
@@ -621,7 +677,7 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
           </div>
 
           <div className="glass-panel p-5 rounded-2xl flex-1 flex flex-col max-h-[calc(100vh-220px)] overflow-y-auto">
-            <SidebarContent />
+            {SidebarContent()}
           </div>
         </aside>
 
