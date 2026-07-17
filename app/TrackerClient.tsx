@@ -731,37 +731,50 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
                   </ul>
 
                   {/* Examples from problems to understand the pattern */}
-                  <div className="mt-4 pt-4 border-t border-cyan-500/10">
-                    <h5 className="font-bold text-cyan-600 dark:text-cyan-400 mb-3 text-xs uppercase tracking-wider">
-                      Example:
-                    </h5>
-                    <div className="flex flex-col gap-4">
-                      {selectedPattern.recognize.split(',').map((clueItem, cIdx) => {
-                        const trimmedClue = clueItem.trim();
-                        const matchingProbs = getClueMatches(trimmedClue, selectedPattern!.problems);
-                        if (matchingProbs.length === 0) return null;
-                        
-                        return (
-                          <div key={cIdx} className="flex flex-col gap-1.5 pl-3 border-l-2 border-cyan-500/20">
-                            <span className="font-bold text-xs text-zinc-800 dark:text-zinc-200">
-                              {trimmedClue} :
-                            </span>
-                            <ol className="list-decimal pl-5 space-y-1 text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                              {matchingProbs.map((prob) => {
-                                const desc = prob.statement!.split('\n')[0].trim();
-                                return (
-                                  <li key={prob.id} title={prob.name}>
-                                    <span className="font-semibold text-zinc-700 dark:text-zinc-300">{prob.name}: </span>
-                                    {desc}
-                                  </li>
-                                );
-                              })}
-                            </ol>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
+                  {(() => {
+                    // Check if there is at least one clue matching any problem
+                    const hasAnyMatch = selectedPattern.recognize.split(',').some(clueItem => {
+                      const trimmedClue = clueItem.trim();
+                      const matchingProbs = getClueMatches(trimmedClue, selectedPattern!.problems);
+                      return matchingProbs.length > 0;
+                    });
+
+                    if (!hasAnyMatch) return null;
+
+                    return (
+                      <div className="mt-4 pt-4 border-t border-cyan-500/10">
+                        <h5 className="font-bold text-cyan-600 dark:text-cyan-400 mb-3 text-xs uppercase tracking-wider">
+                          Example:
+                        </h5>
+                        <div className="flex flex-col gap-4">
+                          {selectedPattern.recognize.split(',').map((clueItem, cIdx) => {
+                            const trimmedClue = clueItem.trim();
+                            const matchingProbs = getClueMatches(trimmedClue, selectedPattern!.problems);
+                            if (matchingProbs.length === 0) return null;
+                            
+                            return (
+                              <div key={cIdx} className="flex flex-col gap-1.5 pl-3 border-l-2 border-cyan-500/20">
+                                <span className="font-bold text-xs text-zinc-800 dark:text-zinc-200">
+                                  {trimmedClue} :
+                                </span>
+                                <ol className="list-decimal pl-5 space-y-1 text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                                  {matchingProbs.map((prob) => {
+                                    const desc = prob.statement!.split('\n')[0].trim();
+                                    return (
+                                      <li key={prob.id} title={prob.name}>
+                                        <span className="font-semibold text-zinc-700 dark:text-zinc-300">{prob.name}: </span>
+                                        {desc}
+                                      </li>
+                                    );
+                                  })}
+                                </ol>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
               )}
 
