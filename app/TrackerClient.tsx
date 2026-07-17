@@ -312,6 +312,67 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
     return { solved, total };
   };
 
+  const getClueMatches = (clue: string, problems: PracticeProblem[]) => {
+    const normalizedClue = clue.toLowerCase();
+    const searchTerms: string[] = [];
+    
+    // Extract quoted strings
+    const quotedMatches = normalizedClue.match(/"([^"]+)"/g);
+    if (quotedMatches) {
+      quotedMatches.forEach(q => {
+        searchTerms.push(q.replace(/"/g, ''));
+      });
+    }
+    
+    const cleanedClue = normalizedClue.replace(/"[^"]+"/g, '');
+    const words = cleanedClue.split(/[\s/,\-\(\)]+/);
+    
+    const stopwords = new Set([
+      'with', 'from', 'to', 'or', 'in', 'a', 'an', 'the', 'x', 'of', 'at', 'most', 'least', 'size',
+      'থেকে', 'এবং', 'ও', 'করে', 'হলে', 'দিয়ে', 'থাকা', 'করা', 'জন্য', 'বা', 'কে', 'একটি'
+    ]);
+    
+    words.forEach(w => {
+      const cleaned = w.trim().replace(/[.,;:??"']/g, '');
+      if (cleaned && cleaned.length > 1 && !stopwords.has(cleaned)) {
+        searchTerms.push(cleaned);
+      }
+    });
+    
+    return problems.filter(prob => {
+      if (!prob.statement) return false;
+      const probName = prob.name.toLowerCase();
+      const probStmt = prob.statement.toLowerCase();
+      const probLabel = (prob.notesLabel || '').toLowerCase();
+      const combinedText = `${probName} ${probStmt} ${probLabel}`;
+      
+      return searchTerms.some(term => {
+        if (term === 'palindrome' || term === 'প্যালিনড্রোম') {
+          return combinedText.includes('palindrome') || combinedText.includes('প্যালিনড্রোম');
+        }
+        if (term === 'sum' || term === 'যোগফল') {
+          return combinedText.includes('sum') || combinedText.includes('যোগফল') || combinedText.includes('triplet');
+        }
+        if (term === 'duplicate' || term === 'duplicates' || term === 'ডুপ্লিকেট') {
+          return combinedText.includes('duplicate') || combinedText.includes('duplicates') || combinedText.includes('ডুপ্লিকেট') || combinedText.includes('unique');
+        }
+        if (term === 'sorted' || term === 'সর্টেড') {
+          return combinedText.includes('sorted') || combinedText.includes('সর্টেড') || combinedText.includes('sort') || combinedText.includes('ক্রমবর্ধমান');
+        }
+        if (term === 'in-place' || term === 'inplace') {
+          return combinedText.includes('in-place') || combinedText.includes('inplace') || combinedText.includes('extra space') || combinedText.includes('o(1)');
+        }
+        if (term === 'partition') {
+          return combinedText.includes('partition') || combinedText.includes('sort colors') || combinedText.includes('colors');
+        }
+        if (term === 'তুলনা' || term === 'প্রান্ত') {
+          return combinedText.includes('water') || combinedText.includes('পানি') || combinedText.includes('reverse') || combinedText.includes('compare') || combinedText.includes('দিক') || combinedText.includes('উল্লম্ব') || combinedText.includes('রেখা');
+        }
+        return combinedText.includes(term);
+      });
+    });
+  };
+
   const handlePatternSelect = (patternId: string) => {
     setSelectedPatternId(patternId);
     setSidebarOpen(false); // close drawer on mobile after selection
@@ -602,12 +663,49 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
               {/* Recognize / চিনবেন কীভাবে */}
               {selectedPattern.recognize && (
                 <div className="p-4 rounded-xl bg-cyan-500/5 border border-cyan-500/20 text-sm">
-                  <h4 className="font-bold text-cyan-600 dark:text-cyan-400 mb-1 flex items-center gap-1.5">
+                  <h4 className="font-bold text-cyan-600 dark:text-cyan-400 mb-2 flex items-center gap-1.5">
                     🔎 চিনবেন কীভাবে:
                   </h4>
-                  <p className="text-zinc-700 dark:text-zinc-300 leading-relaxed">
-                    {selectedPattern.recognize}
-                  </p>
+                  <ul className="list-disc pl-5 space-y-1 text-zinc-700 dark:text-zinc-300 leading-relaxed">
+                    {selectedPattern.recognize.split(',').map((item, idx) => (
+                      <li key={idx}>
+                        {item.trim()}
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* Examples from problems to understand the pattern */}
+                  <div className="mt-4 pt-4 border-t border-cyan-500/10">
+                    <h5 className="font-bold text-cyan-600 dark:text-cyan-400 mb-3 text-xs uppercase tracking-wider">
+                      Example:
+                    </h5>
+                    <div className="flex flex-col gap-4">
+                      {selectedPattern.recognize.split(',').map((clueItem, cIdx) => {
+                        const trimmedClue = clueItem.trim();
+                        const matchingProbs = getClueMatches(trimmedClue, selectedPattern!.problems);
+                        if (matchingProbs.length === 0) return null;
+                        
+                        return (
+                          <div key={cIdx} className="flex flex-col gap-1.5 pl-3 border-l-2 border-cyan-500/20">
+                            <span className="font-bold text-xs text-zinc-800 dark:text-zinc-200">
+                              {trimmedClue} :
+                            </span>
+                            <ol className="list-decimal pl-5 space-y-1 text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                              {matchingProbs.map((prob) => {
+                                const desc = prob.statement!.split('\n')[0].trim();
+                                return (
+                                  <li key={prob.id} title={prob.name}>
+                                    <span className="font-semibold text-zinc-700 dark:text-zinc-300">{prob.name}: </span>
+                                    {desc}
+                                  </li>
+                                );
+                              })}
+                            </ol>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
               )}
 

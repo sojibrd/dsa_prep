@@ -13,7 +13,7 @@
 
 | Token | Value | ব্যবহার |
 |-------|-------|--------|
-| `--background` | `#fafafa` | Page background |
+| `--background` | `#f5f7fb` | Page background |
 | `--foreground` | `#18181b` | Primary text |
 | `--card-bg` | `rgba(255,255,255,0.7)` | Glass card background |
 | `--card-border` | `rgba(228,228,231,0.6)` | Glass card border |
