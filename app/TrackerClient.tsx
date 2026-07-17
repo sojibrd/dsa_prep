@@ -324,7 +324,7 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
       });
     }
     
-    const cleanedClue = normalizedClue.replace(/"[^"]+"/g, '');
+    const cleanedClue = normalizedClue.replace(/"/g, ' ');
     const words = cleanedClue.split(/[\s/,\-\(\)]+/);
     
     const stopwords = new Set([
