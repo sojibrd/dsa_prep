@@ -1,6 +1,6 @@
 # Progress Tracker — DSA Prep Tracker
 
-_সর্বশেষ আপডেট: ২০২৬-০৭-১৭_
+_সর্বশেষ আপডেট: ২০২৬-০৮-২৫_
 
 ---
 
@@ -47,9 +47,20 @@ _সর্বশেষ আপডেট: ২০২৬-০৭-১৭_
 - [x] **Problem card** — mobile-এ vertical stack layout
 - [x] **Slide-in animation** — `animate-slide-in-left` CSS animation
 
+## ✅ সম্প্রতি সম্পন্ন (Pattern Simulation — ভিত্তি)
+
+- [x] **Scene কনট্র্যাক্ট** — `app/lib/simulations/types.ts` (Scene / SimStep / PatternSimulation)
+- [x] **Timeline engine** — `usePatternSim` (play/pause/step/scrub/speed, banked clock)
+- [x] **`ArrayScene`** — cell ও bar মোড, pointer, window, জমা রাশি (fill)
+- [x] **`CodePane`** — demo code, চলমান লাইন হাইলাইট + auto-scroll
+- [x] **`ExplainPanel` + `SimControls`**
+- [x] **`SimulationBlock`** — PatternPanel-এ ভাঁজ করা, fullscreen টগল (Escape + scroll lock)
+- [x] **Theme** — `sim-*` role class ও টোকেন পরিবার
+- [x] **প্রথম ডেটা ফাইল** — `1.1 Two Pointers` (Trapping Rain Water, ১৩ ধাপ)
+
 ## 🔄 বর্তমানে চলমান
 
-_কিছু নেই — mobile responsive সম্পূর্ণ_
+**Pattern simulation ভরা** — টপিক ১-এর বাকি ৬টা প্যাটার্ন (`1.2`–`1.7`)। এখানেই `ArrayScene`-এর API-র ফাঁক ধরা পড়বে (যেমন Merge Intervals-এ দুটো সারি, Kadane-এ প্রতি cell-এর নিচে চলমান sum)।
 
 ---
 
@@ -60,6 +71,13 @@ _কিছু নেই — mobile responsive সম্পূর্ণ_
 - [ ] **Filter by status** — unsolved / Must-do only toggle
 - [ ] **Keyboard navigation** — `j/k` pattern switch
 - [ ] **App metadata** — proper title ("DSA Practice Workbook"), favicon
+
+### Simulation (নতুন)
+- [ ] `1.2`–`1.7` — টপিক ১ সম্পূর্ণ (`ArrayScene` যাচাই)
+- [ ] `MatrixScene` — টপিক ১.৭, ৯ (DP টেবিল), ৮ (grid BFS)
+- [ ] `StackScene` — টপিক ৪
+- [ ] `LinkedListScene` — টপিক ৩
+- [ ] `TreeScene` / `GraphScene` — টপিক ৫, ৮ (ভেতরে React Flow; ডেটা ফাইল তা জানবে না)
 
 ### Medium Priority
 - [ ] **Export progress** — JSON ডাউনলোড
@@ -79,6 +97,7 @@ _কিছু নেই — mobile responsive সম্পূর্ণ_
 | সমস্যা | প্রভাব | সমাধানের পথ |
 |--------|--------|------------|
 | `layout.tsx`-এ metadata এখনো default ("Create Next App") | SEO খারাপ | `metadata` object আপডেট করুন |
+| Simulation হাতে লেখা — demo code বদলালে স্টেপ নিজে আপডেট হয় না | ভুল টাইমলাইন চুপচাপ থেকে যেতে পারে | demo code সম্পাদনার সময় ওই প্যাটার্নের ডেটা ফাইলও দেখুন |
 | `dsa-workbook.md`-এ cross-ref এন্ট্রিগুলো (যেমন `_দেখুন **8.1**_`) পার্স হয় না | কিছু problem card-এ notesLabel অদ্ভুত দেখায় | parser-এ cross-ref detect করে skip করা |
 | ~~Mobile-এ sidebar উপরে-নিচে স্ক্যাক হয়~~ | ~~Mobile ব্যবহারকারীর অভিজ্ঞতা খারাপ~~ | ✅ সমাধান হয়েছে — slide-in drawer |
 

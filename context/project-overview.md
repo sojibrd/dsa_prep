@@ -33,7 +33,12 @@ DSA_Prep/
 │   ├── globals.css             # Theme Contract — role class
 │   ├── themes/
 │   │   └── control-room.css    # সক্রিয় থিম — সব `--t-*` মান
+│   ├── components/
+│   │   └── simulation/         # ধাপে ধাপে demo run — scene renderer, code pane, কন্ট্রোল
+│   ├── lib/
+│   │   └── simulations/        # Scene/SimStep কনট্র্যাক্ট + প্রতি প্যাটার্নের হাতে লেখা স্টেপ
 │   ├── hooks/
+│   │   ├── usePatternSim.ts    # সিমুলেশন টাইমলাইন ইঞ্জিন
 │   │   └── useLocalStorage.ts  # Custom hook — localStorage state management
 │   └── utils/
 │       └── dsaParser.ts        # dsa-workbook.md পার্স করার ইউটিলিটি

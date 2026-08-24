@@ -4,6 +4,8 @@ import { Pattern } from '../utils/dsaParser';
 import { ClueMatch, ProblemNote } from '../types';
 import StatementBox from './StatementBox';
 import ProblemCard from './ProblemCard';
+import SimulationBlock from './simulation/SimulationBlock';
+import { getSimulation } from '../lib/simulations';
 
 interface PatternPanelProps {
   pattern: Pattern;
@@ -41,6 +43,10 @@ export default function PatternPanel({
   onToggleStatement,
   onNoteChange,
 }: PatternPanelProps) {
+  // Sparse by design: most patterns have no timeline yet, and the block simply
+  // does not appear for them.
+  const simulation = getSimulation(pattern.id);
+
   return (
     <div className="surface-panel p-4 sm:p-6 md:p-8 flex flex-col gap-6">
       <div className="flex flex-col gap-1">
@@ -161,6 +167,14 @@ export default function PatternPanel({
             <div className="flex items-center gap-2">
               <span className="chip px-3 py-1.5">⚡ Complexity: {pattern.complexity}</span>
             </div>
+          )}
+
+          {/* The run of that same code, step by step. It sits after the code
+              rather than replacing it: reading the solution and watching it
+              move are two different acts, and the second only helps once the
+              first has been attempted. */}
+          {simulation && pattern.demoCode && (
+            <SimulationBlock simulation={simulation} code={pattern.demoCode} />
           )}
         </div>
       )}
