@@ -2,6 +2,8 @@
 
 import type { Scene } from '../../lib/simulations/types';
 import ArrayScene from './ArrayScene';
+import MatrixScene from './MatrixScene';
+import IntervalsScene from './IntervalsScene';
 
 interface SceneViewProps {
   scene: Scene;
@@ -17,12 +19,15 @@ export default function SceneView({ scene }: SceneViewProps) {
   switch (scene.kind) {
     case 'array':
       return <ArrayScene scene={scene} />;
-    default:
-      // Unreachable while every `Scene` member has a case above. Kept as a
-      // guard rather than an exhaustiveness assertion because `Scene` has a
-      // single member today, and TypeScript cannot narrow a one-member union
-      // to `never`. When the second scene kind lands, replace this with
-      // `const _never: never = scene`.
-      return null;
+    case 'matrix':
+      return <MatrixScene scene={scene} />;
+    case 'intervals':
+      return <IntervalsScene scene={scene} />;
+    default: {
+      // Exhaustiveness: adding a member to `Scene` without a renderer becomes a
+      // compile error here rather than a blank box in production.
+      const _never: never = scene;
+      return _never;
+    }
   }
 }

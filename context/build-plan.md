@@ -30,7 +30,9 @@
 | স্থান | `PatternPanel`-এর ভেতরে, আলাদা route নয় | শেখার ধারাবাহিকতা (spot → approach → code → drill) ভাঙে না |
 | ভরার ক্রম | **এক renderer এক সময়ে** — `ArrayScene` আগে, টপিক ১ দিয়ে যাচাই | ভুল অনুমান ৫১ ফাইলে ছড়ানোর আগে ধরা পড়ে |
 
-**পরের ধাপ:** `1.2`–`1.7` → `MatrixScene` → `StackScene` → `LinkedListScene` → `TreeScene`/`GraphScene`।
+**অবস্থা:** `ArrayScene` (bar + subValues), `MatrixScene` (boundary frame), `IntervalsScene` — তিনটাই তৈরি ও টপিক ১-এর ৭টা প্যাটার্ন দিয়ে যাচাই করা।
+
+**পরের ধাপ:** টপিক ২ (Binary Search) থেকে ডেটা ভরা → `StackScene` (টপিক ৪) → `LinkedListScene` (টপিক ৩) → `TreeScene`/`GraphScene` (টপিক ৫, ৮)।
 
 > নতুন প্যাটার্নে simulation যোগ করতে: `app/lib/simulations/data/<id>-<slug>.ts` লিখুন, তারপর `app/lib/simulations/index.ts`-এর ম্যাপে যোগ করুন। ম্যাপে না থাকলে PatternPanel কিছুই দেখায় না — কোনো খালি বাক্স নয়।
 

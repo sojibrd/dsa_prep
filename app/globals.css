@@ -355,7 +355,7 @@ body {
   }
 
   .option[data-chosen="true"] {
-    border-left-color: var(--t-accent);
+    /* border-left-color: var(--t-accent); */
     color: var(--t-text-body);
   }
 
@@ -617,6 +617,13 @@ body {
     background-color: var(--t-sim-fill-bg);
     border-color: var(--t-sim-fill-border);
     color: var(--t-sim-fill-fg);
+  }
+
+  /* The layer a boundary walk (spiral, layer-by-layer matrix) is still
+     working on — a matrix cell inside the live frame reads as "in play"
+     without needing its own mark. */
+  .sim-cell[data-in-bounds="false"] {
+    opacity: var(--t-sim-reject-opacity);
   }
 
   /* The index printed under each cell — present so a pointer's number can be

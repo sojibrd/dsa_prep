@@ -1,5 +1,11 @@
 import type { PatternSimulation } from './types';
 import { twoPointersSim } from './data/1.1-two-pointers';
+import { slidingWindowSim } from './data/1.2-sliding-window';
+import { prefixSumSim } from './data/1.3-prefix-sum';
+import { hashingSim } from './data/1.4-hashing';
+import { mergeIntervalsSim } from './data/1.5-merge-intervals';
+import { kadaneSim } from './data/1.6-kadane';
+import { matrixTraversalSim } from './data/1.7-matrix-traversal';
 
 /**
  * Every pattern that has a simulation, keyed by `Pattern.id`.
@@ -9,9 +15,19 @@ import { twoPointersSim } from './data/1.1-two-pointers';
  * simulation block — never an empty frame or an error. That is what makes this
  * feature safe to fill in one topic at a time.
  */
-const SIMULATIONS: Record<string, PatternSimulation> = {
-  [twoPointersSim.patternId]: twoPointersSim,
-};
+const ALL: PatternSimulation[] = [
+  twoPointersSim,
+  slidingWindowSim,
+  prefixSumSim,
+  hashingSim,
+  mergeIntervalsSim,
+  kadaneSim,
+  matrixTraversalSim,
+];
+
+const SIMULATIONS: Record<string, PatternSimulation> = Object.fromEntries(
+  ALL.map((sim) => [sim.patternId, sim])
+);
 
 export function getSimulation(patternId: string): PatternSimulation | null {
   return SIMULATIONS[patternId] ?? null;

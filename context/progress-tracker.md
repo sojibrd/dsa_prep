@@ -56,11 +56,18 @@ _সর্বশেষ আপডেট: ২০২৬-০৮-২৫_
 - [x] **`ExplainPanel` + `SimControls`**
 - [x] **`SimulationBlock`** — PatternPanel-এ ভাঁজ করা, fullscreen টগল (Escape + scroll lock)
 - [x] **Theme** — `sim-*` role class ও টোকেন পরিবার
-- [x] **প্রথম ডেটা ফাইল** — `1.1 Two Pointers` (Trapping Rain Water, ১৩ ধাপ)
+- [x] **টপিক ১ সম্পূর্ণ** — `1.1`–`1.7`, ৭টাই simulation সহ:
+  - `1.1` Two Pointers (Trapping Rain Water, bar মোড)
+  - `1.2` Sliding Window (Minimum Window Substring, hashmap টেবিল)
+  - `1.3` Prefix Sum (Subarray Sum Equals K, hashmap টেবিল)
+  - `1.4` Hashing (Longest Consecutive Sequence, Set টেবিল)
+  - `1.5` Merge Intervals — **নতুন scene kind `intervals`**
+  - `1.6` Kadane's Algorithm (subValues দিয়ে চলমান `cur`)
+  - `1.7` Matrix Traversal — **নতুন scene kind `matrix`**, boundary frame
 
 ## 🔄 বর্তমানে চলমান
 
-**Pattern simulation ভরা** — টপিক ১-এর বাকি ৬টা প্যাটার্ন (`1.2`–`1.7`)। এখানেই `ArrayScene`-এর API-র ফাঁক ধরা পড়বে (যেমন Merge Intervals-এ দুটো সারি, Kadane-এ প্রতি cell-এর নিচে চলমান sum)।
+_টপিক ১ সম্পূর্ণ — পরবর্তী: টপিক ২ (Binary Search) থেকে ভরা শুরু, তারপর `MatrixScene`/`StackScene`/`LinkedListScene` ইত্যাদি দরকার অনুযায়ী।_
 
 ---
 
@@ -73,8 +80,9 @@ _সর্বশেষ আপডেট: ২০২৬-০৮-২৫_
 - [ ] **App metadata** — proper title ("DSA Practice Workbook"), favicon
 
 ### Simulation (নতুন)
-- [ ] `1.2`–`1.7` — টপিক ১ সম্পূর্ণ (`ArrayScene` যাচাই)
-- [ ] `MatrixScene` — টপিক ১.৭, ৯ (DP টেবিল), ৮ (grid BFS)
+- [x] `1.1`–`1.7` — টপিক ১ সম্পূর্ণ (`ArrayScene`, `MatrixScene`, `IntervalsScene` তিনটাই যাচাই হয়ে গেছে)
+- [ ] টপিক ২ (Binary Search) থেকে ভরা শুরু
+- [ ] `MatrixScene`-এর পুনর্ব্যবহার — টপিক ৯ (DP টেবিল), ৮ (grid BFS)
 - [ ] `StackScene` — টপিক ৪
 - [ ] `LinkedListScene` — টপিক ৩
 - [ ] `TreeScene` / `GraphScene` — টপিক ৫, ৮ (ভেতরে React Flow; ডেটা ফাইল তা জানবে না)
@@ -98,6 +106,7 @@ _সর্বশেষ আপডেট: ২০২৬-০৮-২৫_
 |--------|--------|------------|
 | `layout.tsx`-এ metadata এখনো default ("Create Next App") | SEO খারাপ | `metadata` object আপডেট করুন |
 | Simulation হাতে লেখা — demo code বদলালে স্টেপ নিজে আপডেট হয় না | ভুল টাইমলাইন চুপচাপ থেকে যেতে পারে | demo code সম্পাদনার সময় ওই প্যাটার্নের ডেটা ফাইলও দেখুন |
+| `SceneView`-এর exhaustiveness check এখন সক্রিয় (`Scene` তিন-সদস্যের union) | নতুন scene kind যোগ করলে renderer ছাড়া কম্পাইল হবে না | নতুন `kind` যোগ করলে `SceneView.tsx`-এ case + renderer একসাথে যোগ করুন |
 | `dsa-workbook.md`-এ cross-ref এন্ট্রিগুলো (যেমন `_দেখুন **8.1**_`) পার্স হয় না | কিছু problem card-এ notesLabel অদ্ভুত দেখায় | parser-এ cross-ref detect করে skip করা |
 | ~~Mobile-এ sidebar উপরে-নিচে স্ক্যাক হয়~~ | ~~Mobile ব্যবহারকারীর অভিজ্ঞতা খারাপ~~ | ✅ সমাধান হয়েছে — slide-in drawer |
 

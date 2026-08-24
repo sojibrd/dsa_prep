@@ -28,10 +28,36 @@ export interface ScenePointer {
 }
 
 /**
+ * Side panels every scene may carry.
+ *
+ * They exist because half of the workbook's array patterns keep a SECOND
+ * structure alongside the row — a `need` map, a `seen` map, a `Set`, a result
+ * list. Bolting those onto one renderer would have made `ArrayScene` the only
+ * scene that could ever have a hashmap; as a shared base, a matrix walk gets
+ * its output list for free.
+ */
+interface SceneBase {
+  /** A key→value companion: a hashmap, a frequency table, a Set (values omitted). */
+  table?: {
+    title: string;
+    entries: { key: string; value?: string | number; mark?: CellMark }[];
+    /** Shown in place of the entries when the structure is empty. */
+    emptyLabel?: string;
+  };
+  /** What the run has produced so far — `res`, a collected order, an answer list. */
+  output?: {
+    title: string;
+    values: (string | number)[];
+  };
+  /** One line under the scene, when the picture alone does not say enough. */
+  caption?: string;
+}
+
+/**
  * A row of values with cursors over it — the shape most of the workbook needs:
  * two pointers, a sliding window, prefix sums, Kadane, hashing passes.
  */
-export interface ArrayScene {
+export interface ArrayScene extends SceneBase {
   kind: 'array';
   values: (number | string)[];
   pointers?: ScenePointer[];
@@ -44,10 +70,47 @@ export interface ArrayScene {
    * a bar, a running total. Only meaningful with `asBars`.
    */
   fills?: Record<number, number>;
+  /**
+   * A second number carried under a cell — the running sum at that index, a DP
+   * value. Printed as given, so a data file controls its own formatting.
+   */
+  subValues?: Record<number, string | number>;
+  /** Label for the `subValues` row, e.g. "cur". */
+  subLabel?: string;
   /** Draw values as proportional bars rather than boxes. */
   asBars?: boolean;
-  /** One line under the row, when the row alone does not say enough. */
-  caption?: string;
+}
+
+/** A 2D grid walked by row and column — spiral order, grid BFS, a DP table. */
+export interface MatrixScene extends SceneBase {
+  kind: 'matrix';
+  values: (number | string)[][];
+  /** The cell being read right now. */
+  cursor?: { row: number; col: number };
+  /** Sparse per-cell meaning, keyed `"row,col"`. */
+  marks?: Record<string, CellMark>;
+  /**
+   * The live boundaries of a layer walk. Drawn as a frame around the region
+   * still in play, which is the whole idea behind the spiral pattern.
+   */
+  bounds?: { top: number; bottom: number; left: number; right: number };
+}
+
+/**
+ * Spans on a shared timeline — merge intervals, meeting rooms, scheduling.
+ *
+ * Not an array of pairs pretending to be scalars: the overlap between two
+ * intervals is a geometric fact, and only laying them on one axis shows it.
+ */
+export interface IntervalsScene extends SceneBase {
+  kind: 'intervals';
+  intervals: { start: number; end: number; label?: string; mark?: CellMark }[];
+  /** Which interval index the loop is on. */
+  cursor?: number;
+  /** The merged result so far, drawn on its own axis under the input. */
+  result?: { start: number; end: number; mark?: CellMark }[];
+  /** Axis range; defaults to the span of everything drawn. */
+  axis?: { from: number; to: number };
 }
 
 /**
@@ -55,7 +118,7 @@ export interface ArrayScene {
  * each with a renderer of its own; a pattern whose shape is not here yet simply
  * has no simulation, which the panel handles by showing nothing.
  */
-export type Scene = ArrayScene;
+export type Scene = ArrayScene | MatrixScene | IntervalsScene;
 
 /** One meaningful moment of the run — a loop iteration or a branch, not a statement. */
 export interface SimStep {

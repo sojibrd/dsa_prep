@@ -24,7 +24,10 @@
 | `app/components/simulation/SimulationBlock.tsx` | এক প্যাটার্নের রান — কোড + scene + ব্যাখ্যা + কন্ট্রোল | Client Component |
 | `app/components/simulation/CodePane.tsx` | demo code, চলমান লাইন হাইলাইট | Client Component |
 | `app/components/simulation/SceneView.tsx` | `kind` → renderer রাউটার | Client Component |
-| `app/components/simulation/ArrayScene.tsx` | array/bar renderer — pointer, window, fill | Client Component |
+| `app/components/simulation/ArrayScene.tsx` | array/bar renderer — pointer, window, fill, subValues | Client Component |
+| `app/components/simulation/MatrixScene.tsx` | grid renderer — cursor, boundary frame | Client Component |
+| `app/components/simulation/IntervalsScene.tsx` | timeline renderer — spans + merged result | Client Component |
+| `app/components/simulation/SceneAside.tsx` | hashmap/Set টেবিল + output তালিকা — সব scene kind ভাগ করে | Client Component |
 | `app/components/simulation/ExplainPanel.tsx` | vars + কী হচ্ছে / কেন | Client Component |
 | `app/components/simulation/SimControls.tsx` | play / step / scrub / speed | Client Component |
 | `app/components/SyncModal.tsx` | Apps Script URL মডাল | Client Component |
