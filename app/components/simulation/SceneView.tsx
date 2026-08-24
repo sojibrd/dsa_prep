@@ -4,6 +4,7 @@ import type { Scene } from '../../lib/simulations/types';
 import ArrayScene from './ArrayScene';
 import MatrixScene from './MatrixScene';
 import IntervalsScene from './IntervalsScene';
+import LinkedListScene from './LinkedListScene';
 
 interface SceneViewProps {
   scene: Scene;
@@ -23,6 +24,8 @@ export default function SceneView({ scene }: SceneViewProps) {
       return <MatrixScene scene={scene} />;
     case 'intervals':
       return <IntervalsScene scene={scene} />;
+    case 'linked-list':
+      return <LinkedListScene scene={scene} />;
     default: {
       // Exhaustiveness: adding a member to `Scene` without a renderer becomes a
       // compile error here rather than a blank box in production.
@@ -31,3 +34,4 @@ export default function SceneView({ scene }: SceneViewProps) {
     }
   }
 }
+

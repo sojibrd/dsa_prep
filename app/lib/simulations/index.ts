@@ -10,6 +10,9 @@ import { basicBinarySearchSim } from './data/2.1-basic-binary-search';
 import { binarySearchOnAnswerSim } from './data/2.2-binary-search-on-answer';
 import { allocationProblemsSim } from './data/2.3-allocation-problems';
 import { bitonicRotatedArraySim } from './data/2.4-bitonic-rotated-array';
+import { fastSlowPointersSim } from './data/3.1-fast-slow-pointers';
+import { dummyNodeSim } from './data/3.2-dummy-node';
+import { inPlaceReversalSim } from './data/3.3-in-place-reversal';
 
 /**
  * Every pattern that has a simulation, keyed by `Pattern.id`.
@@ -31,6 +34,9 @@ const ALL: PatternSimulation[] = [
   binarySearchOnAnswerSim,
   allocationProblemsSim,
   bitonicRotatedArraySim,
+  fastSlowPointersSim,
+  dummyNodeSim,
+  inPlaceReversalSim,
 ];
 
 const SIMULATIONS: Record<string, PatternSimulation> = Object.fromEntries(

@@ -113,12 +113,38 @@ export interface IntervalsScene extends SceneBase {
   axis?: { from: number; to: number };
 }
 
+/** A single node in a linked list scene. */
+export interface LinkedListNode {
+  /** Unique identifier for this node within the scene. */
+  id: string;
+  val: string | number;
+  /** The `id` of the next node, or `null` / omitted for the tail. */
+  nextId?: string | null;
+  mark?: CellMark;
+}
+
+/**
+ * A chain of nodes connected by pointers — linked list traversal, reversal,
+ * merge, cycle detection. Visually: `[ val | • ] → [ val | • ] → …`
+ */
+export interface LinkedListScene extends SceneBase {
+  kind: 'linked-list';
+  /** All nodes present in this step, laid out left-to-right in array order. */
+  nodes: LinkedListNode[];
+  /** Named cursors that sit on a node, identified by `nodeId`. */
+  pointers?: { name: string; nodeId: string }[];
+  /** An optional dummy / sentinel node shown at the head of the chain. */
+  dummy?: { id: string; val: string | number; nextId?: string | null };
+  /** If the list has a cycle, the `id` of the node the tail connects back to. */
+  cycleTargetId?: string;
+}
+
 /**
  * Every scene shape the renderers know. The union grows one member at a time,
  * each with a renderer of its own; a pattern whose shape is not here yet simply
  * has no simulation, which the panel handles by showing nothing.
  */
-export type Scene = ArrayScene | MatrixScene | IntervalsScene;
+export type Scene = ArrayScene | MatrixScene | IntervalsScene | LinkedListScene;
 
 /** One meaningful moment of the run — a loop iteration or a branch, not a statement. */
 export interface SimStep {
