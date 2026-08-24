@@ -6,6 +6,10 @@ import { hashingSim } from './data/1.4-hashing';
 import { mergeIntervalsSim } from './data/1.5-merge-intervals';
 import { kadaneSim } from './data/1.6-kadane';
 import { matrixTraversalSim } from './data/1.7-matrix-traversal';
+import { basicBinarySearchSim } from './data/2.1-basic-binary-search';
+import { binarySearchOnAnswerSim } from './data/2.2-binary-search-on-answer';
+import { allocationProblemsSim } from './data/2.3-allocation-problems';
+import { bitonicRotatedArraySim } from './data/2.4-bitonic-rotated-array';
 
 /**
  * Every pattern that has a simulation, keyed by `Pattern.id`.
@@ -23,6 +27,10 @@ const ALL: PatternSimulation[] = [
   mergeIntervalsSim,
   kadaneSim,
   matrixTraversalSim,
+  basicBinarySearchSim,
+  binarySearchOnAnswerSim,
+  allocationProblemsSim,
+  bitonicRotatedArraySim,
 ];
 
 const SIMULATIONS: Record<string, PatternSimulation> = Object.fromEntries(

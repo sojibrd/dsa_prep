@@ -67,7 +67,7 @@ _সর্বশেষ আপডেট: ২০২৬-০৮-২৫_
 
 ## 🔄 বর্তমানে চলমান
 
-_টপিক ১ সম্পূর্ণ — পরবর্তী: টপিক ২ (Binary Search) থেকে ভরা শুরু, তারপর `MatrixScene`/`StackScene`/`LinkedListScene` ইত্যাদি দরকার অনুযায়ী।_
+_টপিক ১ ও ২ সম্পূর্ণ — পরবর্তী: টপিক ৩ (Linked Lists) থেকে ভরা শুরু, তারপর `LinkedListScene`/`StackScene`/`TreeScene` ইত্যাদি দরকার অনুযায়ী।_
 
 ---
 
@@ -81,7 +81,8 @@ _টপিক ১ সম্পূর্ণ — পরবর্তী: টপি�
 
 ### Simulation (নতুন)
 - [x] `1.1`–`1.7` — টপিক ১ সম্পূর্ণ (`ArrayScene`, `MatrixScene`, `IntervalsScene` তিনটাই যাচাই হয়ে গেছে)
-- [ ] টপিক ২ (Binary Search) থেকে ভরা শুরু
+- [x] `2.1`–`2.4` — টপিক ২ সম্পূর্ণ (Binary Search — `ArrayScene` + `table` + `window`)
+- [ ] টপিক ৩ (Linked Lists) থেকে ভরা শুরু
 - [ ] `MatrixScene`-এর পুনর্ব্যবহার — টপিক ৯ (DP টেবিল), ৮ (grid BFS)
 - [ ] `StackScene` — টপিক ৪
 - [ ] `LinkedListScene` — টপিক ৩
