@@ -39,6 +39,7 @@
 | Chip | `chip` + `chip--accent` `chip--alert` `chip--ok` |
 | Callout | `callout` + `callout--accent` `callout--alert`; `option` |
 | Nav | `row` `overlay` |
+| **Measure** | **`measure`** — পাঠ্য কলামের সর্বোচ্চ প্রস্থ (`--t-measure`) |
 | **Check** | **`check`** — সলভ টগল (`aria-checked`) |
 | **Code** | **`codeblock`** / `codeblock-copy` / `code-inline` |
 | **Gauge** | **`gauge` / `gauge-fill`** (+ `data-tone="ok"`) — অনুপাত দেখানো বার |
@@ -60,6 +61,7 @@
 
 নতুন থিম ফাইলে এগুলো সব সেট করতে হবে। রেফারেন্স: `app/themes/control-room.css`।
 
+- **Layout:** `measure`
 - **Type:** `font-sans` `font-mono` `title-family|weight|tracking|transform` `label-family|size|weight|tracking|transform` `control-family|weight|tracking|transform` `quote-style`
 - **Motion:** `ease` `spinner-width` `spinner-speed` `lamp-blink-animation`
 - **App:** `app-bg` `app-bg-image|size` `select-bg|fg` `overlay-bg|filter` `disabled-opacity` `hover-fill` `selected-bg|fg` `accent` `ok` `ok-soft`

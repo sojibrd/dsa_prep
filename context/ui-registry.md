@@ -2,6 +2,8 @@
 
 বিদ্যমান সমস্ত UI কম্পোনেন্টের রেজিস্ট্রি। নতুন কম্পোনেন্ট তৈরির আগে এখানে দেখুন — হয়তো ইতিমধ্যে আছে।
 
+> `measure` — পাঠ্য কলামের প্রস্থ (`--t-measure`, ৭০ch)। t-body প্রোজে ব্যবহার করুন।
+
 > সব ভিজ্যুয়াল চেহারা role class থেকে আসে (`context/ui-tokens.md`)। নিচে যেখানে ক্লাস লেখা আছে, সেগুলো **role class**, Tailwind ভিজ্যুয়াল ক্লাস নয়।
 
 ---
@@ -11,11 +13,22 @@
 | ফাইল | উদ্দেশ্য | টাইপ |
 |------|---------|------|
 | `app/page.tsx` | Root page, data parsing | Server Component |
-| `app/TrackerClient.tsx` | সম্পূর্ণ UI (monolithic) | Client Component |
+| `app/TrackerClient.tsx` | শেল — state orchestration + composition | Client Component |
+| `app/types.ts` | ProblemNote / SheetRow / SyncStatus / ClueMatch | Types |
+| `app/components/Navbar.tsx` | header, progress pill, sync বাটন | Client Component |
+| `app/components/Sidebar.tsx` | drawer — topic/pattern নেভিগেশন | Client Component |
+| `app/components/PatternPanel.tsx` | recognize, demo, code, problem list | Client Component |
+| `app/components/ProblemCard.tsx` | একটি প্রবলেম row + notes + statement | Client Component |
+| `app/components/StatementBox.tsx` | statement রেন্ডার | Client Component |
+| `app/components/ProgressReadout.tsx` | gauge readout | Client Component |
+| `app/components/SyncModal.tsx` | Apps Script URL মডাল | Client Component |
+| `app/hooks/useSheetSync.ts` | শিট load / debounce / push — সব cloud state | Custom Hook |
 | `app/hooks/useLocalStorage.ts` | localStorage state hook | Custom Hook |
-| `app/utils/dsaParser.ts` | Markdown পার্সার (server-only, `fs`) | Utility |
+| `app/lib/clueMatch.ts` | clue → problem ম্যাচিং (pure) | Utility |
+| `app/lib/parseStatement.ts` | statement পার্সার (pure) | Utility |
+| `app/utils/dsaParser.ts` | Markdown পার্সার (server-only, fs) | Utility |
 | `app/globals.css` | Theme Contract — role class | CSS |
-| `app/themes/control-room.css` | সক্রিয় থিম — `--t-*` মান | CSS |
+| `app/themes/control-room.css` | সক্রিয় থিম — --t-* মান | CSS |
 | `app/layout.tsx` | Root layout, ৫-ফন্ট শেল্ফ, metadata | Server Component |
 
 ---
@@ -48,7 +61,7 @@
 |---|---|---|
 | র‍্যাপার | `surface-panel` | |
 | Header | `t-label` (breadcrumb) + `t-title` | |
-| Recognize | `callout callout--accent` | ভেতরে ক্লু-ম্যাচ উদাহরণ `option[data-chosen]` |
+| Recognize | `callout callout--accent` | ক্লু তালিকা `measure`; উদাহরণ ডিফল্টে collapsed (`control control--quiet` toggle, `aria-expanded`/`aria-controls="clue-examples"`), প্রতি **প্রবলেমে** একটি `option[data-chosen]` — তার clue-গুলো `t-caption t-quote` লাইনে (chip নয়: clue বাক্য, ট্যাগ নয়, আর `.chip`-এর mono ফেসে বাংলা glyph নেই) |
 | Demo header | `t-title` + `chip chip--accent` (LeetCode লিংক) | |
 | Statement | `callout` + `<StatementBox>` | expandable, `aria-expanded` |
 | Approach | `surface-well` + `t-label` + `t-body` | |

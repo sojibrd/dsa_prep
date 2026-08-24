@@ -47,6 +47,16 @@ body {
 }
 
 @layer components {
+  /* --- Measure ---------------------------------------------------------
+     A reading column. Prose set edge-to-edge on a 1920px panel runs past
+     140 characters a line, which is why the page read as sprawling rather
+     than dense. The width is a typographic decision, so it lives in a token
+     rather than as an arbitrary value repeated at every call site. */
+
+  .measure {
+    max-width: var(--t-measure);
+  }
+
   /* --- Surfaces -------------------------------------------------------- */
 
   .surface-app {
