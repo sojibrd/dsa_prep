@@ -5,7 +5,7 @@
 একটা **ব্যক্তিগত DSA প্র্যাকটিস ট্র্যাকার** ওয়েব অ্যাপ তৈরি করা যা:
 
 - `dsa-workbook.md` থেকে টপিক/প্যাটার্ন/প্রবলেম পার্স করে UI-তে দেখাবে
-- প্রতিটা প্রবলেম সলভ করলে চেকবক্সে টিক দেওয়া যাবে (progress localStorage-এ সেভ)
+- প্রতিটা প্রবলেম সলভ করলে চেকবক্সে টিক দেওয়া যাবে (progress গুগল শিটে সেভ)
 - প্রতিটা প্রবলেমের জন্য নোট (সমাধানের ধারণা + যে সমস্যা হয়েছিল) লেখা যাবে
 - সামগ্রিক অগ্রগতি (কতটা সলভ হলো) দেখা যাবে
 
@@ -13,13 +13,13 @@
 
 | লেয়ার | টেকনোলজি |
 |--------|----------|
-| Framework | Next.js 15 (App Router) |
+| Framework | Next.js 16 (App Router, Turbopack) |
 | Language | TypeScript |
-| Styling | Tailwind CSS v4 |
-| Font | Geist Sans + Geist Mono (next/font) |
+| Styling | Tailwind CSS v4 (লেআউট) + Theme Contract / `control-room.css` (চেহারা), dark-only |
+| Font | ৫-ফন্ট শেল্ফ — Barlow Semi Condensed, JetBrains Mono, Noto Sans Bengali, Archivo ×২ (next/font) |
 | Data Source | `context/dsa-workbook.md` (Markdown ফাইল, server-side পার্স) |
 | State | React `useState` + `useLocalStorage` hook |
-| Storage | Browser `localStorage` (progress, notes, dark mode) |
+| Storage | Google Sheet (solved, notes) + `localStorage` (নির্বাচিত প্যাটার্ন, Apps Script URL) |
 | Rendering | Server Component (`page.tsx`) + Client Component (`TrackerClient.tsx`) |
 
 ## ফাইল স্ট্রাকচার
@@ -27,10 +27,12 @@
 ```
 DSA_Prep/
 ├── app/
-│   ├── layout.tsx              # Root layout, Geist font, metadata
+│   ├── layout.tsx              # Root layout, ৫-ফন্ট শেল্ফ, metadata
 │   ├── page.tsx                # Server component — dsa-workbook.md পার্স করে
 │   ├── TrackerClient.tsx       # Client component — সম্পূর্ণ UI লজিক
-│   ├── globals.css             # CSS variables (tokens), glassmorphism, scrollbar
+│   ├── globals.css             # Theme Contract — role class
+│   ├── themes/
+│   │   └── control-room.css    # সক্রিয় থিম — সব `--t-*` মান
 │   ├── hooks/
 │   │   └── useLocalStorage.ts  # Custom hook — localStorage state management
 │   └── utils/
@@ -62,7 +64,7 @@ TrackerClient.tsx (Client Component)
       ↓
 UI: Sidebar (topics/patterns) + Main Panel (demo + problems)
       ↓ (user interaction)
-localStorage: solvedIds, notes, darkMode
+Google Sheet: solvedIds, notes   |   localStorage: selectedPatternId, sheetUrl
 ```
 
 ## মূল ডেটা মডেল
@@ -97,7 +99,7 @@ interface Topic {
 
 ## সীমাবদ্ধতা / স্কোপ বাইরে
 
-- Backend/Database নেই — সব localStorage-এ
+- আলাদা Backend/Database নেই — Google Apps Script endpoint-ই স্টোর
 - Authentication নেই
 - Multi-user নয়
 - Mobile-first নয় (responsive কিন্তু desktop-optimized)

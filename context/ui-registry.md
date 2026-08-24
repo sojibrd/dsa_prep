@@ -2,6 +2,8 @@
 
 বিদ্যমান সমস্ত UI কম্পোনেন্টের রেজিস্ট্রি। নতুন কম্পোনেন্ট তৈরির আগে এখানে দেখুন — হয়তো ইতিমধ্যে আছে।
 
+> সব ভিজ্যুয়াল চেহারা role class থেকে আসে (`context/ui-tokens.md`)। নিচে যেখানে ক্লাস লেখা আছে, সেগুলো **role class**, Tailwind ভিজ্যুয়াল ক্লাস নয়।
+
 ---
 
 ## ফাইল ম্যাপ
@@ -11,9 +13,10 @@
 | `app/page.tsx` | Root page, data parsing | Server Component |
 | `app/TrackerClient.tsx` | সম্পূর্ণ UI (monolithic) | Client Component |
 | `app/hooks/useLocalStorage.ts` | localStorage state hook | Custom Hook |
-| `app/utils/dsaParser.ts` | Markdown পার্সার | Utility |
-| `app/globals.css` | Design tokens + global styles | CSS |
-| `app/layout.tsx` | Root layout, font, metadata | Server Component |
+| `app/utils/dsaParser.ts` | Markdown পার্সার (server-only, `fs`) | Utility |
+| `app/globals.css` | Theme Contract — role class | CSS |
+| `app/themes/control-room.css` | সক্রিয় থিম — `--t-*` মান | CSS |
+| `app/layout.tsx` | Root layout, ৫-ফন্ট শেল্ফ, metadata | Server Component |
 
 ---
 
@@ -22,160 +25,86 @@
 > সব কম্পোনেন্ট বর্তমানে `TrackerClient.tsx`-এ monolithic আকারে আছে।
 > ভবিষ্যতে split করলে এই registry আপডেট করতে হবে।
 
----
+### 🧭 Navigation
 
-### 🏗️ Layout Components
+#### `<Navbar>` — `<header>`
+- **Roles:** `surface-app seam-b` (sticky), লোগো `t-title` + `t-caption`
+- **Contains:** হ্যামবার্গার (`control control--quiet`, `lg:hidden`), Progress pill, sync ইন্ডিকেটর (`t-label`), ক্লাউড সিঙ্ক বাটন
 
-#### `<AppShell>` (implicit — TrackerClient root div)
-- **অবস্থান:** `TrackerClient.tsx` — return-এর root `<div>`
-- **কাজ:** full-height flex container, bg/text color, dark mode transition
-- **Classes:** `min-h-screen flex flex-col bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50 transition-colors duration-300`
+#### `<ProgressPill>` (Navbar-এর ভেতরে)
+- **Roles:** `surface-raised` + `t-label` + `t-mono t-accent`
+- **Bar:** `gauge` / `gauge-fill`, `role="progressbar"` সহ
 
----
-
-### 🧭 Navigation Components
-
-#### `<Navbar>`
-- **অবস্থান:** `TrackerClient.tsx` — `<header>` element
-- **কাজ:** Sticky top bar — logo + title, progress pill, dark mode toggle
-- **Classes:** `sticky top-0 z-40 w-full glass-panel border-b py-4 px-6 md:px-12`
-- **Props (state used):** `solvedProblemsCount`, `totalProblems`, `progressPercent`, `darkMode`
-- **Sections:**
-  - Logo area: 📚 emoji + gradient title + tagline
-  - Progress pill (hidden on mobile): `{solved}/{total} ({percent}%)` + mini progress bar
-  - Dark mode toggle button
-
-#### `<ProgressPill>` (inline in Navbar)
-- **কাজ:** `{solved}/{total} ({percent}%)` + 80px progress bar
-- **Classes:** `hidden sm:flex items-center gap-3 glass-panel px-4 py-1.5 rounded-full text-sm`
-- **Bar fill:** `bg-gradient-to-r from-indigo-500 to-cyan-500`
+#### `<Sidebar>` — `<aside>`
+- ডেস্কটপে স্থায়ী কলাম, মোবাইলে drawer (`overlay` + `animate-slide-in-left`)
+- Topic গ্রুপ `seam-b`-তে বিভক্ত; প্রতিটি প্যাটার্ন একটি `row` (`aria-current` = নির্বাচিত)
+- প্যাটার্ন বাটনের `id="pattern-btn-{id}"` — লোডে অটো-স্ক্রলের জন্য
 
 ---
 
-### 📋 Sidebar Components
+### 📄 Pattern Panel — `<main>`
 
-#### `<Sidebar>`
-- **অবস্থান:** `TrackerClient.tsx` — `<aside>` element
-- **কাজ:** Topic list + pattern navigation
-- **Size:** `w-full lg:w-[360px] flex flex-col gap-4 shrink-0`
+| ব্লক | Roles | নোট |
+|---|---|---|
+| র‍্যাপার | `surface-panel` | |
+| Header | `t-label` (breadcrumb) + `t-title` | |
+| Recognize | `callout callout--accent` | ভেতরে ক্লু-ম্যাচ উদাহরণ `option[data-chosen]` |
+| Demo header | `t-title` + `chip chip--accent` (LeetCode লিংক) | |
+| Statement | `callout` + `<StatementBox>` | expandable, `aria-expanded` |
+| Approach | `surface-well` + `t-label` + `t-body` | |
+| Code | `codeblock` + `codeblock-copy` | copy বাটন hover/focus-এ আসে |
+| Complexity | `chip` | |
+| খালি অবস্থা | `surface-panel` + `control control--primary` | Apps Script URL না থাকলে |
+| লোডিং | `spinner t-accent` | |
 
-#### `<MobileProgressDashboard>` (inside Sidebar, lg:hidden)
-- **কাজ:** Mobile-only — solved count + circular progress ring
-- **Classes:** `lg:hidden glass-panel p-5 rounded-2xl`
-- **Ring:** SVG circle with `strokeDasharray=175`, `strokeDashoffset` calculated from percent
-
-#### `<TopicGroup>` (mapped inside Sidebar)
-- **কাজ:** একটা topic-এর header + pattern button list
-- **Props (from map):** `topic`, `solved/total` from `getTopicProgress()`
-- **Header:** topic name + `{solved}/{total}` badge
-- **Pattern list:** left-bordered `<div>` with pattern buttons
-
-#### `<PatternButton>` (mapped inside TopicGroup)
-- **কাজ:** Clickable pattern selector
-- **Active state:** `bg-indigo-500/10 text-indigo-600 border-l-2 border-indigo-500`
-- **Inactive state:** `text-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-900`
-- **Right side:** `({solved}/{total})` counter in `text-[10px]`
+#### `<StatementBox>` (মডিউল-লেভেল ফাংশন কম্পোনেন্ট)
+- `parseStatement()` দিয়ে raw টেক্সটকে description / input / output / constraint-এ ভাঙে
+- Input/Output দুটো `surface-well`; ইঙ্ক `code-inline t-ok` ও `code-inline t-accent`
 
 ---
 
-### 📄 Main Panel Components
+### ✅ Problem List
 
-#### `<PatternPanel>` (main content area)
-- **অবস্থান:** `<main>` element inside flex row
-- **কাজ:** Selected pattern-এর সম্পূর্ণ বিবরণ
-- **Wrapper:** `glass-panel p-6 md:p-8 rounded-3xl flex flex-col gap-6`
+#### `<ProblemCard>`
+- **Wrapper:** `surface-raised`, `data-solved={isSolved}`
+- **Check:** নেটিভ `<input type="checkbox" className="check">` — `:checked`-এ সবুজ, টিক থিমের background image
+- **Name:** `<a>` `card-name` — `[data-solved="true"]`-এ ম্লান ও line-through (CSS-এ, কম্পোনেন্টে নয়)
+- **Badge:** `chip chip--accent` (🔥 Must-do) / `chip` (⚪ Bonus)
+- **Toggles:** `control control--quiet` × ২ — Statement ও Notes, দুটোতেই `aria-expanded`
 
-#### `<PatternHeader>` (inside PatternPanel)
-- **কাজ:** Topic breadcrumb + pattern name
-- **Breadcrumb:** `text-xs font-bold text-indigo-500 uppercase tracking-wider`
-- **Title:** `text-2xl md:text-3xl font-extrabold`
-
-#### `<RecognizeBox>` (inside PatternPanel)
-- **কাজ:** "চিনবেন কীভাবে" card
-- **Classes:** `p-4 rounded-xl bg-cyan-500/5 border border-cyan-500/20 text-sm`
-- **Header:** `🔎 চিনবেন কীভাবে:` — `text-cyan-600 dark:text-cyan-400 font-bold`
-
-#### `<DemoSection>` (inside PatternPanel)
-- **কাজ:** Demo problem — name + LC link + approach + code + complexity
-- **Condition:** `selectedPattern.demoName &&`
-- **LC Link:** `text-xs font-semibold text-indigo-500 bg-indigo-500/5 px-2.5 py-1 rounded-full border`
-
-#### `<ApproachBox>` (inside DemoSection)
-- **কাজ:** Approach text display
-- **Classes:** `bg-zinc-100/50 dark:bg-zinc-900/50 p-4 rounded-xl border border-zinc-200/50 dark:border-zinc-800/50`
-
-#### `<CodeBlock>` (inside DemoSection)
-- **কাজ:** JavaScript code display + copy button
-- **Pre/code:** `bg-zinc-900 text-zinc-100 dark:bg-black border border-zinc-800 p-5 rounded-2xl overflow-x-auto`
-- **Copy button:** hover-এ দেখায়, `navigator.clipboard.writeText()` ব্যবহার করে
-
-#### `<ComplexityBadge>` (inside DemoSection)
-- **কাজ:** Time/Space complexity display
-- **Classes:** `text-xs font-semibold bg-zinc-100 dark:bg-zinc-900 px-3 py-1.5 rounded-lg border`
+#### `<NotesSection>` (expandable)
+- দুটো `<textarea className="surface-well">` — সমাধানের আইডিয়া ও যে সমস্যা হয়েছিল
 
 ---
 
-### ✅ Problem List Components
-
-#### `<ProblemList>` (inside PatternPanel)
-- **কাজ:** Practice problems-এর list
-- **Header:** `"Practice Problems ({count})"`
-
-#### `<ProblemCard>` (mapped inside ProblemList)
-- **কাজ:** একটা practice problem-এর card
-- **States:**
-  - Solved: `bg-emerald-500/5 border-emerald-500/20`
-  - Unsolved: `bg-zinc-100/30 border-zinc-200/60 dark:bg-zinc-900/30 dark:border-zinc-800/60`
-- **Contains:**
-  - Checkbox (`<input type="checkbox">`) — `toggleSolved()` trigger
-  - Problem name (`<a>` → LeetCode URL, `target="_blank"`)
-  - Optional `notesLabel` — italic extra hint
-  - Must-do/Bonus badge
-  - "Notes / Revise ▼" toggle button
-
-#### `<NotesSection>` (inside ProblemCard, expandable)
-- **কাজ:** Solution idea + obstacle textarea
-- **Condition:** `expandedProblemId === problem.id`
-- **Two textareas:**
-  - "আমার সমাধান (মূল আইডিয়া ২–৩ লাইনে):"
-  - "যে সমস্যা হয়েছিল (trap / edge cases):"
-- **Classes:** `w-full text-sm p-3 rounded-xl border bg-white dark:bg-black focus:ring-1 focus:ring-indigo-500`
+### ☁️ Google Sheets Sync Modal
+- **Scrim:** `overlay`; **প্যানেল:** `surface-panel`
+- Apps Script URL ইনপুট (`surface-well`) + সেভ/বাতিল (`control`, `control--primary`)
+- স্ট্যাটাস বার্তা সাফল্য/ব্যর্থতা অনুযায়ী
 
 ---
 
 ## Custom Hooks
 
-### `useLocalStorage<T>(key: string, initialValue: T)`
-- **অবস্থান:** `app/hooks/useLocalStorage.ts`
-- **কাজ:** `useState`-এর মতো — কিন্তু `localStorage`-এ persist করে
-- **Return:** `[value, setValue]` — `useState`-এর মতোই
-- **ব্যবহার:**
-  ```tsx
-  const [solvedIds, setSolvedIds] = useLocalStorage<string[]>('dsa_solved_ids', []);
-  const [notes, setNotes] = useLocalStorage<Record<string, ProblemNote>>('dsa_problem_notes', {});
-  const [darkMode, setDarkMode] = useLocalStorage<boolean>('dsa_dark_mode', false);
-  ```
+### `useLocalStorage<T>(key, initialValue)`
+`useState`-এর মতো, কিন্তু `localStorage`-এ persist করে।
 
 ---
 
 ## LocalStorage Keys
 
-| Key | Type | Default | ব্যবহার |
-|-----|------|---------|--------|
-| `dsa_solved_ids` | `string[]` | `[]` | সলভ করা problem IDs |
-| `dsa_problem_notes` | `Record<string, ProblemNote>` | `{}` | Problem-wise notes |
-| `dsa_dark_mode` | `boolean` | `false` | Dark mode on/off |
+| Key | Type | ব্যবহার |
+|-----|------|--------|
+| `dsa_selected_pattern_id` | `string` | শেষ দেখা প্যাটার্ন |
+| `dsa_sheet_script_url` | `string` | Google Apps Script endpoint |
+
+> `dsa_dark_mode` কী **অবসরপ্রাপ্ত** — সাইট dark-only, toggle নেই।
+> Solved ও notes এখন localStorage-এ নয়, Google Sheet-এ থাকে।
 
 ---
 
 ## Utility Functions
 
 ### `parseDsaWorkbook(): Topic[]`
-- **অবস্থান:** `app/utils/dsaParser.ts`
-- **কাজ:** `context/dsa-workbook.md` পড়ে `Topic[]` return করে
-- **শুধু Server-side** — `fs` module ব্যবহার করে
-- **পার্স করে:** `## N. Topic`, `### N.M Pattern`, recognize, demo, approach, code block, complexity, problem list
-
-### `getTopicProgress(topic: Topic): { solved: number, total: number }`
-- **অবস্থান:** `TrackerClient.tsx` (inline function)
-- **কাজ:** একটা topic-এর সলভ সংখ্যা গণনা
+`context/dsa-workbook.md` পড়ে `Topic[]` return করে। **Server-only** (`fs`)।
+পার্স করে: `## N. Topic`, `### N.M Pattern`, recognize, demo, statement, approach, code block, complexity, problem list।

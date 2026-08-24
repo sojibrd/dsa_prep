@@ -1,103 +1,583 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:where(.dark, .dark *));
+/* ============================================================================
+   ACTIVE THEME — this is the one line to change to re-skin the whole app.
+   Every visual value lives in the imported file; nothing below it is
+   theme-specific.
+   ========================================================================= */
+@import "./themes/control-room.css";
 
-:root {
-  --background: #f5f7fb;
-  --foreground: #18181b;
-  --card-bg: rgba(255, 255, 255, 0.7);
-  --card-border: rgba(228, 228, 231, 0.6);
-  --primary: #4f46e5;
-  --primary-hover: #4338ca;
-  --accent: #06b6d4;
-  --success: #10b981;
-  --shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
-  --glow: 0 0 20px rgba(79, 70, 229, 0.1);
+/* ============================================================================
+   THEME CONTRACT
+
+   Components describe WHAT a thing is (a panel, a label, a solved problem)
+   and never how it looks. Everything below reads `--t-*` variables that the
+   theme file supplies. A theme may change any value here; it may never
+   require a component to change.
+
+   Division of labour:
+   - Tailwind utilities  -> layout only (flex, grid, gap, sizing, truncate)
+   - role classes below  -> every visual decision
+
+   The site is dark-only. There is no `.dark` class and no `dark:` variant;
+   a light look would be a new theme file, not a code change.
+   ========================================================================= */
+
+@theme {
+  /* Font families are loaded once in layout.tsx and never change per theme;
+     a theme only chooses which role gets which family. */
+  --font-sans: var(--t-font-sans);
+  --font-mono: var(--t-font-mono);
 }
 
-.dark {
-  --background: #09090b;
-  --foreground: #f4f4f5;
-  --card-bg: rgba(24, 24, 27, 0.6);
-  --card-border: rgba(39, 39, 42, 0.8);
-  --primary: #6366f1;
-  --primary-hover: #4f46e5;
-  --accent: #22d3ee;
-  --success: #34d399;
-  --shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-  --glow: 0 0 25px rgba(99, 102, 241, 0.15);
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* --- Root -------------------------------------------------------------- */
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  background-color: var(--t-app-bg);
+  background-image: var(--t-app-bg-image, none);
+  background-size: var(--t-app-bg-size, auto);
+  color: var(--t-text-body);
+  font-family: var(--t-font-sans);
+  overflow-x: hidden;
 }
 
-/* Glassmorphism Classes */
-.glass-panel {
-  background: var(--card-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--card-border);
-  box-shadow: var(--shadow);
+::selection {
+  background-color: var(--t-select-bg);
+  color: var(--t-select-fg);
 }
 
-.glass-glow {
-  box-shadow: var(--shadow), var(--glow);
+@layer components {
+  /* --- Surfaces -------------------------------------------------------- */
+
+  .surface-app {
+    background-color: var(--t-app-bg);
+    color: var(--t-text-body);
+  }
+
+  .surface-panel {
+    background-color: var(--t-panel-bg);
+    border: var(--t-panel-border-width) solid var(--t-panel-border);
+    border-radius: var(--t-panel-radius);
+    box-shadow: var(--t-panel-shadow);
+  }
+
+  .surface-raised {
+    background-color: var(--t-raised-bg);
+    border: var(--t-raised-border-width) solid var(--t-raised-border);
+    border-radius: var(--t-raised-radius);
+    box-shadow: var(--t-raised-shadow);
+  }
+
+  .surface-well {
+    background-color: var(--t-well-bg);
+    border: var(--t-well-border-width) solid var(--t-well-border);
+    border-radius: var(--t-well-radius);
+    box-shadow: var(--t-well-shadow);
+  }
+
+  .surface-well:focus-visible,
+  .surface-well:focus-within {
+    outline: 2px solid var(--t-accent);
+    outline-offset: 1px;
+    border-color: var(--t-accent);
+  }
+
+  /* --- Text roles ------------------------------------------------------ */
+
+  .t-title {
+    color: var(--t-text-title);
+    font-family: var(--t-title-family);
+    font-weight: var(--t-title-weight);
+    letter-spacing: var(--t-title-tracking);
+    text-transform: var(--t-title-transform);
+  }
+
+  /* The engraved micro-label used all over the app. */
+  .t-label {
+    color: var(--t-text-label);
+    font-family: var(--t-label-family);
+    font-size: var(--t-label-size);
+    font-weight: var(--t-label-weight);
+    letter-spacing: var(--t-label-tracking);
+    text-transform: var(--t-label-transform);
+  }
+
+  .t-body {
+    color: var(--t-text-body);
+    line-height: 1.65;
+  }
+
+  .t-caption {
+    color: var(--t-text-muted);
+    font-size: 0.6875rem;
+    line-height: 1.5;
+  }
+
+  .t-mono {
+    color: var(--t-text-body);
+    font-family: var(--t-font-mono);
+  }
+
+  .t-strong {
+    color: var(--t-text-title);
+    font-weight: 700;
+  }
+
+  .t-accent {
+    color: var(--t-accent);
+  }
+
+  .t-muted {
+    color: var(--t-text-muted);
+  }
+
+  .t-faint {
+    color: var(--t-text-faint);
+  }
+
+  /* "Correct / succeeded" ink. A component says a thing is OK; the theme
+     decides what OK looks like. */
+  .t-ok {
+    color: var(--t-ok);
+  }
+
+  /* A set-apart voice — a hint, an aside. Whether that reads as italics or
+     as nothing at all is the theme's call. */
+  .t-quote {
+    font-style: var(--t-quote-style);
+  }
+
+  /* --- Seams ----------------------------------------------------------- */
+
+  .seam {
+    background-color: var(--t-seam);
+    height: var(--t-seam-width);
+    width: 100%;
+  }
+
+  .seam-b {
+    border-bottom: var(--t-seam-width) solid var(--t-seam);
+  }
+
+  .seam-b-heavy {
+    border-bottom: var(--t-seam-heavy-width) solid var(--t-seam-heavy);
+  }
+
+  .seam-t {
+    border-top: var(--t-seam-width) solid var(--t-seam);
+  }
+
+  .seam-l {
+    border-left: var(--t-seam-width) solid var(--t-seam);
+  }
+
+  /* --- Controls -------------------------------------------------------- */
+
+  .control {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    border-style: solid;
+    border-width: var(--t-control-border-width);
+    border-radius: var(--t-control-radius);
+    font-family: var(--t-control-family);
+    font-weight: var(--t-control-weight);
+    letter-spacing: var(--t-control-tracking);
+    text-transform: var(--t-control-transform);
+    transition: all 120ms var(--t-ease);
+    user-select: none;
+    background-color: var(--t-control-bg);
+    border-color: var(--t-control-border);
+    color: var(--t-control-fg);
+    box-shadow: var(--t-control-shadow);
+  }
+
+  .control:hover:not(:disabled) {
+    background-color: var(--t-control-bg-hover);
+    border-color: var(--t-control-border-hover);
+    color: var(--t-control-fg-hover);
+  }
+
+  .control:active:not(:disabled) {
+    transform: var(--t-control-press-transform);
+    box-shadow: var(--t-control-press-shadow);
+  }
+
+  .control:disabled {
+    opacity: var(--t-disabled-opacity);
+    pointer-events: none;
+    box-shadow: none;
+  }
+
+  .control:focus-visible {
+    outline: 2px solid var(--t-accent);
+    outline-offset: 2px;
+  }
+
+  .control--primary {
+    background-color: var(--t-primary-bg);
+    border-color: var(--t-primary-border);
+    color: var(--t-primary-fg);
+    box-shadow: var(--t-primary-shadow);
+  }
+
+  .control--primary:hover:not(:disabled) {
+    background-color: var(--t-primary-bg-hover);
+    border-color: var(--t-primary-border);
+    color: var(--t-primary-fg);
+  }
+
+  .control--alert {
+    background-color: var(--t-alert-bg);
+    border-color: var(--t-alert-border);
+    color: var(--t-alert-fg);
+    box-shadow: var(--t-primary-shadow);
+  }
+
+  .control--alert:hover:not(:disabled) {
+    background-color: var(--t-alert-bg-hover);
+    color: var(--t-alert-fg);
+  }
+
+  .control--quiet {
+    background-color: transparent;
+    border-color: transparent;
+    color: var(--t-text-muted);
+    box-shadow: none;
+  }
+
+  .control--quiet:hover:not(:disabled) {
+    background-color: var(--t-hover-fill);
+    border-color: transparent;
+    color: var(--t-text-title);
+  }
+
+  .control--quiet:active:not(:disabled) {
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* --- Spinner: work in flight ----------------------------------------- */
+  /* Inherits `currentColor`, so the ink is whatever text role sits on it. */
+
+  .spinner {
+    border-style: solid;
+    border-width: var(--t-spinner-width);
+    border-color: currentColor;
+    border-top-color: transparent;
+    border-radius: 9999px;
+    animation: spin var(--t-spinner-speed) linear infinite;
+  }
+
+  /* --- Chips ----------------------------------------------------------- */
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.125rem 0.375rem;
+    border: var(--t-chip-border-width) solid var(--t-chip-border);
+    border-radius: var(--t-chip-radius);
+    background-color: var(--t-chip-bg);
+    color: var(--t-chip-fg);
+    font-family: var(--t-label-family);
+    font-size: var(--t-label-size);
+    letter-spacing: var(--t-label-tracking);
+    text-transform: var(--t-label-transform);
+  }
+
+  .chip--accent {
+    border-color: var(--t-chip-accent-border);
+    background-color: var(--t-chip-accent-bg);
+    color: var(--t-chip-accent-fg);
+  }
+
+  .chip--alert {
+    border-color: var(--t-alert-bg);
+    background-color: var(--t-alert-soft);
+    color: var(--t-alert-bg);
+  }
+
+  .chip--ok {
+    border-color: var(--t-ok);
+    background-color: var(--t-ok-soft);
+    color: var(--t-ok);
+  }
+
+  /* --- Callout: a labelled block of explanation ------------------------ */
+
+  .callout {
+    border: var(--t-callout-border-width) solid var(--t-callout-border);
+    border-left-width: var(--t-callout-edge-width);
+    border-left-color: var(--t-callout-edge);
+    border-radius: var(--t-callout-radius);
+    background-color: var(--t-callout-bg);
+    box-shadow: var(--t-callout-shadow);
+    padding: 0.75rem;
+  }
+
+  .callout--accent {
+    border-color: var(--t-chip-accent-border);
+    border-left-color: var(--t-accent);
+    background-color: var(--t-chip-accent-bg);
+  }
+
+  .callout--accent .t-label {
+    color: var(--t-accent);
+  }
+
+  .callout--alert {
+    border-color: var(--t-alert-bg);
+    border-left-color: var(--t-alert-bg);
+    background-color: var(--t-alert-soft);
+  }
+
+  .callout--alert .t-label {
+    color: var(--t-alert-bg);
+  }
+
+  /* --- Option: one branch of a trade-off ------------------------------- */
+
+  .option {
+    border-left: var(--t-callout-edge-width) solid var(--t-seam);
+    color: var(--t-text-muted);
+  }
+
+  .option[data-chosen="true"] {
+    border-left-color: var(--t-accent);
+    color: var(--t-text-body);
+  }
+
+  /* --- Topic group: one topic's block in the sidebar ------------------- */
+  /* Seamed off from the next topic — except the last, which has nothing to
+     be separated from. Keeping the exception here spares the component a
+     `last:border-0` visual decision. */
+
+  .topic-group {
+    border-bottom: var(--t-seam-width) solid var(--t-seam);
+  }
+
+  .topic-group:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  /* --- List rows (the pattern index in the sidebar) -------------------- */
+
+  .row {
+    border-radius: var(--t-chip-radius);
+    color: var(--t-text-muted);
+    transition: all 150ms var(--t-ease);
+  }
+
+  .row:hover {
+    background-color: var(--t-hover-fill);
+    color: var(--t-text-title);
+  }
+
+  .row[aria-current="true"] {
+    background-color: var(--t-selected-bg);
+    color: var(--t-selected-fg);
+    font-weight: 600;
+  }
+
+  /* --- Card name: the problem title, struck through once solved -------- */
+  /* Reads `data-solved` off the card wrapper, so ticking the box restyles
+     the title without the component branching on class names. */
+
+  .card-name {
+    color: var(--t-text-title);
+    font-weight: 600;
+  }
+
+  .card-name:hover {
+    color: var(--t-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  [data-solved="true"] .card-name {
+    color: var(--t-text-muted);
+    text-decoration: line-through;
+    text-decoration-color: var(--t-text-faint);
+  }
+
+  /* --- Check: the solved toggle ---------------------------------------- */
+
+  /* Applied to a native `<input type="checkbox">`: the platform keeps the
+     semantics and keyboard behaviour, the theme takes over the paint. The
+     tick is a background image so it can be drawn on an element that is not
+     allowed to have children. */
+  .check {
+    appearance: none;
+    -webkit-appearance: none;
+    flex: none;
+    width: var(--t-check-size);
+    height: var(--t-check-size);
+    border: var(--t-check-border-width) solid var(--t-check-border);
+    border-radius: var(--t-check-radius);
+    background-color: var(--t-check-bg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 72%;
+    box-shadow: var(--t-check-shadow);
+    cursor: pointer;
+    transition: all 150ms var(--t-ease);
+  }
+
+  .check:hover {
+    border-color: var(--t-check-border-hover);
+  }
+
+  .check:focus-visible {
+    outline: 2px solid var(--t-accent);
+    outline-offset: 2px;
+  }
+
+  .check:checked {
+    background-color: var(--t-check-on-bg);
+    border-color: var(--t-check-on-border);
+    background-image: var(--t-check-on-mark);
+    box-shadow: var(--t-check-on-shadow);
+  }
+
+  /* --- Code block: the demo solution ----------------------------------- */
+
+  .codeblock {
+    position: relative;
+    background-color: var(--t-code-bg);
+    border: var(--t-code-border-width) solid var(--t-code-border);
+    border-radius: var(--t-code-radius);
+    box-shadow: var(--t-code-shadow);
+    overflow-x: auto;
+  }
+
+  .codeblock code {
+    color: var(--t-code-fg);
+    font-family: var(--t-code-family);
+    font-size: var(--t-code-size);
+    line-height: var(--t-code-leading);
+  }
+
+  /* The copy key rides the block's top-right corner and only announces
+     itself on hover — the code is what is being read, not the button.
+     Keyboard users get it on focus, which hover alone would never give. */
+  .codeblock-copy {
+    opacity: 0;
+    transition: opacity 150ms var(--t-ease);
+  }
+
+  .group:hover .codeblock-copy,
+  .codeblock-copy:focus-within {
+    opacity: 1;
+  }
+
+  /* --- Inline code: a literal value inside a sentence ------------------ */
+  /* Ink is left to the caller (`t-ok` for an input, `t-accent` for an
+     output) — this role supplies the plate, not the colour. */
+
+  .code-inline {
+    font-family: var(--t-code-family);
+    font-size: var(--t-code-inline-size);
+    padding: 0.0625rem 0.25rem;
+    border: var(--t-chip-border-width) solid var(--t-code-inline-border);
+    border-radius: var(--t-chip-radius);
+    background-color: var(--t-code-inline-bg);
+  }
+
+  /* --- Gauge: a filled bar reporting a proportion ---------------------- */
+
+  .gauge {
+    background-color: var(--t-gauge-track);
+    border: var(--t-gauge-border-width) solid var(--t-gauge-border);
+    border-radius: var(--t-gauge-radius);
+    box-shadow: var(--t-well-shadow);
+    overflow: hidden;
+  }
+
+  .gauge-fill {
+    height: 100%;
+    background-color: var(--t-gauge-fill);
+    box-shadow: var(--t-gauge-fill-glow);
+    transition: width 400ms var(--t-ease);
+  }
+
+  .gauge-fill[data-tone="ok"] {
+    background-color: var(--t-ok);
+    box-shadow: var(--t-check-on-shadow);
+  }
+
+  /* --- Modal overlay (the mobile drawer scrim) ------------------------- */
+
+  .overlay {
+    background-color: var(--t-overlay-bg);
+    backdrop-filter: var(--t-overlay-filter, none);
+  }
+
+  /* --- Focus ----------------------------------------------------------- */
+
+  /* Every keyboard-reachable role gets the SAME ring. Left to the browser
+     default it all but vanishes on a chassis this dark. */
+  .row:focus-visible,
+  .chip:focus-visible {
+    outline: 2px solid var(--t-accent);
+    outline-offset: 2px;
+  }
 }
 
-/* Beautiful Custom Scrollbars */
+/* --- Scrollbars --------------------------------------------------------- */
+
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: var(--t-scrollbar-size);
+  height: var(--t-scrollbar-size);
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: var(--t-scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(100, 116, 139, 0.2);
-  border-radius: 9999px;
+  background: var(--t-scrollbar-thumb);
+  border-radius: var(--t-chip-radius);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 116, 139, 0.4);
+  background: var(--t-scrollbar-thumb-hover);
 }
 
-/* Code Highlight Adjustments */
-pre code {
-  font-family: var(--font-geist-mono), monospace;
-  font-size: 0.9rem;
-  line-height: 1.5;
+/* --- Mobile drawer ------------------------------------------------------ */
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
-/* Mobile Drawer Slide-in Animation */
 @keyframes slide-in-left {
-  from {
-    transform: translateX(-100%);
-  }
-  to {
-    transform: translateX(0);
-  }
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
 }
 
 .animate-slide-in-left {
-  animation: slide-in-left 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: slide-in-left 0.25s var(--t-ease) forwards;
 }
 
-/* Ensure tap targets are large enough on mobile */
+/* Tap targets stay reachable on a phone. */
 @media (max-width: 1023px) {
-  button, a {
+  button,
+  a {
     min-height: 36px;
+  }
+}
+
+/* --- Reduced motion ----------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
   }
 }

@@ -29,31 +29,83 @@ export interface Topic {
   patterns: Pattern[];
 }
 
+/**
+ * Every file this parser may read lives under `context/`, and the bundler is
+ * told so statically. Joining `process.cwd()` straight to a path read out of
+ * a file leaves the dependency graph unresolvable, and Next then falls back
+ * to tracing the WHOLE project — node_modules included — as a dependency of
+ * the page. Anchoring the join to a fixed subfolder keeps the trace to the
+ * content directory.
+ */
+const CONTENT_ROOT = path.join(process.cwd(), 'context');
+const CONTENT_ROOT_PREFIX = path.resolve(CONTENT_ROOT) + path.sep;
+
+/** How deep `@[...]` includes may nest before we assume something is wrong. */
+const MAX_REF_DEPTH = 16;
+
+/**
+ * Turns an `@[...]` target into an absolute path, or null if it escapes the
+ * content directory. Refs are written project-relative (`context/foo/bar.md`),
+ * so a leading `context/` is stripped before re-anchoring.
+ */
+function resolveRefPath(ref: string): string | null {
+  const cleaned = ref.trim().replace(/^\.?[/\\]/, '');
+  const relative = cleaned.replace(/^context[/\\]/, '');
+  const resolved = path.resolve(CONTENT_ROOT, relative);
+
+  // Containment check: `@[../../etc/passwd]` must not resolve outside.
+  if (!resolved.startsWith(CONTENT_ROOT_PREFIX)) return null;
+
+  return resolved;
+}
+
 export function parseDsaWorkbook(): Topic[] {
-  const filePath = path.join(process.cwd(), 'context', 'dsa-workbook.md');
+  const filePath = path.join(CONTENT_ROOT, 'dsa-workbook.md');
   const content = fs.readFileSync(filePath, 'utf-8');
-  
+
   const topics: Topic[] = [];
-  // Recursively resolve @[filepath] references
-  function resolveRefs(text: string): string[] {
+
+  /**
+   * Recursively resolve `@[filepath]` references.
+   *
+   * `seen` carries the include chain, so a file that references itself or an
+   * ancestor is left as literal text instead of recursing forever. Without it
+   * one bad line in the workbook spins the build until it runs out of memory.
+   */
+  function resolveRefs(text: string, seen: ReadonlySet<string>, depth: number): string[] {
     const result: string[] = [];
+
     for (const line of text.split('\n')) {
       const refMatch = line.trim().match(/^@\[([^\]]+)\]$/);
-      if (refMatch) {
-        const refPath = path.join(process.cwd(), refMatch[1].trim());
-        if (fs.existsSync(refPath)) {
-          result.push(...resolveRefs(fs.readFileSync(refPath, 'utf-8')));
-        } else {
-          result.push(line);
-        }
-      } else {
+
+      if (!refMatch) {
         result.push(line);
+        continue;
       }
+
+      const refPath = resolveRefPath(refMatch[1]);
+
+      if (!refPath || seen.has(refPath) || depth >= MAX_REF_DEPTH || !fs.existsSync(refPath)) {
+        if (refPath && seen.has(refPath)) {
+          console.warn(`[dsaParser] Circular reference ignored: ${refMatch[1]}`);
+        } else if (refPath && depth >= MAX_REF_DEPTH) {
+          console.warn(`[dsaParser] Reference nested deeper than ${MAX_REF_DEPTH}: ${refMatch[1]}`);
+        } else if (!refPath) {
+          console.warn(`[dsaParser] Reference outside context/ ignored: ${refMatch[1]}`);
+        }
+        result.push(line);
+        continue;
+      }
+
+      const nested = new Set(seen);
+      nested.add(refPath);
+      result.push(...resolveRefs(fs.readFileSync(refPath, 'utf-8'), nested, depth + 1));
     }
+
     return result;
   }
 
-  let lines = resolveRefs(content);
+  const lines = resolveRefs(content, new Set([path.resolve(filePath)]), 0);
   
   let currentTopic: Topic | null = null;
   let currentPattern: Pattern | null = null;

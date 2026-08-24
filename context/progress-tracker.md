@@ -7,7 +7,7 @@ _সর্বশেষ আপডেট: ২০২৬-০৭-১৭_
 ## ✅ সম্পন্ন কাজ (v1 MVP)
 
 ### Core Infrastructure
-- [x] Next.js 15 App Router সেটআপ
+- [x] Next.js App Router সেটআপ (বর্তমানে ১৬.২, Turbopack)
 - [x] TypeScript কনফিগারেশন
 - [x] Tailwind CSS v4 ইন্টিগ্রেশন
 - [x] Geist font (Sans + Mono) লোড
