@@ -8,6 +8,11 @@ import { mergeIntervalsSim } from './topic1/merge-intervals';
 import { kadaneSim } from './topic1/kadane';
 import { matrixTraversalSim } from './topic1/matrix-traversal';
 
+import { basicBinarySearchSim } from './topic2/basic-binary-search';
+import { searchOnAnswerSim } from './topic2/search-on-answer';
+import { allocationSim } from './topic2/allocation';
+import { rotatedArraySim } from './topic2/rotated-array';
+
 /** Every simulation that exists. Topics land here one file at a time. */
 const ALL: PatternSimulation[] = [
   twoPointersSim,
@@ -17,6 +22,11 @@ const ALL: PatternSimulation[] = [
   mergeIntervalsSim,
   kadaneSim,
   matrixTraversalSim,
+
+  basicBinarySearchSim,
+  searchOnAnswerSim,
+  allocationSim,
+  rotatedArraySim,
 ];
 
 const SIMULATIONS: Record<string, PatternSimulation> = Object.fromEntries(

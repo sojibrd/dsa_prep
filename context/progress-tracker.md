@@ -65,7 +65,7 @@ _সর্বশেষ আপডেট: ২০২৬-০৮-২৬_
 | টপিক | scene kind | প্যাটার্ন | অবস্থা |
 |---|---|---|---|
 | 1. Arrays & Strings | `array` `matrix` `intervals` | ৭/৭ | ✅ সম্পন্ন |
-| 2. Binary Search | `array` | 0/? | ⏳ বাকি |
+| 2. Binary Search | `array` (পুনর্ব্যবহার) | ৪/৪ | ✅ সম্পন্ন |
 | 3. Linked Lists | + `linked-list` | 0/? | ⏳ বাকি |
 | 4. Stacks & Queues | `array` | 0/? | ⏳ বাকি |
 | 5. Trees | + `tree` | 0/? | ⏳ বাকি |
@@ -88,9 +88,26 @@ _সর্বশেষ আপডেট: ২০২৬-০৮-২৬_
 
 সব ট্রেস node script দিয়ে চালিয়ে যাচাই করা। `tsc --noEmit`, `eslint app`, `next build` — তিনটাই ক্লিন।
 
+### ✅ টপিক ২ — Binary Search (সম্পন্ন)
+
+কোনো নতুন কম্পোনেন্ট বা scene kind লাগেনি — চারটাই `array` scene পুনর্ব্যবহার করে।
+
+| প্যাটার্ন | Demo | সারিতে কী আঁকা | ধাপ | উত্তর |
+|---|---|---|---|---|
+| 2.1 Basic Binary Search | Find First and Last Position (LC 34) | `nums` | 9 | `[3, 4]` |
+| 2.2 Search on Answer | Koko Eating Bananas (LC 875) | **candidate speed 1‥11** | 6 | `4` |
+| 2.3 Allocation | Split Array Largest Sum (LC 410) | **candidate cap 10‥32** | 6 | `18` |
+| 2.4 Rotated Array | Search in Rotated Sorted Array (LC 33) | `nums` | 5 | `4` |
+
+**সিদ্ধান্ত — 2.2/2.3-এ সারিটা input array নয়, উত্তরের পরিসর।** প্ল্যান দুটো বিকল্প দিয়েছিল; `values = piles` রেখে lo/hi/mid দেখালে তিনটে pointer এমন একটা array-র উপর বসত যাকে তারা index-ই করে না — এই প্যাটার্নের সবচেয়ে চেনা বিভ্রান্তিটাই। তাই সারিতে আঁকা হয় candidate speed/cap, আর input array পাশের `table`-এ (2.2-তে প্রতি pile-এ কত ঘণ্টা লাগছে সেটাসহ)। cell index = `মান − সর্বনিম্ন মান`।
+
+**2.1-এ দুই pass এক টাইমলাইনে** — মাঝে একটা হ্যান্ড-অফ স্টেপ ("এখন শেষ occurrence খুঁজব"), নইলে দ্বিতীয় pass শুরু হওয়াটা অকারণে আবার শুরু করা মনে হয়।
+
+**2.4-এ `done` = সাজানো অর্ধেক** (বাদ পড়া অংশ নয় — সেটা `reject`)। সিদ্ধান্তটা সবসময় সাজানো অর্ধেক থেকেই নেওয়া হয়, তাই ওটাই চোখে পড়া দরকার।
+
 ## 🔄 বর্তমানে চলমান
 
-_টপিক ২ (Binary Search) শুরুর অপেক্ষায়।_
+_টপিক ৩ (Linked Lists) শুরুর অপেক্ষায় — নতুন `linked-list` scene kind আনবে।_
 
 ---
 
