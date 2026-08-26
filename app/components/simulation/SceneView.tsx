@@ -7,6 +7,7 @@ import IntervalsScene from './IntervalsScene';
 import LinkedListScene from './LinkedListScene';
 import TreeScene from './TreeScene';
 import GraphScene from './GraphScene';
+import TrieScene from './TrieScene';
 import SceneAside from './SceneAside';
 
 /**
@@ -27,6 +28,8 @@ function renderScene(scene: Scene) {
       return <TreeScene scene={scene} />;
     case 'graph':
       return <GraphScene scene={scene} />;
+    case 'trie':
+      return <TrieScene scene={scene} />;
   }
 }
 

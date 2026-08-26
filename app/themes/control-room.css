@@ -328,6 +328,20 @@
   --t-sim-graph-weight-fg: var(--readout-faint);
   --t-sim-graph-weight-size: 0.5625rem;
 
+  /* Trie: the tree's vocabulary again, plus an edge character and the inner
+     ring that marks "a word ends here". */
+  --t-sim-trie-node-bg: var(--raised);
+  --t-sim-trie-node-border: var(--bezel-strong);
+  --t-sim-trie-node-width: 1.5px;
+  --t-sim-trie-edge: var(--bezel-strong);
+  --t-sim-trie-edge-width: 1.5px;
+  --t-sim-trie-char-fg: var(--readout-soft);
+  --t-sim-trie-char-size: 0.6875rem;
+  --t-sim-trie-end-ring: var(--green);
+  --t-sim-trie-end-width: 1.5px;
+  --t-sim-trie-root-fg: var(--readout-faint);
+  --t-sim-trie-root-size: 0.5625rem;
+
   --t-sim-span-height: 0.625rem;
   --t-sim-span-bg: var(--bezel-strong);
   --t-sim-span-radius: 2px;

@@ -180,14 +180,55 @@ export interface GraphScene extends SceneBase {
   pointers?: { name: string; nodeId: string }[];
 }
 
+/** One node in a trie — it holds no value, only whether a word ends here. */
+export interface TrieNodeData {
+  id: string;
+  /** `true` once a complete word has been inserted ending at this node. */
+  isEnd?: boolean;
+  mark?: CellMark;
+}
+
+/** One character-labelled edge from a parent node to a child. */
+export interface TrieEdgeData {
+  id: string;
+  fromId: string;
+  toId: string;
+  /** The single character this edge represents. */
+  char: string;
+  mark?: CellMark;
+}
+
+/**
+ * A prefix tree — insert, search and startsWith walked character by
+ * character.
+ *
+ * `TreeScene` cannot stand in for two reasons: a trie node can have up to 26
+ * children rather than two, and the character that gets you to a child lives
+ * on the EDGE, not in the node. A tree scene has no edge labels, and without
+ * them a trie is just an unlabelled fan of circles.
+ *
+ * Layout is derived exactly as `TreeScene` derives it, only n-ary: children
+ * fan out beneath their parent in insertion order.
+ */
+export interface TrieScene extends SceneBase {
+  kind: 'trie';
+  nodes: TrieNodeData[];
+  edges: TrieEdgeData[];
+  rootId: string;
+  /** The node the walk is standing on right now. */
+  activeNodeId?: string;
+  /** Characters already consumed on this walk. */
+  pathSoFar?: string;
+}
+
 export type Scene =
   | ArrayScene
   | MatrixScene
   | IntervalsScene
   | LinkedListScene
   | TreeScene
-  | GraphScene;
-/* Topic 10 adds `TrieScene` — this union grows, nothing above it changes. */
+  | GraphScene
+  | TrieScene;
 
 export interface SimStep {
   id: string;

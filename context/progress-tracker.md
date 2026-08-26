@@ -72,7 +72,7 @@ _সর্বশেষ আপডেট: ২০২৬-০৮-২৬_
 | 7. Backtracking | `array` `matrix` (পুনর্ব্যবহার) | ৩/৩ | ✅ সম্পন্ন |
 | 8. Graphs | + `graph` | ৭/৭ | ✅ সম্পন্ন |
 | 9. Dynamic Programming | `array` `matrix` (+ `matrix.pointers`) | ১১/১১ | ✅ সম্পন্ন |
-| 10. Greedy, Trie & Design | + `trie` | 0/? | ⏳ বাকি |
+| 10. Greedy, Trie & Design | + `trie` | ৩/৩ | ✅ সম্পন্ন |
 
 ### ✅ টপিক ১ — Arrays & Strings (সম্পন্ন)
 
@@ -230,9 +230,48 @@ _সর্বশেষ আপডেট: ২০২৬-০৮-২৬_
 
 > ⚠️ **workbook ডেটা সমস্যা (ফ্ল্যাগ করা, ঠিক করা হয়নি)** — `9.4 Longest Common Subsequence LCS.md`-এর পাশে একটা URL-encoded ডুপ্লিকেট ফাইল আছে (`9.4%20Longest%20...md`), যাতে বেশি সম্পূর্ণ কনটেন্ট। parser শুধু সঠিক-নামের ফাইলটা পড়ে, তাই অ্যাপে ৯.৪-এর demo statement অনুপস্থিত। এটা ডেটা-হাইজিনের কাজ, সিমুলেশন ফিচারের অংশ নয় — প্ল্যানও তা-ই বলেছে।
 
+### ✅ টপিক ১০ — Greedy, Trie & Design (সম্পন্ন)
+
+**নতুন scene kind `trie`** — শেষ সংযোজন, `Scene` union এখন ৭ সদস্যের।
+
+| প্যাটার্ন | Demo | scene | ধাপ | উত্তর |
+|---|---|---|---|---|
+| 10.1 Greedy | Candy | `array` + subValues | 5 | `8` |
+| 10.2 Trie | Implement Trie | **`trie`** | 8 | `true, false, true` |
+| 10.3 Design | LRU Cache | `linked-list` | 6 | `[1:1, 3:3]` |
+
+**কেন `TreeScene` যথেষ্ট নয়** — trie নোডে ২৬ পর্যন্ত সন্তান হতে পারে, আর সবচেয়ে গুরুত্বপূর্ণ তথ্যটা (অক্ষর) থাকে **edge-এ, নোডে নয়**। `TreeScene`-এ edge-এ কোনো label নেই, আর label ছাড়া trie নিছক কতগুলো বৃত্তের ছড়ানো। layout কৌশল অবশ্য অভিন্ন — হিসাব করা x/y, n-ary: leaf পরের কলাম নেয়, parent তার সন্তানদের উপরে কেন্দ্রে বসে।
+
+**`isEnd` = ভেতরের সবুজ বৃত্ত, রং নয়** — কারণ নোডের নিজের `data-mark` ততক্ষণে walk-এর অবস্থা বলছে। দুটো আলাদা তথ্য, তাই দুটো আলাদা ভিজ্যুয়াল চ্যানেল।
+
+**10.3-এ নতুন কিছু লাগেনি** — `Map`-এর insertion order-ই recency, আর সেটা আক্ষরিক অর্থেই একটা chain (সামনে LRU, পেছনে MRU)। `LinkedListScene` ঠিক সেটাই আঁকে।
+
+**10.1-এ `subValues` = ratings** — Kadane-এর `cur`-এর মতোই বৈধ ব্যবহার: প্রতিটা index-এর নিজস্ব দ্বিতীয় মান, running scalar নয়। সারিতে `candies` (যা বদলায়), নিচে `ratings` (যা স্থির)।
+
+> ⚠️ **প্ল্যান সংশোধন** — `10-greedy-trie-design.md`-এ 10.2-এর লাইন ম্যাপ ৯ থেকে এক ঘর পিছিয়ে (`search` আসলে লাইন ১০, `startsWith` ১৪, `_walk` ১৭), আর 10.3-এ ১২ থেকে (`put` আসলে লাইন ১৩)। কোড ফেন্স থেকে গুনে যাচাই করা মান ব্যবহার করা হয়েছে।
+
+---
+
+## 🎉 সিমুলেশন ফিচার সম্পূর্ণ
+
+**৪৭টা সিমুলেশন, ৯টা টপিক** (টপিক ৬ বাদে, যার সোর্স ডেটা workbook-এ নেই)।
+
+**৭টা scene kind:** `array` `matrix` `intervals` `linked-list` `tree` `graph` `trie`
+**১৩টা কম্পোনেন্ট:** SceneView + ৭টা renderer + SceneAside, CodePane, ExplainPanel, SimControls, SimulationBlock
+**১টা হুক:** `usePatternSim`
+
+প্রতিটা টপিকের প্রতিটা ট্রেস demo code চালিয়ে যাচাই করা, হাতে লেখা নয়। প্রতি টপিকে `tsc --noEmit`, `eslint app`, `next build` — তিনটাই ক্লিন।
+
+### যে নিয়মগুলো টিকে গেছে
+
+1. **ট্রেস ডেটা renderer-এর কিছুই জানে না** — ৪৭টা ফাইলের একটাতেও কোনো স্থানাঙ্ক, রং বা CSS ক্লাস নেই। tree, graph ও trie-র layout সম্পূর্ণ হিসাব করা।
+2. **`scene.kind`-এ switch একমাত্র `SceneView`-এ** — সাতবার scene kind যোগ হয়েছে, প্রতিবার ঠিক একটা case।
+3. **`values` = যার উপর দিয়ে cursor হাঁটে**, স্বয়ংক্রিয়ভাবে input array নয় (2.2/2.3 উত্তরের পরিসর, 4.3 কলের ক্রম, 9.5 `tails`)।
+4. **যা বদলায় না, তা ধাপ নয়** — 9.2, 10.1-এ শুধু পরিবর্তনকারী iteration; 7.2-এ ৭৮ event থেকে ২৭।
+
 ## 🔄 বর্তমানে চলমান
 
-_টপিক ১০ (Greedy, Trie & Design) শুরুর অপেক্ষায় — নতুন `trie` scene kind আনবে। এটাই শেষ টপিক।_
+_কিছু নেই — সিমুলেশন ফিচার সম্পূর্ণ।_
 
 ---
 

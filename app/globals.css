@@ -953,6 +953,82 @@ body {
     fill: var(--t-sim-active-border);
   }
 
+  /* --- Trie: SVG nodes with character-labelled edges -------------------- */
+
+  .sim-trie-node {
+    fill: var(--t-sim-trie-node-bg);
+    stroke: var(--t-sim-trie-node-border);
+    stroke-width: var(--t-sim-trie-node-width);
+    transition: all 200ms var(--t-ease);
+  }
+
+  .sim-trie-node[data-mark="active"] {
+    fill: var(--t-sim-active-bg);
+    stroke: var(--t-sim-active-border);
+  }
+
+  .sim-trie-node[data-mark="done"] {
+    fill: var(--t-sim-done-bg);
+    stroke: var(--t-sim-done-border);
+  }
+
+  .sim-trie-node[data-mark="reject"] {
+    opacity: var(--t-sim-reject-opacity);
+  }
+
+  .sim-trie-node[data-mark="fill"] {
+    fill: var(--t-sim-fill-bg);
+    stroke: var(--t-sim-fill-border);
+  }
+
+  /* "A word ends here" is an inner ring, not a colour — so it can coexist
+     with whatever mark the walk is putting on the node. */
+  .sim-trie-end {
+    fill: none;
+    stroke: var(--t-sim-trie-end-ring);
+    stroke-width: var(--t-sim-trie-end-width);
+  }
+
+  .sim-trie-edge {
+    stroke: var(--t-sim-trie-edge);
+    stroke-width: var(--t-sim-trie-edge-width);
+    transition: stroke 200ms var(--t-ease);
+  }
+
+  .sim-trie-edge[data-mark="active"] {
+    stroke: var(--t-sim-active-border);
+  }
+
+  .sim-trie-edge[data-mark="done"] {
+    stroke: var(--t-sim-done-border);
+  }
+
+  .sim-trie-edge[data-mark="reject"] {
+    opacity: var(--t-sim-reject-opacity);
+  }
+
+  .sim-trie-char {
+    fill: var(--t-sim-trie-char-fg);
+    font-family: var(--t-font-mono);
+    font-size: var(--t-sim-trie-char-size);
+    text-anchor: middle;
+    dominant-baseline: central;
+    paint-order: stroke;
+    stroke: var(--t-app-bg);
+    stroke-width: 4px;
+  }
+
+  .sim-trie-char[data-mark="active"] {
+    fill: var(--t-sim-active-border);
+  }
+
+  .sim-trie-root {
+    fill: var(--t-sim-trie-root-fg);
+    font-family: var(--t-font-mono);
+    font-size: var(--t-sim-trie-root-size);
+    text-anchor: middle;
+  }
+
   /* --- Intervals: spans on a shared axis ------------------------------- */
 
   .sim-span {

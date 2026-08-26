@@ -52,6 +52,10 @@ import { intervalDpSim } from './topic9/interval-dp';
 import { stateMachineSim } from './topic9/state-machine';
 import { bitmaskSim } from './topic9/bitmask';
 
+import { greedySim } from './topic10/greedy';
+import { trieSim } from './topic10/trie';
+import { lruCacheSim } from './topic10/lru-cache';
+
 /** Every simulation that exists. Topics land here one file at a time. */
 const ALL: PatternSimulation[] = [
   twoPointersSim,
@@ -105,6 +109,10 @@ const ALL: PatternSimulation[] = [
   intervalDpSim,
   stateMachineSim,
   bitmaskSim,
+
+  greedySim,
+  trieSim,
+  lruCacheSim,
 ];
 
 const SIMULATIONS: Record<string, PatternSimulation> = Object.fromEntries(
