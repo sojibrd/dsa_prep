@@ -62,6 +62,11 @@ export interface MatrixScene extends SceneBase {
   kind: 'matrix';
   values: (number | string)[][];
   cursor?: { row: number; col: number };
+  /**
+   * Named 2D cursors — interval DP's l/r/k triple, say. Additive to `cursor`,
+   * which stays for the common case of one unnamed position.
+   */
+  pointers?: { name: string; row: number; col: number }[];
   /** Key is `"row,col"` — an object literal cannot hold a tuple key. */
   marks?: Record<string, CellMark>;
   bounds?: { top: number; bottom: number; left: number; right: number };

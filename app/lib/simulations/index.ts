@@ -40,6 +40,18 @@ import { bipartiteSim } from './topic8/bipartite';
 import { dijkstraSim } from './topic8/dijkstra';
 import { mstSim } from './topic8/mst';
 
+import { climbingStairsSim } from './topic9/climbing-stairs';
+import { subsetSumSim } from './topic9/subset-sum';
+import { coinChangeSim } from './topic9/coin-change';
+import { lcsSim } from './topic9/lcs';
+import { lisSim } from './topic9/lis';
+import { editDistanceSim } from './topic9/edit-distance';
+import { houseRobberSim } from './topic9/house-robber';
+import { gridPathsSim } from './topic9/grid-paths';
+import { intervalDpSim } from './topic9/interval-dp';
+import { stateMachineSim } from './topic9/state-machine';
+import { bitmaskSim } from './topic9/bitmask';
+
 /** Every simulation that exists. Topics land here one file at a time. */
 const ALL: PatternSimulation[] = [
   twoPointersSim,
@@ -81,6 +93,18 @@ const ALL: PatternSimulation[] = [
   bipartiteSim,
   dijkstraSim,
   mstSim,
+
+  climbingStairsSim,
+  subsetSumSim,
+  coinChangeSim,
+  lcsSim,
+  lisSim,
+  editDistanceSim,
+  houseRobberSim,
+  gridPathsSim,
+  intervalDpSim,
+  stateMachineSim,
+  bitmaskSim,
 ];
 
 const SIMULATIONS: Record<string, PatternSimulation> = Object.fromEntries(

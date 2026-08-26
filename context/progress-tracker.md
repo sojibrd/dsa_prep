@@ -71,7 +71,7 @@ _সর্বশেষ আপডেট: ২০২৬-০৮-২৬_
 | 5. Trees | + `tree` | ৫/৫ | ✅ সম্পন্ন |
 | 7. Backtracking | `array` `matrix` (পুনর্ব্যবহার) | ৩/৩ | ✅ সম্পন্ন |
 | 8. Graphs | + `graph` | ৭/৭ | ✅ সম্পন্ন |
-| 9. Dynamic Programming | `matrix` | 0/? | ⏳ বাকি |
+| 9. Dynamic Programming | `array` `matrix` (+ `matrix.pointers`) | ১১/১১ | ✅ সম্পন্ন |
 | 10. Greedy, Trie & Design | + `trie` | 0/? | ⏳ বাকি |
 
 ### ✅ টপিক ১ — Arrays & Strings (সম্পন্ন)
@@ -202,9 +202,37 @@ _সর্বশেষ আপডেট: ২০২৬-০৮-২৬_
 
 > ⚠️ **প্ল্যান সংশোধন** — `8-graphs.md`-এ 8.3-এর লাইন ম্যাপ পুরোটা +১ শিফটেড (`queue` init আসলে লাইন ৮, ৯ নয়), আর 8.6-এর উত্তর-লাইন ১৮‑১৯, ১৭‑১৮ নয়। 8.6-এর `MinHeap` ক্লাসটা workbook-এ অনুপস্থিত টপিক ৬-এ সংজ্ঞায়িত হওয়ার কথা ছিল; কোড অপরিবর্তিত রেখে heap-কে `[dist, node]`-এর sorted তালিকা হিসেবে `table`-এ দেখানো হয়েছে, প্ল্যানের নির্দেশমতো।
 
+### ✅ টপিক ৯ — Dynamic Programming (সম্পন্ন)
+
+নতুন scene kind লাগেনি — `MatrixScene`-এ একটা ছোট এক্সটেনশন (`pointers`) ছাড়া সবই বিদ্যমান।
+
+| প্যাটার্ন | Demo | scene | ধাপ | উত্তর |
+|---|---|---|---|---|
+| 9.1 Fibonacci | Climbing Stairs | `array` | 6 | `8` |
+| 9.2 0/1 Knapsack | Partition Equal Subset Sum | `array` | 7 | `true` |
+| 9.3 Unbounded Knapsack | Coin Change | `array` | 15 | `2` |
+| 9.4 LCS | Longest Common Subsequence | `matrix` | 8 | `2` |
+| 9.5 LIS | LIS (patience sorting) | `array` | 10 | `4` |
+| 9.6 Edit Distance | Edit Distance | `matrix` | 11 | `1` |
+| 9.7 House Robber | House Robber | `array` | 7 | `12` |
+| 9.8 Grid Paths | Unique Paths | `matrix` | 6 | `6` |
+| 9.9 Interval DP | Burst Balloons | `matrix` + `pointers` | 18 | `35` |
+| 9.10 State Machine | Stock with Cooldown | `array` | 7 | `3` |
+| 9.11 Bitmask | Partition to K Equal Sum Subsets | `array` | 9 | `true` |
+
+**নতুন: `MatrixScene.pointers`** — শুধু ৯.৯-এর জন্য। Burst Balloons-এ একসাথে তিনটে অবস্থান গুরুত্বপূর্ণ (`l`, `r`, `k`), আর একটামাত্র নামহীন `cursor` দিয়ে বলা যায় না কোনটা কোনটা। `cursor` অপরিবর্তিত রাখা হয়েছে — বাকি সব matrix প্যাটার্ন সেটাই ব্যবহার করে।
+
+**সিদ্ধান্ত — কোড 1D, দৃশ্য 2D (৯.১, ৯.৮)।** দুটো প্যাটার্নেই কোড space-optimized rolling array রাখে, কিন্তু scene পুরো টেবিল দেখায়। এটা ইচ্ছাকৃত বিমূর্তকরণ: rolling array আসলে পুরো টেবিলেরই একটা ছাঁটা রূপ, আর পুনরাবৃত্তি সূত্রটা (`dp[i-1] + dp[i-2]`, বা "উপর + বাঁ") টেবিল ছাড়া চোখে পড়ে না। কোড অপরিবর্তিত।
+
+**যেসব iteration কিছু বদলায় না, সেগুলো ধাপ নয় (৯.২)।** ভেতরের লুপ প্রতি আইটেমে target বার চলে, কিন্তু মাত্র ৫ বার `false` → `true` হয়। বাকিগুলো ধাপ বানালে বিশটা অভিন্ন ফ্রেম হতো।
+
+**`vars` বনাম `subValues`** — প্ল্যানের নিয়ম মানা হয়েছে: ৯.৭-এর `robbed`/`skipped` ও ৯.১০-এর `hold`/`sold`/`rest` running scalar, তাই `vars`-এ। `subValues` কেবল তখনই, যখন প্রতিটা index-এর নিজস্ব দ্বিতীয় মান আছে (যেমন Kadane-এর `cur`)।
+
+> ⚠️ **workbook ডেটা সমস্যা (ফ্ল্যাগ করা, ঠিক করা হয়নি)** — `9.4 Longest Common Subsequence LCS.md`-এর পাশে একটা URL-encoded ডুপ্লিকেট ফাইল আছে (`9.4%20Longest%20...md`), যাতে বেশি সম্পূর্ণ কনটেন্ট। parser শুধু সঠিক-নামের ফাইলটা পড়ে, তাই অ্যাপে ৯.৪-এর demo statement অনুপস্থিত। এটা ডেটা-হাইজিনের কাজ, সিমুলেশন ফিচারের অংশ নয় — প্ল্যানও তা-ই বলেছে।
+
 ## 🔄 বর্তমানে চলমান
 
-_টপিক ৯ (Dynamic Programming) শুরুর অপেক্ষায়।_
+_টপিক ১০ (Greedy, Trie & Design) শুরুর অপেক্ষায় — নতুন `trie` scene kind আনবে। এটাই শেষ টপিক।_
 
 ---
 

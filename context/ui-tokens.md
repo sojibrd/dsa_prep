@@ -58,7 +58,7 @@
 | `data-dummy` | `.sim-node` | sentinel — ডেটার অংশ নয় |
 | `data-kind` | `.sim-link` | `next` / `jump` / `null` / `cycle` |
 | `data-in` / `data-edge` | `.sim-loop` | cycle rail-এর ভেতরে / প্রান্ত |
-| `data-cursor` | `.sim-cell` `.sim-span` | এই মুহূর্তের ঘর |
+| `data-cursor` | `.sim-cell` `.sim-span` | এই মুহূর্তের ঘর (matrix-এ নামযুক্ত একাধিক অবস্থান দরকার হলে `pointers` → `.sim-pointer`) |
 | `data-window` | `.sim-cell` | window বা bounds-এর ভেতরে |
 | `data-wide` | `.sim-stage` | বড় করে দেখা |
 | `data-active` | `.codeline` | এই লাইনটা এখন চলছে |

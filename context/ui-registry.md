@@ -46,6 +46,7 @@
 | `app/lib/simulations/topic5/*.ts` | টপিক ৫-এর ৫টা যাচাই-করা ট্রেস | Data |
 | `app/lib/simulations/topic7/*.ts` | টপিক ৭-এর ৩টা যাচাই-করা ট্রেস | Data |
 | `app/lib/simulations/topic8/*.ts` | টপিক ৮-এর ৭টা যাচাই-করা ট্রেস | Data |
+| `app/lib/simulations/topic9/*.ts` | টপিক ৯-এর ১১টা যাচাই-করা ট্রেস | Data |
 | `app/lib/clueMatch.ts` | clue → problem ম্যাচিং (pure) | Utility |
 | `app/lib/parseStatement.ts` | statement পার্সার (pure) | Utility |
 | `app/utils/dsaParser.ts` | Markdown পার্সার (server-only, fs) | Utility |
@@ -125,8 +126,8 @@ Demo code একটা নির্দিষ্ট ইনপুটে ধাপ�
 
 | kind | কম্পোনেন্ট | কোথায় প্রথম লাগল |
 |---|---|---|
-| `array` | `<ArrayScene>` | 1.1 (bar মোড), 1.2, 1.3, 1.4, 1.6, 2.1–2.4, 4.1–4.4, 7.1, 8.4 |
-| `matrix` | `<MatrixScene>` | 1.7 Spiral Matrix, 7.2, 7.3, 8.1 |
+| `array` | `<ArrayScene>` | 1.1 (bar মোড), 1.2, 1.3, 1.4, 1.6, 2.1–2.4, 4.1–4.4, 7.1, 8.4, 9.1–9.3, 9.5, 9.7, 9.10, 9.11 |
+| `matrix` | `<MatrixScene>` | 1.7 Spiral Matrix, 7.2, 7.3, 8.1, 9.4, 9.6, 9.8, 9.9 |
 | `intervals` | `<IntervalsScene>` | 1.5 Merge Intervals |
 | `linked-list` | `<LinkedListScene>` | 3.1, 3.2, 3.3 |
 | `tree` | `<TreeScene>` | 5.1–5.5 |
@@ -157,6 +158,14 @@ Demo code একটা নির্দিষ্ট ইনপুটে ধাপ�
 - **arrowhead polygon, `marker` নয়** — SVG marker নির্ভরযোগ্যভাবে line-এর stroke রং নেয় না, তাই edge amber হলেও তীর ধূসর থেকে যেত।
 
 > `directed` না দিলে edge দিকহীন। `weight` দিলে line-এর মাঝে ছোট label, আর সেটাও edge-এর `mark` অনুসরণ করে।
+
+#### `matrix` — `cursor` বনাম `pointers`
+
+- **`cursor`** = একটামাত্র নামহীন অবস্থান। প্রায় সব matrix প্যাটার্নে এটাই যথেষ্ট (1.7, 7.2, 7.3, 8.1, 9.4, 9.6, 9.8)।
+- **`pointers`** = একাধিক **নামযুক্ত** অবস্থান, ঘরের উপরে `sim-pointer` লেবেল হিসেবে। শুধু ৯.৯ Interval DP-তে দরকার, যেখানে `l`, `r`, `k` একসাথে দেখাতে হয়। দুটো additive — `cursor` সরানো হয়নি।
+- `pointers` না দিলে লেবেলের সারিটাই render হয় না, তাই বাকি scene-গুলোর লেআউট অপরিবর্তিত থাকে।
+
+> **`values` সবসময় বাস্তব ডেটা-কাঠামোর প্রতিচ্ছবি নয়।** ৯.১ ও ৯.৮-এ কোড rolling 1D array রাখে, কিন্তু scene পুরো dp টেবিল দেখায় — rolling array ওই টেবিলেরই ছাঁটা রূপ, আর সূত্রটা টেবিল ছাড়া পড়া যায় না। কোড অপরিবর্তিত থাকে; বিমূর্তকরণটা কেবল দৃশ্যে।
 
 #### Role classes
 
