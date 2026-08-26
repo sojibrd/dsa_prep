@@ -673,6 +673,115 @@ body {
     transition: height 200ms var(--t-ease);
   }
 
+  /* --- Linked list: node plates joined by connectors -------------------- */
+  /* A node reuses the cell's plate and its four marks, then adds a divider
+     for the pointer slot — a linked-list node IS a cell with somewhere to
+     point, and giving it a second look would say otherwise. */
+
+  .sim-node {
+    display: flex;
+    align-items: stretch;
+    flex: none;
+    min-width: var(--t-sim-node-min-width);
+    height: var(--t-sim-node-height);
+    border: var(--t-raised-border-width) solid var(--t-sim-cell-border);
+    border-radius: var(--t-sim-node-radius);
+    background-color: var(--t-sim-cell-bg);
+    color: var(--t-sim-cell-fg);
+    font-family: var(--t-sim-cell-family);
+    font-size: var(--t-sim-cell-size-text);
+    overflow: hidden;
+    transition: all 200ms var(--t-ease);
+  }
+
+  .sim-node[data-mark="active"] {
+    background-color: var(--t-sim-active-bg);
+    border-color: var(--t-sim-active-border);
+    color: var(--t-sim-active-fg);
+    box-shadow: var(--t-sim-active-shadow);
+  }
+
+  .sim-node[data-mark="done"] {
+    background-color: var(--t-sim-done-bg);
+    border-color: var(--t-sim-done-border);
+    color: var(--t-sim-done-fg);
+  }
+
+  .sim-node[data-mark="reject"] {
+    opacity: var(--t-sim-reject-opacity);
+  }
+
+  .sim-node[data-mark="fill"] {
+    background-color: var(--t-sim-fill-bg);
+    border-color: var(--t-sim-fill-border);
+    color: var(--t-sim-fill-fg);
+  }
+
+  /* The sentinel is not part of the data, and should not look like it is. */
+  .sim-node[data-dummy="true"] {
+    border-style: var(--t-sim-node-dummy-style);
+    border-color: var(--t-sim-node-dummy-border);
+    background-color: transparent;
+    color: var(--t-text-faint);
+  }
+
+  .sim-node-val {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    padding: 0 0.375rem;
+  }
+
+  .sim-node-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    border-left: var(--t-seam-width) solid var(--t-sim-node-divider);
+    color: var(--t-text-faint);
+  }
+
+  /* --- Connectors: what a node's `next` actually points at ------------- */
+
+  .sim-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: var(--t-sim-link-width);
+    height: var(--t-sim-node-height);
+    color: var(--t-sim-link-fg);
+    font-family: var(--t-font-mono);
+    font-size: var(--t-sim-cell-size-text);
+  }
+
+  /* A link that skips its neighbour is the event worth seeing. */
+  .sim-link[data-kind="jump"],
+  .sim-link[data-kind="cycle"] {
+    width: var(--t-sim-link-jump-width);
+    color: var(--t-sim-link-jump-fg);
+  }
+
+  /* --- Loop-back rail: a cycle, without any coordinates ---------------- */
+  /* One segment per node, so the rail spans target→tail on its own. */
+
+  .sim-loop {
+    height: var(--t-sim-loop-height);
+  }
+
+  .sim-loop[data-in="true"] {
+    border-bottom: var(--t-sim-loop-width) solid var(--t-sim-loop-border);
+  }
+
+  .sim-loop[data-edge="start"] {
+    border-left: var(--t-sim-loop-width) solid var(--t-sim-loop-border);
+  }
+
+  .sim-loop[data-edge="end"] {
+    border-right: var(--t-sim-loop-width) solid var(--t-sim-loop-border);
+  }
+
   /* --- Intervals: spans on a shared axis ------------------------------- */
 
   .sim-span {

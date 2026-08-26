@@ -13,6 +13,10 @@ import { searchOnAnswerSim } from './topic2/search-on-answer';
 import { allocationSim } from './topic2/allocation';
 import { rotatedArraySim } from './topic2/rotated-array';
 
+import { fastSlowPointersSim } from './topic3/fast-slow-pointers';
+import { dummyNodeSim } from './topic3/dummy-node';
+import { inPlaceReversalSim } from './topic3/in-place-reversal';
+
 /** Every simulation that exists. Topics land here one file at a time. */
 const ALL: PatternSimulation[] = [
   twoPointersSim,
@@ -27,6 +31,10 @@ const ALL: PatternSimulation[] = [
   searchOnAnswerSim,
   allocationSim,
   rotatedArraySim,
+
+  fastSlowPointersSim,
+  dummyNodeSim,
+  inPlaceReversalSim,
 ];
 
 const SIMULATIONS: Record<string, PatternSimulation> = Object.fromEntries(

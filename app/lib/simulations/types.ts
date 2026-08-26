@@ -76,9 +76,38 @@ export interface IntervalsScene extends SceneBase {
   axis?: { from: number; to: number };
 }
 
-export type Scene = ArrayScene | MatrixScene | IntervalsScene;
-/* Topic 3 adds `LinkedListScene`, topic 5 `TreeScene`, topic 8 `GraphScene`,
-   topic 10 `TrieScene` — this union grows, nothing above it changes. */
+/** A single node in a linked list scene. */
+export interface LinkedListNode {
+  id: string;
+  val: string | number;
+  /** The `id` of the next node, or `null`/omitted for the tail. */
+  nextId?: string | null;
+  mark?: CellMark;
+}
+
+/**
+ * A chain of nodes joined by pointers — traversal, reversal, merge, cycle.
+ *
+ * `nodes` is a LAYOUT order (left to right on screen), not the chain order.
+ * The two agree while a list is intact and deliberately disagree mid
+ * reversal, which is the whole point: the renderer reads each node's real
+ * `nextId`, so a link that jumps backwards is drawn as a jump rather than
+ * quietly redrawn as a tidy left-to-right chain that no longer exists.
+ */
+export interface LinkedListScene extends SceneBase {
+  kind: 'linked-list';
+  nodes: LinkedListNode[];
+  /** Named cursors sitting on a node, identified by `nodeId`. */
+  pointers?: { name: string; nodeId: string }[];
+  /** An optional dummy/sentinel shown at the head of the chain. */
+  dummy?: { id: string; val: string | number; nextId?: string | null };
+  /** If the list has a cycle, the `id` the tail connects back to. */
+  cycleTargetId?: string;
+}
+
+export type Scene = ArrayScene | MatrixScene | IntervalsScene | LinkedListScene;
+/* Topic 5 adds `TreeScene`, topic 8 `GraphScene`, topic 10 `TrieScene` —
+   this union grows, nothing above it changes. */
 
 export interface SimStep {
   id: string;

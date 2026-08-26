@@ -278,6 +278,25 @@
   --t-sim-bar-min-height: 2px;
   --t-sim-bar-width: 1.5rem;
 
+  /* Linked list: a node plate wide enough for a value and its pointer slot,
+     plus the connector that follows it. No new colours — a node borrows the
+     cell's plate and the same four marks. */
+  --t-sim-node-height: 2.25rem;
+  --t-sim-node-min-width: 3rem;
+  --t-sim-node-radius: var(--t-sim-cell-radius);
+  --t-sim-node-divider: var(--t-bezel-divider, var(--bezel-strong));
+  --t-sim-node-dummy-border: var(--readout-faint);
+  --t-sim-node-dummy-style: dashed;
+  --t-sim-link-width: 1.5rem;
+  --t-sim-link-fg: var(--readout-muted);
+  /* A pointer aiming somewhere other than the neighbour, and the loop-back
+     rail, both read as "the shape changed" — amber, like anything live. */
+  --t-sim-link-jump-fg: var(--amber);
+  --t-sim-link-jump-width: 3rem;
+  --t-sim-loop-height: 0.75rem;
+  --t-sim-loop-border: var(--amber);
+  --t-sim-loop-width: 2px;
+
   --t-sim-span-height: 0.625rem;
   --t-sim-span-bg: var(--bezel-strong);
   --t-sim-span-radius: 2px;

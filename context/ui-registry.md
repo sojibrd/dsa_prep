@@ -27,6 +27,7 @@
 | `app/components/simulation/ArrayScene.tsx` | `kind: 'array'` — cell/bar মোড | Client Component |
 | `app/components/simulation/MatrixScene.tsx` | `kind: 'matrix'` — grid + bounds ফ্রেম | Client Component |
 | `app/components/simulation/IntervalsScene.tsx` | `kind: 'intervals'` — সংখ্যারেখায় span | Client Component |
+| `app/components/simulation/LinkedListScene.tsx` | `kind: 'linked-list'` — নোড চেইন, jump link, cycle rail | Client Component |
 | `app/components/simulation/SceneAside.tsx` | `table`/`output` পাশের প্যানেল (সব kind শেয়ার করে) | Client Component |
 | `app/components/simulation/CodePane.tsx` | demo code + line highlight + auto-scroll | Client Component |
 | `app/components/simulation/ExplainPanel.tsx` | `vars` চিপ + বাংলা ব্যাখ্যা | Client Component |
@@ -38,6 +39,7 @@
 | `app/lib/simulations/index.ts` | `getSimulation(patternId)` — sparse lookup | Utility |
 | `app/lib/simulations/topic1/*.ts` | টপিক ১-এর ৭টা যাচাই-করা ট্রেস | Data |
 | `app/lib/simulations/topic2/*.ts` | টপিক ২-এর ৪টা যাচাই-করা ট্রেস | Data |
+| `app/lib/simulations/topic3/*.ts` | টপিক ৩-এর ৩টা যাচাই-করা ট্রেস | Data |
 | `app/lib/clueMatch.ts` | clue → problem ম্যাচিং (pure) | Utility |
 | `app/lib/parseStatement.ts` | statement পার্সার (pure) | Utility |
 | `app/utils/dsaParser.ts` | Markdown পার্সার (server-only, fs) | Utility |
@@ -120,8 +122,17 @@ Demo code একটা নির্দিষ্ট ইনপুটে ধাপ�
 | `array` | `<ArrayScene>` | 1.1 (bar মোড), 1.2, 1.3, 1.4, 1.6, 2.1–2.4 |
 | `matrix` | `<MatrixScene>` | 1.7 Spiral Matrix |
 | `intervals` | `<IntervalsScene>` | 1.5 Merge Intervals |
+| `linked-list` | `<LinkedListScene>` | 3.1, 3.2, 3.3 |
 
-> টপিক ৩ `linked-list`, ৫ `tree`, ৮ `graph`, ১০ `trie` যোগ করবে — `Scene` union বাড়বে, উপরের কিছুই বদলাবে না।
+> টপিক ৫ `tree`, ৮ `graph`, ১০ `trie` যোগ করবে — `Scene` union বাড়বে, উপরের কিছুই বদলাবে না।
+
+#### `linked-list` — তিনটে নিয়ম
+
+- **`nodes` = লেআউট ক্রম, চেইন ক্রম নয়।** লিস্ট অক্ষত থাকলে দুটো মেলে; reversal-এর মাঝপথে ইচ্ছাকৃতভাবে মেলে না। renderer প্রতিটা নোডের আসল `nextId` পড়ে, তাই পেছনে তাক করা তীর **পেছনে তাক করা অবস্থাতেই** আঁকা হয়।
+- **connector-এর তিন রূপ** — `→` (next-ই ডান পাশের প্রতিবেশী), `↳ মান` (next অন্য কোথাও — জাম্প), `∅` (tail)। jump ও cycle amber, কারণ ওখানেই গঠন বদলেছে।
+- **cycle = নিচের rail, বাঁকানো তীর নয়।** প্রতি নোডের নিচে এক টুকরো segment (`.sim-loop`), target থেকে tail পর্যন্ত `data-in="true"` — কম্পোনেন্ট একটাও স্থানাঙ্ক হিসাব করে না, তবু rail নিজে থেকেই সঠিক জায়গায় বসে।
+
+> `dummy` (sentinel) আলাদা করে dashed border-এ — সে ডেটার অংশ নয়, আর দেখতেও যেন তা-ই মনে না হয়।
 
 #### Role classes
 
@@ -134,6 +145,10 @@ Demo code একটা নির্দিষ্ট ইনপুটে ধাপ�
 | `sim-window-tag` | window ক্যাপশনের ট্যাগ |
 | `sim-bar-track` / `sim-bar` / `sim-bar-fill` | bar মোড — track, দেয়াল, উপরে জমা রাশি |
 | `sim-span` / `sim-axis` | interval span ও সংখ্যারেখা |
+| `sim-node` (+ `data-mark`, `data-dummy`) | লিংকড লিস্ট নোড প্লেট — `sim-cell`-এর প্লেট ও চারটে mark পুনর্ব্যবহার করে |
+| `sim-node-val` / `sim-node-link` | নোডের মান ও pointer slot |
+| `sim-link` (+ `data-kind`) | connector — `next` / `jump` / `null` / `cycle` |
+| `sim-loop` (+ `data-in`, `data-edge`) | cycle rail-এর এক নোডের segment |
 | `sim-entry` (+ `sim-entry-key`/`-value`) | পাশের map/Set entry |
 | `sim-out` | output array-র এক মান |
 | `sim-var` (+ `sim-var-name`/`-value`) | ব্যাখ্যা প্যানেলের ভেরিয়েবল চিপ |
