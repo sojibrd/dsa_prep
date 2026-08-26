@@ -228,7 +228,7 @@ _সর্বশেষ আপডেট: ২০২৬-০৮-২৬_
 
 **`vars` বনাম `subValues`** — প্ল্যানের নিয়ম মানা হয়েছে: ৯.৭-এর `robbed`/`skipped` ও ৯.১০-এর `hold`/`sold`/`rest` running scalar, তাই `vars`-এ। `subValues` কেবল তখনই, যখন প্রতিটা index-এর নিজস্ব দ্বিতীয় মান আছে (যেমন Kadane-এর `cur`)।
 
-> ⚠️ **workbook ডেটা সমস্যা (ফ্ল্যাগ করা, ঠিক করা হয়নি)** — `9.4 Longest Common Subsequence LCS.md`-এর পাশে একটা URL-encoded ডুপ্লিকেট ফাইল আছে (`9.4%20Longest%20...md`), যাতে বেশি সম্পূর্ণ কনটেন্ট। parser শুধু সঠিক-নামের ফাইলটা পড়ে, তাই অ্যাপে ৯.৪-এর demo statement অনুপস্থিত। এটা ডেটা-হাইজিনের কাজ, সিমুলেশন ফিচারের অংশ নয় — প্ল্যানও তা-ই বলেছে।
+> ✅ **workbook ডেটা সমস্যা — সমাধান হয়েছে।** `9.4`-এর URL-encoded ডুপ্লিকেট ফাইলটা (`9.4%20Longest%20...md`) ছিল strict superset: demo statement, problem statement আর sibling-দের মতো company tag তাতে ছিল, সঠিক-নামের ফাইলে ছিল না। ডুপ্লিকেটের কনটেন্ট সঠিক-নামের ফাইলে নিয়ে গিয়ে orphan ফাইলটা মুছে ফেলা হয়েছে। পুরো workbook স্ক্যান করে দেখা গেছে এটাই একমাত্র orphan ছিল।
 
 ### ✅ টপিক ১০ — Greedy, Trie & Design (সম্পন্ন)
 
