@@ -782,6 +782,74 @@ body {
     border-right: var(--t-sim-loop-width) solid var(--t-sim-loop-border);
   }
 
+  /* --- Tree: SVG nodes and edges --------------------------------------- */
+  /* An SVG shape has no border or background, so the same four marks are
+     expressed as fill/stroke. The meanings are identical to `.sim-cell`. */
+
+  .sim-tree-node {
+    fill: var(--t-sim-tree-node-bg);
+    stroke: var(--t-sim-tree-node-border);
+    stroke-width: var(--t-sim-tree-node-width);
+    transition: all 200ms var(--t-ease);
+  }
+
+  .sim-tree-node[data-mark="active"] {
+    fill: var(--t-sim-active-bg);
+    stroke: var(--t-sim-active-border);
+  }
+
+  .sim-tree-node[data-mark="done"] {
+    fill: var(--t-sim-done-bg);
+    stroke: var(--t-sim-done-border);
+  }
+
+  .sim-tree-node[data-mark="reject"] {
+    opacity: var(--t-sim-reject-opacity);
+  }
+
+  .sim-tree-node[data-mark="fill"] {
+    fill: var(--t-sim-fill-bg);
+    stroke: var(--t-sim-fill-border);
+  }
+
+  /* On the live recursion path but not the node being visited. */
+  .sim-tree-node[data-on="true"]:not([data-mark]) {
+    stroke: var(--t-sim-active-border);
+  }
+
+  .sim-tree-val {
+    fill: var(--t-sim-tree-fg);
+    font-family: var(--t-font-mono);
+    font-size: var(--t-sim-tree-val-size);
+    text-anchor: middle;
+    dominant-baseline: central;
+  }
+
+  .sim-tree-annot {
+    fill: var(--t-sim-tree-annot-fg);
+    font-family: var(--t-font-mono);
+    font-size: var(--t-sim-tree-annot-size);
+    text-anchor: middle;
+  }
+
+  .sim-tree-pointer {
+    fill: var(--t-sim-tree-pointer-fg);
+    font-family: var(--t-font-mono);
+    font-size: var(--t-sim-tree-pointer-size);
+    font-weight: 700;
+    text-anchor: middle;
+  }
+
+  .sim-tree-edge {
+    stroke: var(--t-sim-tree-edge);
+    stroke-width: var(--t-sim-tree-edge-width);
+    transition: stroke 200ms var(--t-ease);
+  }
+
+  .sim-tree-edge[data-on="true"] {
+    stroke: var(--t-sim-tree-edge-on);
+  }
+
   /* --- Intervals: spans on a shared axis ------------------------------- */
 
   .sim-span {

@@ -28,6 +28,7 @@
 | `app/components/simulation/MatrixScene.tsx` | `kind: 'matrix'` — grid + bounds ফ্রেম | Client Component |
 | `app/components/simulation/IntervalsScene.tsx` | `kind: 'intervals'` — সংখ্যারেখায় span | Client Component |
 | `app/components/simulation/LinkedListScene.tsx` | `kind: 'linked-list'` — নোড চেইন, jump link, cycle rail | Client Component |
+| `app/components/simulation/TreeScene.tsx` | `kind: 'tree'` — SVG, layout হিসাব করা | Client Component |
 | `app/components/simulation/SceneAside.tsx` | `table`/`output` পাশের প্যানেল (সব kind শেয়ার করে) | Client Component |
 | `app/components/simulation/CodePane.tsx` | demo code + line highlight + auto-scroll | Client Component |
 | `app/components/simulation/ExplainPanel.tsx` | `vars` চিপ + বাংলা ব্যাখ্যা | Client Component |
@@ -41,6 +42,7 @@
 | `app/lib/simulations/topic2/*.ts` | টপিক ২-এর ৪টা যাচাই-করা ট্রেস | Data |
 | `app/lib/simulations/topic3/*.ts` | টপিক ৩-এর ৩টা যাচাই-করা ট্রেস | Data |
 | `app/lib/simulations/topic4/*.ts` | টপিক ৪-এর ৪টা যাচাই-করা ট্রেস | Data |
+| `app/lib/simulations/topic5/*.ts` | টপিক ৫-এর ৫টা যাচাই-করা ট্রেস | Data |
 | `app/lib/clueMatch.ts` | clue → problem ম্যাচিং (pure) | Utility |
 | `app/lib/parseStatement.ts` | statement পার্সার (pure) | Utility |
 | `app/utils/dsaParser.ts` | Markdown পার্সার (server-only, fs) | Utility |
@@ -124,8 +126,9 @@ Demo code একটা নির্দিষ্ট ইনপুটে ধাপ�
 | `matrix` | `<MatrixScene>` | 1.7 Spiral Matrix |
 | `intervals` | `<IntervalsScene>` | 1.5 Merge Intervals |
 | `linked-list` | `<LinkedListScene>` | 3.1, 3.2, 3.3 |
+| `tree` | `<TreeScene>` | 5.1–5.5 |
 
-> টপিক ৫ `tree`, ৮ `graph`, ১০ `trie` যোগ করবে — `Scene` union বাড়বে, উপরের কিছুই বদলাবে না।
+> টপিক ৮ `graph`, ১০ `trie` যোগ করবে — `Scene` union বাড়বে, উপরের কিছুই বদলাবে না।
 
 #### `linked-list` — তিনটে নিয়ম
 
@@ -134,6 +137,14 @@ Demo code একটা নির্দিষ্ট ইনপুটে ধাপ�
 - **cycle = নিচের rail, বাঁকানো তীর নয়।** প্রতি নোডের নিচে এক টুকরো segment (`.sim-loop`), target থেকে tail পর্যন্ত `data-in="true"` — কম্পোনেন্ট একটাও স্থানাঙ্ক হিসাব করে না, তবু rail নিজে থেকেই সঠিক জায়গায় বসে।
 
 > `dummy` (sentinel) আলাদা করে dashed border-এ — সে ডেটার অংশ নয়, আর দেখতেও যেন তা-ই মনে না হয়।
+
+#### `tree` — তিনটে নিয়ম
+
+- **Layout হিসাব করা, দেওয়া নয়।** in-order traversal কলাম ঠিক করে, recursion depth সারি। কোনো ট্রেস ফাইল `{x, y}` জানে না — জানলে এক renderer-এর জ্যামিতি পঞ্চাশটা ডেটা ফাইলে ছড়িয়ে পড়ত। পার্শ্বফল: অর্ধেক-তৈরি গাছ (5.2) বিনা কষ্টে সঠিকভাবে বসে।
+- **root নিজে খুঁজে নেয়** — `rootId` না দিলে যে নোডকে কেউ `leftId`/`rightId` হিসেবে দাবি করেনি, সে-ই root।
+- **SVG-তে mark = fill/stroke।** `<circle>`-এ border/background নেই, তাই একই চারটে `data-mark` fill ও stroke দিয়ে প্রকাশ পায়। অর্থ `.sim-cell`-এর সাথে অভিন্ন।
+
+> `annotation` = নোডের নিচে ছোট cyan টেক্সট। 5.3-এ parent-কে পাঠানো gain, 5.4-এ অনুমোদিত `(min, max)`, 5.5-এ কোন target মিলল। `highlightPath` = live recursion path — ওই পথের edge amber হয়ে যায়।
 
 #### Role classes
 
@@ -150,6 +161,9 @@ Demo code একটা নির্দিষ্ট ইনপুটে ধাপ�
 | `sim-node-val` / `sim-node-link` | নোডের মান ও pointer slot |
 | `sim-link` (+ `data-kind`) | connector — `next` / `jump` / `null` / `cycle` |
 | `sim-loop` (+ `data-in`, `data-edge`) | cycle rail-এর এক নোডের segment |
+| `sim-tree-node` (+ `data-mark`, `data-on`) | SVG `<circle>` — fill/stroke দিয়ে একই চারটে mark |
+| `sim-tree-val` / `sim-tree-annot` / `sim-tree-pointer` | নোডের মান, নিচের ছোট টেক্সট, উপরের cursor লেবেল |
+| `sim-tree-edge` (+ `data-on`) | parent→child রেখা; `data-on` = live recursion path |
 | `sim-entry` (+ `sim-entry-key`/`-value`) | পাশের map/Set entry |
 | `sim-out` | output array-র এক মান |
 | `sim-var` (+ `sim-var-name`/`-value`) | ব্যাখ্যা প্যানেলের ভেরিয়েবল চিপ |

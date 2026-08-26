@@ -297,6 +297,21 @@
   --t-sim-loop-border: var(--amber);
   --t-sim-loop-width: 2px;
 
+  /* Tree: SVG, so the plate is a fill/stroke pair rather than a border. Same
+     four marks, same amber-for-live rule as every other scene. */
+  --t-sim-tree-node-bg: var(--raised);
+  --t-sim-tree-node-border: var(--bezel-strong);
+  --t-sim-tree-node-width: 1.5px;
+  --t-sim-tree-fg: var(--readout-soft);
+  --t-sim-tree-val-size: 0.75rem;
+  --t-sim-tree-annot-fg: var(--cyan);
+  --t-sim-tree-annot-size: 0.5625rem;
+  --t-sim-tree-pointer-fg: var(--amber);
+  --t-sim-tree-pointer-size: 0.5625rem;
+  --t-sim-tree-edge: var(--bezel-strong);
+  --t-sim-tree-edge-width: 1.5px;
+  --t-sim-tree-edge-on: var(--amber);
+
   --t-sim-span-height: 0.625rem;
   --t-sim-span-bg: var(--bezel-strong);
   --t-sim-span-radius: 2px;

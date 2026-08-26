@@ -22,6 +22,12 @@ import { parenthesesSim } from './topic4/parentheses';
 import { minStackSim } from './topic4/min-stack';
 import { monotonicDequeSim } from './topic4/monotonic-deque';
 
+import { treeTraversalSim } from './topic5/traversal';
+import { treeConstructionSim } from './topic5/construction';
+import { pathSumSim } from './topic5/path-sum';
+import { validationSim } from './topic5/validation';
+import { lcaSim } from './topic5/lca';
+
 /** Every simulation that exists. Topics land here one file at a time. */
 const ALL: PatternSimulation[] = [
   twoPointersSim,
@@ -45,6 +51,12 @@ const ALL: PatternSimulation[] = [
   parenthesesSim,
   minStackSim,
   monotonicDequeSim,
+
+  treeTraversalSim,
+  treeConstructionSim,
+  pathSumSim,
+  validationSim,
+  lcaSim,
 ];
 
 const SIMULATIONS: Record<string, PatternSimulation> = Object.fromEntries(

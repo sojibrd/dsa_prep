@@ -43,7 +43,7 @@
 | **Check** | **`check`** — সলভ টগল (`aria-checked`) |
 | **Code** | **`codeblock`** / `codeblock-copy` / `code-inline` |
 | **Gauge** | **`gauge` / `gauge-fill`** (+ `data-tone="ok"`) — অনুপাত দেখানো বার |
-| **Simulation** | **`sim-stage` `sim-cell` `sim-index` `sim-cell-value` `sim-subvalue` `sim-pointer` `sim-window-tag` `sim-bar-track` `sim-bar` `sim-bar-fill` `sim-span` `sim-axis` `sim-node` `sim-node-val` `sim-node-link` `sim-link` `sim-loop` `sim-entry` `sim-out` `sim-var` `codeline` `codeline-no` `sim-scrub`** — প্যাটার্ন প্লেয়ার (বিস্তারিত `ui-registry.md` → 🎬 Simulation) |
+| **Simulation** | **`sim-stage` `sim-cell` `sim-index` `sim-cell-value` `sim-subvalue` `sim-pointer` `sim-window-tag` `sim-bar-track` `sim-bar` `sim-bar-fill` `sim-span` `sim-axis` `sim-node` `sim-node-val` `sim-node-link` `sim-link` `sim-loop` `sim-tree-node` `sim-tree-val` `sim-tree-annot` `sim-tree-pointer` `sim-tree-edge` `sim-entry` `sim-out` `sim-var` `codeline` `codeline-no` `sim-scrub`** — প্যাটার্ন প্লেয়ার (বিস্তারিত `ui-registry.md` → 🎬 Simulation) |
 
 ### State attributes
 
@@ -53,7 +53,8 @@
 | `aria-current` | `.row` | নির্বাচিত প্যাটার্ন |
 | `data-chosen` | `.option` | বাছাই করা শাখা |
 | `data-tone` | `.gauge-fill` | `ok` হলে সাফল্যের রঙে |
-| `data-mark` | `.sim-cell` `.sim-bar` `.sim-span` `.sim-node` `.sim-entry` | `active` / `done` / `reject` / `fill` |
+| `data-mark` | `.sim-cell` `.sim-bar` `.sim-span` `.sim-node` `.sim-tree-node` `.sim-entry` | `active` / `done` / `reject` / `fill` |
+| `data-on` | `.sim-tree-node` `.sim-tree-edge` | live recursion path-এর উপর |
 | `data-dummy` | `.sim-node` | sentinel — ডেটার অংশ নয় |
 | `data-kind` | `.sim-link` | `next` / `jump` / `null` / `cycle` |
 | `data-in` / `data-edge` | `.sim-loop` | cycle rail-এর ভেতরে / প্রান্ত |
@@ -83,7 +84,7 @@
 - **Gauge:** `gauge-track` `gauge-border` `gauge-border-width` `gauge-radius` `gauge-fill` `gauge-fill-glow`
 - **Check:** `check-size|radius|bg|border|border-width|shadow|border-hover` `check-on-bg|border|fg|shadow`
 - **Code:** `code-family|size|leading|fg|bg|border|border-width|radius|shadow` `code-inline-size|bg|border`
-- **Simulation:** `sim-stage-*` `sim-cell-*` `sim-active-*` `sim-done-*` `sim-reject-opacity` `sim-fill-*` `sim-window-rail|-width` `sim-index-*` `sim-pointer-*` `sim-bar-*` `sim-node-*` `sim-link-*` `sim-loop-*` `sim-span-*` `sim-axis-border` `codeline-active-*` `codeline-no-*` `sim-scrub-*`
+- **Simulation:** `sim-stage-*` `sim-cell-*` `sim-active-*` `sim-done-*` `sim-reject-opacity` `sim-fill-*` `sim-window-rail|-width` `sim-index-*` `sim-pointer-*` `sim-bar-*` `sim-node-*` `sim-link-*` `sim-loop-*` `sim-tree-*` `sim-span-*` `sim-axis-border` `codeline-active-*` `codeline-no-*` `sim-scrub-*`
 
 > `system_design`-এর `canvas-*`, `wire-*`, `packet-*`, `unit-*`, `diagram-*`, `doc-*` পরিবারগুলো এখানে **নেই** — সেগুলো সিমুলেটর ও লম্বা রিডিং কলামের, যার কোনোটাই এই অ্যাপে নেই।
 

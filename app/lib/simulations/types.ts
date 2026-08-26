@@ -105,9 +105,44 @@ export interface LinkedListScene extends SceneBase {
   cycleTargetId?: string;
 }
 
-export type Scene = ArrayScene | MatrixScene | IntervalsScene | LinkedListScene;
-/* Topic 5 adds `TreeScene`, topic 8 `GraphScene`, topic 10 `TrieScene` —
-   this union grows, nothing above it changes. */
+export interface TreeNodeData {
+  id: string;
+  val: string | number;
+  leftId?: string | null;
+  rightId?: string | null;
+  mark?: CellMark;
+  /** Small text under the node — a computed gain, a range, a subtotal. */
+  annotation?: string;
+}
+
+/**
+ * A binary tree — traversal, construction, path sum, validation, LCA.
+ *
+ * Layout is COMPUTED by the renderer (in-order for x, depth for y), never
+ * supplied here. A data file that carried `{x, y}` would be encoding one
+ * renderer's geometry into fifty trace files; deriving it instead keeps the
+ * contract's rule intact and makes a partially-built tree lay itself out for
+ * free, which 5.2 depends on.
+ */
+export interface TreeScene extends SceneBase {
+  kind: 'tree';
+  nodes: TreeNodeData[];
+  /** Omit and the renderer finds it: the node no one lists as a child. */
+  rootId?: string;
+  activeNodeId?: string;
+  /** Root→node path to light up — typically the live recursion stack. */
+  highlightPath?: string[];
+  pointers?: { name: string; nodeId: string }[];
+}
+
+export type Scene =
+  | ArrayScene
+  | MatrixScene
+  | IntervalsScene
+  | LinkedListScene
+  | TreeScene;
+/* Topic 8 adds `GraphScene`, topic 10 `TrieScene` — this union grows,
+   nothing above it changes. */
 
 export interface SimStep {
   id: string;
