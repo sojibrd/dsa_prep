@@ -28,6 +28,10 @@ import { pathSumSim } from './topic5/path-sum';
 import { validationSim } from './topic5/validation';
 import { lcaSim } from './topic5/lca';
 
+import { subsetsSim } from './topic7/subsets';
+import { nQueensSim } from './topic7/n-queens';
+import { wordSearchSim } from './topic7/word-search';
+
 /** Every simulation that exists. Topics land here one file at a time. */
 const ALL: PatternSimulation[] = [
   twoPointersSim,
@@ -57,6 +61,10 @@ const ALL: PatternSimulation[] = [
   pathSumSim,
   validationSim,
   lcaSim,
+
+  subsetsSim,
+  nQueensSim,
+  wordSearchSim,
 ];
 
 const SIMULATIONS: Record<string, PatternSimulation> = Object.fromEntries(

@@ -43,6 +43,7 @@
 | `app/lib/simulations/topic3/*.ts` | টপিক ৩-এর ৩টা যাচাই-করা ট্রেস | Data |
 | `app/lib/simulations/topic4/*.ts` | টপিক ৪-এর ৪টা যাচাই-করা ট্রেস | Data |
 | `app/lib/simulations/topic5/*.ts` | টপিক ৫-এর ৫টা যাচাই-করা ট্রেস | Data |
+| `app/lib/simulations/topic7/*.ts` | টপিক ৭-এর ৩টা যাচাই-করা ট্রেস | Data |
 | `app/lib/clueMatch.ts` | clue → problem ম্যাচিং (pure) | Utility |
 | `app/lib/parseStatement.ts` | statement পার্সার (pure) | Utility |
 | `app/utils/dsaParser.ts` | Markdown পার্সার (server-only, fs) | Utility |
@@ -122,8 +123,8 @@ Demo code একটা নির্দিষ্ট ইনপুটে ধাপ�
 
 | kind | কম্পোনেন্ট | কোথায় প্রথম লাগল |
 |---|---|---|
-| `array` | `<ArrayScene>` | 1.1 (bar মোড), 1.2, 1.3, 1.4, 1.6, 2.1–2.4, 4.1–4.4 |
-| `matrix` | `<MatrixScene>` | 1.7 Spiral Matrix |
+| `array` | `<ArrayScene>` | 1.1 (bar মোড), 1.2, 1.3, 1.4, 1.6, 2.1–2.4, 4.1–4.4, 7.1 |
+| `matrix` | `<MatrixScene>` | 1.7 Spiral Matrix, 7.2, 7.3 |
 | `intervals` | `<IntervalsScene>` | 1.5 Merge Intervals |
 | `linked-list` | `<LinkedListScene>` | 3.1, 3.2, 3.3 |
 | `tree` | `<TreeScene>` | 5.1–5.5 |
