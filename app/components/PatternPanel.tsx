@@ -4,6 +4,8 @@ import { Pattern } from '../utils/dsaParser';
 import { ClueMatch, ProblemNote } from '../types';
 import StatementBox from './StatementBox';
 import ProblemCard from './ProblemCard';
+import SimulationBlock from './simulation/SimulationBlock';
+import { getSimulation } from '../lib/simulations';
 
 interface PatternPanelProps {
   pattern: Pattern;
@@ -41,6 +43,9 @@ export default function PatternPanel({
   onToggleStatement,
   onNoteChange,
 }: PatternPanelProps) {
+  // Sparse: most patterns have none yet, and those render nothing at all.
+  const simulation = getSimulation(pattern.id);
+
   return (
     <div className="surface-panel p-4 sm:p-6 md:p-8 flex flex-col gap-6">
       <div className="flex flex-col gap-1">
@@ -163,6 +168,10 @@ export default function PatternPanel({
             </div>
           )}
         </div>
+      )}
+
+      {simulation && pattern.demoCode && (
+        <SimulationBlock simulation={simulation} code={pattern.demoCode} />
       )}
 
       <div className="seam-t pt-6 flex flex-col gap-4">

@@ -1,6 +1,6 @@
 # Progress Tracker — DSA Prep Tracker
 
-_সর্বশেষ আপডেট: ২০২৬-০৭-১৭_
+_সর্বশেষ আপডেট: ২০২৬-০৮-২৬_
 
 ---
 
@@ -47,9 +47,50 @@ _সর্বশেষ আপডেট: ২০২৬-০৭-১৭_
 - [x] **Problem card** — mobile-এ vertical stack layout
 - [x] **Slide-in animation** — `animate-slide-in-left` CSS animation
 
+## 🎬 Pattern Simulation (চলমান — টপিক ধরে ধরে)
+
+`implementation-plan/`-এর ৯টা প্ল্যান ডকুমেন্ট ধরে ক্রমান্বয়ে implement হচ্ছে। প্রতি টপিক = এক কমিট।
+> টপিক ৬ (Heaps) ইচ্ছাকৃতভাবে বাদ — workbook-এ ওই টপিকের সোর্স ডেটা নেই।
+
+### ✅ ভিত্তি (টপিক ১-এ একবারই বানানো হয়েছে)
+- [x] `app/lib/simulations/types.ts` — Scene কনট্র্যাক্ট (`Scene` / `SimStep` / `PatternSimulation`)
+- [x] `app/hooks/usePatternSim.ts` — টাইমলাইন ইঞ্জিন (play/pause/step/scrub/speed, শেষে থামে)
+- [x] `app/components/simulation/` — ৯টা কম্পোনেন্ট (SceneView, ArrayScene, MatrixScene, IntervalsScene, SceneAside, CodePane, ExplainPanel, SimControls, SimulationBlock)
+- [x] `app/lib/simulations/index.ts` — `getSimulation()` sparse lookup
+- [x] Theme — `--t-sim-*` টোকেন পরিবার + `sim-*`/`codeline` role class; নতুন `cyan` প্যালেট এন্ট্রি (`fill` = জমা রাশি)
+- [x] `PatternPanel`-এ demo সেকশনের পরে জোড়া লাগানো
+
+### টপিকভিত্তিক অবস্থা
+
+| টপিক | scene kind | প্যাটার্ন | অবস্থা |
+|---|---|---|---|
+| 1. Arrays & Strings | `array` `matrix` `intervals` | ৭/৭ | ✅ সম্পন্ন |
+| 2. Binary Search | `array` | 0/? | ⏳ বাকি |
+| 3. Linked Lists | + `linked-list` | 0/? | ⏳ বাকি |
+| 4. Stacks & Queues | `array` | 0/? | ⏳ বাকি |
+| 5. Trees | + `tree` | 0/? | ⏳ বাকি |
+| 7. Backtracking | `tree` | 0/? | ⏳ বাকি |
+| 8. Graphs | + `graph` | 0/? | ⏳ বাকি |
+| 9. Dynamic Programming | `matrix` | 0/? | ⏳ বাকি |
+| 10. Greedy, Trie & Design | + `trie` | 0/? | ⏳ বাকি |
+
+### ✅ টপিক ১ — Arrays & Strings (সম্পন্ন)
+
+| প্যাটার্ন | Demo | scene | ধাপ | উত্তর |
+|---|---|---|---|---|
+| 1.1 Two Pointers | Trapping Rain Water (LC 42) | `array` (bar মোড) | 13 | `6` |
+| 1.2 Sliding Window | Minimum Window Substring (LC 76) | `array` + window | 28 | `"BANC"` |
+| 1.3 Prefix Sum | Subarray Sum Equals K (LC 560) | `array` + table | 5 | `2` |
+| 1.4 Hashing | Longest Consecutive Sequence (LC 128) | `array` + table | 8 | `4` |
+| 1.5 Merge Intervals | Merge Intervals (LC 56) | `intervals` | 5 | `[[1,6],[8,10],[15,18]]` |
+| 1.6 Kadane's | Maximum Subarray (LC 53) | `array` + subValues | 10 | `6` |
+| 1.7 Matrix Traversal | Spiral Matrix (LC 54) | `matrix` + bounds | 11 | `[1,2,3,6,9,8,7,4,5]` |
+
+সব ট্রেস node script দিয়ে চালিয়ে যাচাই করা। `tsc --noEmit`, `eslint app`, `next build` — তিনটাই ক্লিন।
+
 ## 🔄 বর্তমানে চলমান
 
-_কিছু নেই — mobile responsive সম্পূর্ণ_
+_টপিক ২ (Binary Search) শুরুর অপেক্ষায়।_
 
 ---
 

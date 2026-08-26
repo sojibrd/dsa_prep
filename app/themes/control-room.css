@@ -40,6 +40,11 @@
   --green-soft: #14261a;
   --red: #e05646;
   --red-soft: #2c1613;
+  /* The one family this chassis did not already have. "Accumulated" — water
+     banked above a bar, a running total — is neither "selected" (amber) nor
+     "settled" (green), so it needed a cool voice of its own. */
+  --cyan: #4aa8c4;
+  --cyan-soft: #10242b;
 
   /* --- Type ------------------------------------------------------------ */
   --t-font-sans: var(--font-condensed), var(--font-bengali), ui-sans-serif, system-ui, sans-serif;
@@ -224,6 +229,71 @@
   --t-code-inline-size: 0.75rem;
   --t-code-inline-bg: var(--amber-soft);
   --t-code-inline-border: var(--amber-dim);
+
+  /* --- Simulation: the pattern player ---------------------------------- */
+  /* Four marks, four meanings, borrowed from families already on this
+     chassis so a lit cell reads like a lit sidebar row rather than a new
+     vocabulary: amber = live right now, green = settled, faded = discarded,
+     cyan = accumulated. */
+  --t-sim-stage-bg: var(--chassis);
+  --t-sim-stage-border: var(--bezel);
+  --t-sim-stage-radius: 4px;
+
+  --t-sim-cell-size: 2.25rem;
+  --t-sim-cell-radius: 3px;
+  --t-sim-cell-bg: var(--raised);
+  --t-sim-cell-border: var(--bezel-strong);
+  --t-sim-cell-fg: var(--readout-soft);
+  --t-sim-cell-family: var(--t-font-mono);
+  --t-sim-cell-size-text: 0.75rem;
+
+  --t-sim-active-bg: var(--amber-soft);
+  --t-sim-active-border: var(--amber);
+  --t-sim-active-fg: var(--amber);
+  --t-sim-active-shadow: 0 0 12px -3px rgb(255 176 32 / 0.9);
+
+  --t-sim-done-bg: var(--green-soft);
+  --t-sim-done-border: var(--green);
+  --t-sim-done-fg: var(--green);
+
+  --t-sim-reject-opacity: 0.3;
+
+  --t-sim-fill-bg: var(--cyan-soft);
+  --t-sim-fill-border: var(--cyan);
+  --t-sim-fill-fg: var(--cyan);
+
+  /* A cell inside the current window keeps the plain plate but gains a rail
+     underneath — the window is a span, not a per-cell state. */
+  --t-sim-window-rail: var(--amber);
+  --t-sim-window-rail-width: 2px;
+
+  --t-sim-index-fg: var(--readout-faint);
+  --t-sim-index-size: 0.5625rem;
+  --t-sim-pointer-fg: var(--chassis);
+  --t-sim-pointer-bg: var(--amber);
+  --t-sim-pointer-size: 0.5625rem;
+
+  --t-sim-bar-bg: var(--bezel-strong);
+  --t-sim-bar-track: var(--well);
+  --t-sim-bar-min-height: 2px;
+  --t-sim-bar-width: 1.5rem;
+
+  --t-sim-span-height: 0.625rem;
+  --t-sim-span-bg: var(--bezel-strong);
+  --t-sim-span-radius: 2px;
+  --t-sim-axis-border: var(--bezel);
+
+  /* Code pane: one line per row, the executing one lit from the gutter in. */
+  --t-codeline-active-bg: var(--amber-soft);
+  --t-codeline-active-fg: var(--readout);
+  --t-codeline-active-edge: var(--amber);
+  --t-codeline-no-fg: var(--readout-faint);
+  --t-codeline-no-width: 2.25rem;
+
+  --t-sim-scrub-track: var(--well);
+  --t-sim-scrub-height: 4px;
+  --t-sim-scrub-thumb: var(--amber);
+  --t-sim-scrub-thumb-size: 14px;
 
   /* --- Lamp blink (borrowed by anything that must pulse) --------------- */
   --t-lamp-blink-animation: lampBlink 1s var(--t-ease) infinite;

@@ -22,8 +22,21 @@
 | `app/components/StatementBox.tsx` | statement রেন্ডার | Client Component |
 | `app/components/ProgressReadout.tsx` | gauge readout | Client Component |
 | `app/components/SyncModal.tsx` | Apps Script URL মডাল | Client Component |
+| `app/components/simulation/SimulationBlock.tsx` | সিমুলেশন প্লেয়ারের র‍্যাপার — fold + expand | Client Component |
+| `app/components/simulation/SceneView.tsx` | `scene.kind` → renderer (একমাত্র switch) | Client Component |
+| `app/components/simulation/ArrayScene.tsx` | `kind: 'array'` — cell/bar মোড | Client Component |
+| `app/components/simulation/MatrixScene.tsx` | `kind: 'matrix'` — grid + bounds ফ্রেম | Client Component |
+| `app/components/simulation/IntervalsScene.tsx` | `kind: 'intervals'` — সংখ্যারেখায় span | Client Component |
+| `app/components/simulation/SceneAside.tsx` | `table`/`output` পাশের প্যানেল (সব kind শেয়ার করে) | Client Component |
+| `app/components/simulation/CodePane.tsx` | demo code + line highlight + auto-scroll | Client Component |
+| `app/components/simulation/ExplainPanel.tsx` | `vars` চিপ + বাংলা ব্যাখ্যা | Client Component |
+| `app/components/simulation/SimControls.tsx` | transport — play/step/reset/speed/scrub | Client Component |
 | `app/hooks/useSheetSync.ts` | শিট load / debounce / push — সব cloud state | Custom Hook |
 | `app/hooks/useLocalStorage.ts` | localStorage state hook | Custom Hook |
+| `app/hooks/usePatternSim.ts` | সিমুলেশন টাইমলাইন ইঞ্জিন | Custom Hook |
+| `app/lib/simulations/types.ts` | Scene কনট্র্যাক্ট — `Scene`/`SimStep`/`PatternSimulation` | Types |
+| `app/lib/simulations/index.ts` | `getSimulation(patternId)` — sparse lookup | Utility |
+| `app/lib/simulations/topic1/*.ts` | টপিক ১-এর ৭টা যাচাই-করা ট্রেস | Data |
 | `app/lib/clueMatch.ts` | clue → problem ম্যাচিং (pure) | Utility |
 | `app/lib/parseStatement.ts` | statement পার্সার (pure) | Utility |
 | `app/utils/dsaParser.ts` | Markdown পার্সার (server-only, fs) | Utility |
@@ -90,6 +103,58 @@
 
 ---
 
+### 🎬 Simulation — প্যাটার্ন প্লেয়ার
+
+Demo code একটা নির্দিষ্ট ইনপুটে ধাপে-ধাপে চলতে দেখার প্লেয়ার। `PatternPanel`-এ demo সেকশনের ঠিক পরে বসে, `getSimulation(pattern.id)` `null` দিলে **কিছুই render হয় না** (খালি বাক্স নয়)।
+
+#### অলঙ্ঘনীয় সীমানা
+- **ট্রেস ডেটা renderer-এর কিছুই জানে না** — কোনো স্থানাঙ্ক, রং, CSS ক্লাস বা লাইব্রেরি-টাইপ `app/lib/simulations/`-এ ঢুকবে না। শুধু অর্থ (`values`, `pointers`, `marks`, `window`, `fills`)।
+- **`scene.kind`-এ switch হয় একমাত্র `SceneView.tsx`-এ।** নতুন scene kind = নতুন renderer + সেখানে একটা case, আর কোথাও নয়।
+- `highlightLines` ১-ভিত্তিক, এবং লাইন ১ = workbook-এর কোড ফেন্সের ভেতরের প্রথম লাইন (কমেন্টসহ)।
+
+#### Scene kinds
+
+| kind | কম্পোনেন্ট | কোথায় প্রথম লাগল |
+|---|---|---|
+| `array` | `<ArrayScene>` | 1.1 (bar মোড), 1.2, 1.3, 1.4, 1.6 |
+| `matrix` | `<MatrixScene>` | 1.7 Spiral Matrix |
+| `intervals` | `<IntervalsScene>` | 1.5 Merge Intervals |
+
+> টপিক ৩ `linked-list`, ৫ `tree`, ৮ `graph`, ১০ `trie` যোগ করবে — `Scene` union বাড়বে, উপরের কিছুই বদলাবে না।
+
+#### Role classes
+
+| ক্লাস | কাজ |
+|---|---|
+| `sim-stage` (+ `data-wide`) | প্লেয়ারের মঞ্চ; `data-wide="true"` = fixed fullscreen |
+| `sim-cell` | array/matrix ঘর — `data-mark` ও `data-cursor`/`data-window` পড়ে |
+| `sim-index` / `sim-cell-value` / `sim-subvalue` | index নম্বর, bar-এর নিচের মান, দ্বিতীয় সারির মান (Kadane-এর `cur`) |
+| `sim-pointer` | নামযুক্ত cursor লেবেল (`l`, `r`, `slow`) — amber প্লেট |
+| `sim-window-tag` | window ক্যাপশনের ট্যাগ |
+| `sim-bar-track` / `sim-bar` / `sim-bar-fill` | bar মোড — track, দেয়াল, উপরে জমা রাশি |
+| `sim-span` / `sim-axis` | interval span ও সংখ্যারেখা |
+| `sim-entry` (+ `sim-entry-key`/`-value`) | পাশের map/Set entry |
+| `sim-out` | output array-র এক মান |
+| `sim-var` (+ `sim-var-name`/`-value`) | ব্যাখ্যা প্যানেলের ভেরিয়েবল চিপ |
+| `codeline` (+ `data-active`) / `codeline-no` | CodePane-এর লাইন ও গাটার নম্বর |
+| `sim-scrub` | টাইমলাইন range input |
+| `control[aria-pressed="true"]` | চাপা অবস্থার control (speed বাটন) |
+
+#### `data-mark` — চারটা অর্থ, চারটা রং
+
+| mark | অর্থ | টোকেন পরিবার |
+|---|---|---|
+| `active` | এই মুহূর্তে pointer এখানে | amber (`--t-sim-active-*`) |
+| `done` | প্রসেস হয়ে settled | green (`--t-sim-done-*`) |
+| `reject` | বাদ পড়েছে / skip | `--t-sim-reject-opacity` |
+| `fill` | জমা রাশি — পানি, running total | cyan (`--t-sim-fill-*`) |
+
+> `cyan`/`cyan-soft` — `control-room.css`-এ যোগ হওয়া একমাত্র নতুন প্যালেট এন্ট্রি। "জমা হওয়া" ধারণাটা amber (নির্বাচিত) বা green (settled) কোনোটাই নয়, তাই তার নিজের ঠান্ডা কণ্ঠস্বর দরকার ছিল।
+
+> `style` attribute শুধু ডেটা-চালিত জ্যামিতিতে — bar-এর উচ্চতা ও span-এর প্রস্থ/অবস্থান। gauge width-এর মতোই ব্যতিক্রম; রং/বর্ডার/radius সবই role class-এ।
+
+---
+
 ### ☁️ Google Sheets Sync Modal
 - **Scrim:** `overlay`; **প্যানেল:** `surface-panel`
 - Apps Script URL ইনপুট (`surface-well`) + সেভ/বাতিল (`control`, `control--primary`)
@@ -117,6 +182,14 @@
 ---
 
 ## Utility Functions
+
+### `usePatternSim(steps): PatternSim`
+টাইমলাইন ইঞ্জিন — `stepIndex, step, totalSteps, isPlaying, isFinished, speed, play, pause, next, prev, goTo, reset, setSpeed`।
+দুটো সিদ্ধান্ত load-bearing: (১) **শেষ স্টেপে থেমে যায়, rewind করে না** — DP/backtracking-এর উত্তর শেষ স্টেপেই থাকে; (২) pause/resume "কতটা দেখা হয়েছে" ব্যাংক করে রাখে, নাহলে speed বদলালে স্টেপ শুরু থেকে চলত।
+`steps` array-এর identity বদলালে **render-এর সময়ই** রিসেট হয় (effect-এ নয় — নাহলে পুরনো state-এর এক ফ্রেম দেখা যেত)।
+
+### `getSimulation(patternId): PatternSimulation | null`
+Sparse lookup। simulation নেই এমন প্যাটার্নে `null` — তখন `SimulationBlock` render-ই হয় না।
 
 ### `parseDsaWorkbook(): Topic[]`
 `context/dsa-workbook.md` পড়ে `Topic[]` return করে। **Server-only** (`fs`)।

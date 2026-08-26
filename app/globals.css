@@ -525,6 +525,311 @@ body {
     backdrop-filter: var(--t-overlay-filter, none);
   }
 
+  /* --- Simulation: the pattern player ----------------------------------
+     A step's data says what a cell MEANS (`data-mark="active"`), never what
+     it looks like. Every colour below is a theme value, so re-skinning the
+     player never touches a trace file. */
+
+  .sim-stage {
+    background-color: var(--t-sim-stage-bg);
+    border: var(--t-seam-width) solid var(--t-sim-stage-border);
+    border-radius: var(--t-sim-stage-radius);
+  }
+
+  /* Expanded view: the scene takes the viewport, for graphs and trees that
+     have no chance inside a column. */
+  .sim-stage[data-wide="true"] {
+    position: fixed;
+    inset: 0.5rem;
+    z-index: 50;
+    overflow: auto;
+    box-shadow: var(--t-raised-shadow);
+  }
+
+  /* --- Cells (array + matrix share one plate) -------------------------- */
+
+  .sim-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    min-width: var(--t-sim-cell-size);
+    height: var(--t-sim-cell-size);
+    padding: 0 0.25rem;
+    border: var(--t-raised-border-width) solid var(--t-sim-cell-border);
+    border-radius: var(--t-sim-cell-radius);
+    background-color: var(--t-sim-cell-bg);
+    color: var(--t-sim-cell-fg);
+    font-family: var(--t-sim-cell-family);
+    font-size: var(--t-sim-cell-size-text);
+    transition: all 200ms var(--t-ease);
+  }
+
+  .sim-cell[data-mark="active"],
+  .sim-cell[data-cursor="true"] {
+    background-color: var(--t-sim-active-bg);
+    border-color: var(--t-sim-active-border);
+    color: var(--t-sim-active-fg);
+    box-shadow: var(--t-sim-active-shadow);
+  }
+
+  .sim-cell[data-mark="done"] {
+    background-color: var(--t-sim-done-bg);
+    border-color: var(--t-sim-done-border);
+    color: var(--t-sim-done-fg);
+  }
+
+  .sim-cell[data-mark="reject"] {
+    opacity: var(--t-sim-reject-opacity);
+  }
+
+  .sim-cell[data-mark="fill"] {
+    background-color: var(--t-sim-fill-bg);
+    border-color: var(--t-sim-fill-border);
+    color: var(--t-sim-fill-fg);
+  }
+
+  /* Matrix only: a cell outside the live rectangle recedes rather than
+     disappears — the shape it leaves behind is what shows the spiral. */
+  .sim-cell[data-window="false"] {
+    opacity: var(--t-sim-reject-opacity);
+  }
+
+  /* The window is a SPAN, so it reads as a rail under the row, not as a
+     per-cell state that would collide with the marks above. */
+  .sim-cell[data-window="true"] {
+    border-bottom: var(--t-sim-window-rail-width) solid var(--t-sim-window-rail);
+  }
+
+  .sim-cell-value,
+  .sim-index {
+    color: var(--t-sim-index-fg);
+    font-family: var(--t-font-mono);
+    font-size: var(--t-sim-index-size);
+  }
+
+  .sim-cell-value {
+    color: var(--t-sim-cell-fg);
+  }
+
+  .sim-subvalue {
+    color: var(--t-sim-fill-fg);
+    font-family: var(--t-font-mono);
+    font-size: var(--t-sim-index-size);
+  }
+
+  /* --- Pointers: a named cursor sitting over a cell -------------------- */
+
+  .sim-pointer {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 0.25rem;
+    border-radius: var(--t-chip-radius);
+    background-color: var(--t-sim-pointer-bg);
+    color: var(--t-sim-pointer-fg);
+    font-family: var(--t-font-mono);
+    font-size: var(--t-sim-pointer-size);
+    font-weight: 700;
+  }
+
+  .sim-window-tag {
+    color: var(--t-accent);
+    font-family: var(--t-font-mono);
+  }
+
+  /* --- Bars: value as height, fill stacked on top --------------------- */
+
+  .sim-bar-track {
+    width: var(--t-sim-bar-width);
+    background-color: var(--t-sim-bar-track);
+    border-radius: var(--t-sim-cell-radius);
+    overflow: hidden;
+  }
+
+  .sim-bar {
+    width: 100%;
+    min-height: var(--t-sim-bar-min-height);
+    background-color: var(--t-sim-bar-bg);
+    transition: all 200ms var(--t-ease);
+  }
+
+  .sim-bar[data-mark="active"] {
+    background-color: var(--t-sim-active-border);
+    box-shadow: var(--t-sim-active-shadow);
+  }
+
+  .sim-bar[data-mark="done"] {
+    background-color: var(--t-sim-done-border);
+  }
+
+  .sim-bar[data-mark="reject"] {
+    opacity: var(--t-sim-reject-opacity);
+  }
+
+  /* Water, a running total — whatever has piled up above the value. */
+  .sim-bar-fill {
+    width: 100%;
+    background-color: var(--t-sim-fill-border);
+    transition: height 200ms var(--t-ease);
+  }
+
+  /* --- Intervals: spans on a shared axis ------------------------------- */
+
+  .sim-span {
+    height: var(--t-sim-span-height);
+    min-width: 2px;
+    border-radius: var(--t-sim-span-radius);
+    background-color: var(--t-sim-span-bg);
+    transition: all 200ms var(--t-ease);
+  }
+
+  .sim-span[data-mark="active"],
+  .sim-span[data-cursor="true"] {
+    background-color: var(--t-sim-active-border);
+    box-shadow: var(--t-sim-active-shadow);
+  }
+
+  .sim-span[data-mark="done"] {
+    background-color: var(--t-sim-done-border);
+  }
+
+  .sim-span[data-mark="reject"] {
+    opacity: var(--t-sim-reject-opacity);
+  }
+
+  .sim-axis {
+    display: flex;
+    justify-content: space-between;
+    border-top: var(--t-seam-width) solid var(--t-sim-axis-border);
+    padding-top: 0.25rem;
+  }
+
+  /* --- Aside panels: a map being built, the output so far -------------- */
+
+  .sim-entry,
+  .sim-out,
+  .sim-var {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.0625rem 0.375rem;
+    border: var(--t-chip-border-width) solid var(--t-sim-cell-border);
+    border-radius: var(--t-chip-radius);
+    background-color: var(--t-sim-cell-bg);
+    color: var(--t-sim-cell-fg);
+    font-family: var(--t-font-mono);
+    font-size: var(--t-code-inline-size);
+  }
+
+  .sim-entry[data-mark="active"] {
+    border-color: var(--t-sim-active-border);
+    background-color: var(--t-sim-active-bg);
+    color: var(--t-sim-active-fg);
+  }
+
+  .sim-entry[data-mark="done"] {
+    border-color: var(--t-sim-done-border);
+    color: var(--t-sim-done-fg);
+  }
+
+  .sim-entry[data-mark="reject"] {
+    opacity: var(--t-sim-reject-opacity);
+  }
+
+  .sim-entry[data-mark="fill"] {
+    border-color: var(--t-sim-fill-border);
+    color: var(--t-sim-fill-fg);
+  }
+
+  .sim-entry-key,
+  .sim-var-name {
+    color: var(--t-text-label);
+  }
+
+  .sim-var-value {
+    color: var(--t-accent);
+  }
+
+  /* --- Code pane: the executing line, lit from the gutter in ----------- */
+
+  .codeline {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0 0.5rem 0 0;
+    border-left: var(--t-callout-edge-width) solid transparent;
+    white-space: pre;
+    transition: background-color 150ms var(--t-ease);
+  }
+
+  .codeline[data-active="true"] {
+    background-color: var(--t-codeline-active-bg);
+    border-left-color: var(--t-codeline-active-edge);
+    color: var(--t-codeline-active-fg);
+  }
+
+  .codeline-no {
+    flex: none;
+    width: var(--t-codeline-no-width);
+    text-align: right;
+    color: var(--t-codeline-no-fg);
+    user-select: none;
+  }
+
+  /* --- Scrubber: step position along the timeline ---------------------- */
+
+  .sim-scrub {
+    appearance: none;
+    -webkit-appearance: none;
+    height: var(--t-sim-scrub-thumb-size);
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .sim-scrub::-webkit-slider-runnable-track {
+    height: var(--t-sim-scrub-height);
+    border-radius: var(--t-gauge-radius);
+    background-color: var(--t-sim-scrub-track);
+    box-shadow: var(--t-well-shadow);
+  }
+
+  .sim-scrub::-moz-range-track {
+    height: var(--t-sim-scrub-height);
+    border-radius: var(--t-gauge-radius);
+    background-color: var(--t-sim-scrub-track);
+  }
+
+  .sim-scrub::-webkit-slider-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+    width: var(--t-sim-scrub-thumb-size);
+    height: var(--t-sim-scrub-thumb-size);
+    margin-top: calc((var(--t-sim-scrub-height) - var(--t-sim-scrub-thumb-size)) / 2);
+    border-radius: 9999px;
+    border: 0;
+    background-color: var(--t-sim-scrub-thumb);
+    box-shadow: var(--t-gauge-fill-glow);
+  }
+
+  .sim-scrub::-moz-range-thumb {
+    width: var(--t-sim-scrub-thumb-size);
+    height: var(--t-sim-scrub-thumb-size);
+    border-radius: 9999px;
+    border: 0;
+    background-color: var(--t-sim-scrub-thumb);
+  }
+
+  .sim-scrub:focus-visible {
+    outline: 2px solid var(--t-accent);
+    outline-offset: 3px;
+  }
+
+  /* A speed button reads as pressed the same way a selected row does. */
+  .control[aria-pressed="true"] {
+    background-color: var(--t-selected-bg);
+    border-color: var(--t-primary-border);
+    color: var(--t-selected-fg);
+  }
+
   /* --- Focus ----------------------------------------------------------- */
 
   /* Every keyboard-reachable role gets the SAME ring. Left to the browser
