@@ -67,6 +67,10 @@ export function usePatternSim(steps: SimStep[]): PatternSim {
   }, []);
 
   const play = useCallback(() => {
+    // A one-step timeline has nothing to advance to. Starting playback would
+    // schedule no timer and leave the transport stuck reading "Pause".
+    if (total <= 1) return;
+
     // Pressing play at the end means starting over, so drop the bank too.
     if (stepIndex >= total - 1) {
       clearBank();

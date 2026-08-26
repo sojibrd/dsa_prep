@@ -15,10 +15,16 @@ import type { MatrixScene as MatrixSceneData } from '../../lib/simulations/types
 export default function MatrixScene({ scene }: { scene: MatrixSceneData }) {
   const { values, cursor, pointers, marks, bounds } = scene;
 
-  const inBounds = (row: number, col: number) =>
+  /**
+   * `undefined` — not `true` — when there are no bounds. `data-window` is
+   * shared with `ArrayScene`, where "true" paints the window rail; saying
+   * "true" for every cell of a boundless grid would underline the whole DP
+   * table in amber and claim a window that does not exist.
+   */
+  const windowState = (row: number, col: number) =>
     bounds
       ? row >= bounds.top && row <= bounds.bottom && col >= bounds.left && col <= bounds.right
-      : true;
+      : undefined;
 
   const pointersAt = (row: number, col: number) =>
     (pointers ?? []).filter((p) => p.row === row && p.col === col);
@@ -43,7 +49,7 @@ export default function MatrixScene({ scene }: { scene: MatrixSceneData }) {
                 className="sim-cell"
                 data-mark={marks?.[`${r},${c}`]}
                 data-cursor={cursor?.row === r && cursor?.col === c}
-                data-window={inBounds(r, c)}
+                data-window={windowState(r, c)}
               >
                 {value}
               </div>

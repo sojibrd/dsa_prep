@@ -38,20 +38,22 @@ export default function TrieScene({ scene }: { scene: TrieSceneData }) {
   const placed = new Map<string, Placed>();
   let column = 0;
 
-  /** Post-order: children claim columns first, then the parent centres. */
-  function place(id: string, depth: number): number {
+  /**
+   * Post-order: children claim columns first, then the parent centres over
+   * the span they occupy. Returns null for an id with no node, so a dangling
+   * edge is skipped rather than folded into the average as a phantom x = 0,
+   * which would silently drag the subtree to the left edge.
+   */
+  function place(id: string, depth: number): number | null {
     const node = byId.get(id);
-    if (!node) return 0;
+    if (!node) return null;
 
     const children = childrenOf.get(id) ?? [];
-    let x: number;
+    const xs = children
+      .map((edge) => place(edge.toId, depth + 1))
+      .filter((x): x is number => x !== null);
 
-    if (children.length === 0) {
-      x = PAD_X + column++ * COL;
-    } else {
-      const xs = children.map((edge) => place(edge.toId, depth + 1));
-      x = (xs[0] + xs[xs.length - 1]) / 2;
-    }
+    const x = xs.length === 0 ? PAD_X + column++ * COL : (xs[0] + xs[xs.length - 1]) / 2;
 
     placed.set(id, { node, x, y: PAD_Y + depth * ROW });
     return x;
