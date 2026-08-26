@@ -17,6 +17,11 @@ import { fastSlowPointersSim } from './topic3/fast-slow-pointers';
 import { dummyNodeSim } from './topic3/dummy-node';
 import { inPlaceReversalSim } from './topic3/in-place-reversal';
 
+import { monotonicStackSim } from './topic4/monotonic-stack';
+import { parenthesesSim } from './topic4/parentheses';
+import { minStackSim } from './topic4/min-stack';
+import { monotonicDequeSim } from './topic4/monotonic-deque';
+
 /** Every simulation that exists. Topics land here one file at a time. */
 const ALL: PatternSimulation[] = [
   twoPointersSim,
@@ -35,6 +40,11 @@ const ALL: PatternSimulation[] = [
   fastSlowPointersSim,
   dummyNodeSim,
   inPlaceReversalSim,
+
+  monotonicStackSim,
+  parenthesesSim,
+  minStackSim,
+  monotonicDequeSim,
 ];
 
 const SIMULATIONS: Record<string, PatternSimulation> = Object.fromEntries(

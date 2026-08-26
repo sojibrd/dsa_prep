@@ -40,6 +40,7 @@
 | `app/lib/simulations/topic1/*.ts` | টপিক ১-এর ৭টা যাচাই-করা ট্রেস | Data |
 | `app/lib/simulations/topic2/*.ts` | টপিক ২-এর ৪টা যাচাই-করা ট্রেস | Data |
 | `app/lib/simulations/topic3/*.ts` | টপিক ৩-এর ৩টা যাচাই-করা ট্রেস | Data |
+| `app/lib/simulations/topic4/*.ts` | টপিক ৪-এর ৪টা যাচাই-করা ট্রেস | Data |
 | `app/lib/clueMatch.ts` | clue → problem ম্যাচিং (pure) | Utility |
 | `app/lib/parseStatement.ts` | statement পার্সার (pure) | Utility |
 | `app/utils/dsaParser.ts` | Markdown পার্সার (server-only, fs) | Utility |
@@ -119,7 +120,7 @@ Demo code একটা নির্দিষ্ট ইনপুটে ধাপ�
 
 | kind | কম্পোনেন্ট | কোথায় প্রথম লাগল |
 |---|---|---|
-| `array` | `<ArrayScene>` | 1.1 (bar মোড), 1.2, 1.3, 1.4, 1.6, 2.1–2.4 |
+| `array` | `<ArrayScene>` | 1.1 (bar মোড), 1.2, 1.3, 1.4, 1.6, 2.1–2.4, 4.1–4.4 |
 | `matrix` | `<MatrixScene>` | 1.7 Spiral Matrix |
 | `intervals` | `<IntervalsScene>` | 1.5 Merge Intervals |
 | `linked-list` | `<LinkedListScene>` | 3.1, 3.2, 3.3 |
@@ -167,7 +168,7 @@ Demo code একটা নির্দিষ্ট ইনপুটে ধাপ�
 
 > `cyan`/`cyan-soft` — `control-room.css`-এ যোগ হওয়া একমাত্র নতুন প্যালেট এন্ট্রি। "জমা হওয়া" ধারণাটা amber (নির্বাচিত) বা green (settled) কোনোটাই নয়, তাই তার নিজের ঠান্ডা কণ্ঠস্বর দরকার ছিল।
 
-> **`values` মানেই input array নয়।** Binary-search-on-answer ধরনের প্যাটার্নে (2.2, 2.3) সারিতে আঁকা হয় **উত্তরের সম্ভাব্য পরিসর**, আর input array যায় পাশের `table`-এ। কারণ ওখানে lo/hi/mid ওই পরিসরকেই index করে, input array-কে নয় — উল্টোটা আঁকলে pointer-গুলো এমন array-র উপর বসে যাকে তারা স্পর্শই করে না। cell index = `মান − সর্বনিম্ন মান`, আর `caption`-এ স্পষ্ট করে বলা থাকে সারিটা আসলে কী।
+> **`values` মানেই input array নয়।** সারিতে আঁকা হয় যেটার উপর দিয়ে cursor হাঁটে — 2.2/2.3-এ **উত্তরের সম্ভাব্য পরিসর**, 4.3-এ **API কলের ক্রম**। input array তখন যায় পাশের `table`-এ। কারণ ওখানে lo/hi/mid ওই পরিসরকেই index করে, input array-কে নয় — উল্টোটা আঁকলে pointer-গুলো এমন array-র উপর বসে যাকে তারা স্পর্শই করে না। cell index = `মান − সর্বনিম্ন মান`, আর `caption`-এ স্পষ্ট করে বলা থাকে সারিটা আসলে কী।
 
 > `style` attribute শুধু ডেটা-চালিত জ্যামিতিতে — bar-এর উচ্চতা ও span-এর প্রস্থ/অবস্থান। gauge width-এর মতোই ব্যতিক্রম; রং/বর্ডার/radius সবই role class-এ।
 
