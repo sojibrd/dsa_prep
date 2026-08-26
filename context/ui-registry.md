@@ -21,22 +21,9 @@
 | `app/components/ProblemCard.tsx` | একটি প্রবলেম row + notes + statement | Client Component |
 | `app/components/StatementBox.tsx` | statement রেন্ডার | Client Component |
 | `app/components/ProgressReadout.tsx` | gauge readout | Client Component |
-| `app/components/simulation/SimulationBlock.tsx` | এক প্যাটার্নের রান — কোড + scene + ব্যাখ্যা + কন্ট্রোল | Client Component |
-| `app/components/simulation/CodePane.tsx` | demo code, চলমান লাইন হাইলাইট | Client Component |
-| `app/components/simulation/SceneView.tsx` | `kind` → renderer রাউটার | Client Component |
-| `app/components/simulation/ArrayScene.tsx` | array/bar renderer — pointer, window, fill, subValues | Client Component |
-| `app/components/simulation/MatrixScene.tsx` | grid renderer — cursor, boundary frame | Client Component |
-| `app/components/simulation/IntervalsScene.tsx` | timeline renderer — spans + merged result | Client Component |
-| `app/components/simulation/SceneAside.tsx` | hashmap/Set টেবিল + output তালিকা — সব scene kind ভাগ করে | Client Component |
-| `app/components/simulation/ExplainPanel.tsx` | vars + কী হচ্ছে / কেন | Client Component |
-| `app/components/simulation/SimControls.tsx` | play / step / scrub / speed | Client Component |
 | `app/components/SyncModal.tsx` | Apps Script URL মডাল | Client Component |
 | `app/hooks/useSheetSync.ts` | শিট load / debounce / push — সব cloud state | Custom Hook |
 | `app/hooks/useLocalStorage.ts` | localStorage state hook | Custom Hook |
-| `app/hooks/usePatternSim.ts` | সিমুলেশন টাইমলাইন ইঞ্জিন | Custom Hook |
-| `app/lib/simulations/types.ts` | Scene / SimStep / PatternSimulation কনট্র্যাক্ট | Types |
-| `app/lib/simulations/index.ts` | patternId → simulation রেজিস্ট্রি (sparse) | Utility |
-| `app/lib/simulations/data/*.ts` | প্রতি প্যাটার্নের হাতে লেখা স্টেপ | Data |
 | `app/lib/clueMatch.ts` | clue → problem ম্যাচিং (pure) | Utility |
 | `app/lib/parseStatement.ts` | statement পার্সার (pure) | Utility |
 | `app/utils/dsaParser.ts` | Markdown পার্সার (server-only, fs) | Utility |
@@ -79,7 +66,6 @@
 | Statement | `callout` + `<StatementBox>` | expandable, `aria-expanded` |
 | Approach | `surface-well` + `t-label` + `t-body` | |
 | Code | `codeblock` + `codeblock-copy` | copy বাটন hover/focus-এ আসে |
-| Simulation | `control` toggle + `<SimulationBlock>` | `getSimulation(pattern.id)` থাকলেই দেখায়; না থাকলে কিছুই রেন্ডার হয় না |
 | Complexity | `chip` | |
 | খালি অবস্থা | `surface-panel` + `control control--primary` | Apps Script URL না থাকলে |
 | লোডিং | `spinner t-accent` | |

@@ -43,8 +43,6 @@
 | **Check** | **`check`** — সলভ টগল (`aria-checked`) |
 | **Code** | **`codeblock`** / `codeblock-copy` / `code-inline` |
 | **Gauge** | **`gauge` / `gauge-fill`** (+ `data-tone="ok"`) — অনুপাত দেখানো বার |
-| **Simulation** | **`sim-cell`** (+ `data-mark`) `sim-bar` `sim-bar-fill` `sim-pointer` `sim-index` `sim-window` `sim-scrub` `sim-fullscreen` |
-| **Code line** | **`codeline`** (+ `data-active`) / `codeline-no` — চলমান লাইন |
 
 ### State attributes
 
@@ -54,9 +52,6 @@
 | `aria-current` | `.row` | নির্বাচিত প্যাটার্ন |
 | `data-chosen` | `.option` | বাছাই করা শাখা |
 | `data-tone` | `.gauge-fill` | `ok` হলে সাফল্যের রঙে |
-| `data-mark` | `.sim-cell` / `.sim-bar` | `active` = pointer এখানে, `done` = দেখা শেষ, `reject` = বাদ, `fill` = জমা রাশি |
-| `data-active` | `.codeline` | এই লাইনটা এখন চলছে |
-| `aria-pressed` | `.chip` | টগল হিসেবে ব্যবহৃত chip (গতি নির্বাচক) |
 
 > `.code-inline` ইঙ্ক নিজে ঠিক করে না — প্লেট দেয় মাত্র। রঙ কলারের (`t-ok` = input, `t-accent` = output)।
 
@@ -78,9 +73,8 @@
 - **Gauge:** `gauge-track` `gauge-border` `gauge-border-width` `gauge-radius` `gauge-fill` `gauge-fill-glow`
 - **Check:** `check-size|radius|bg|border|border-width|shadow|border-hover` `check-on-bg|border|fg|shadow`
 - **Code:** `code-family|size|leading|fg|bg|border|border-width|radius|shadow` `code-inline-size|bg|border`
-- **Simulation:** `sim-cell-size|text|radius|bg|border|border-width|fg` `sim-active-bg|border|fg|shadow` `sim-done-border|fg` `sim-reject-fg|opacity` `sim-fill-bg|border|fg` `sim-index-fg|text` `sim-pointer-fg|text` `sim-window-border|border-width|fg` `sim-bar-bg` `sim-codeline-bg|fg|marker|marker-width`
 
-> `system_design`-এর `canvas-*`, `wire-*`, `packet-*`, `unit-*`, `diagram-*`, `doc-*` পরিবারগুলো এখানে **নেই** — ওগুলো আর্কিটেকচার ডায়াগ্রাম ও লম্বা রিডিং কলামের। এই অ্যাপের সিমুলেটর ডেটা স্ট্রাকচার দেখায়, নেটওয়ার্ক নয়, তাই তার নিজের `sim-*` পরিবার।
+> `system_design`-এর `canvas-*`, `wire-*`, `packet-*`, `unit-*`, `diagram-*`, `doc-*` পরিবারগুলো এখানে **নেই** — সেগুলো সিমুলেটর ও লম্বা রিডিং কলামের, যার কোনোটাই এই অ্যাপে নেই।
 
 ---
 

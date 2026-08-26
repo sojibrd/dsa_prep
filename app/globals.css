@@ -355,7 +355,7 @@ body {
   }
 
   .option[data-chosen="true"] {
-    /* border-left-color: var(--t-accent); */
+    border-left-color: var(--t-accent);
     color: var(--t-text-body);
   }
 
@@ -518,198 +518,6 @@ body {
     box-shadow: var(--t-check-on-shadow);
   }
 
-  /* A chip acting as a toggle (the speed selector). The pressed one wears the
-     accent plate — same meaning as a selected row in the drawer. */
-  .chip[aria-pressed="true"] {
-    border-color: var(--t-chip-accent-border);
-    background-color: var(--t-chip-accent-bg);
-    color: var(--t-chip-accent-fg);
-  }
-
-  /* The step scrubber. A range input is one of the few controls the browser
-     will not let a class reach into, so its parts are named explicitly. */
-  .sim-scrub {
-    appearance: none;
-    height: 0.75rem;
-    background: transparent;
-    cursor: pointer;
-  }
-
-  .sim-scrub::-webkit-slider-runnable-track {
-    height: 0.25rem;
-    border-radius: var(--t-gauge-radius);
-    background-color: var(--t-gauge-track);
-    border: var(--t-gauge-border-width) solid var(--t-gauge-border);
-  }
-
-  .sim-scrub::-moz-range-track {
-    height: 0.25rem;
-    border-radius: var(--t-gauge-radius);
-    background-color: var(--t-gauge-track);
-    border: var(--t-gauge-border-width) solid var(--t-gauge-border);
-  }
-
-  .sim-scrub::-webkit-slider-thumb {
-    appearance: none;
-    width: 0.75rem;
-    height: 0.75rem;
-    margin-top: -0.3125rem;
-    border-radius: 50%;
-    background-color: var(--t-accent);
-    box-shadow: var(--t-gauge-fill-glow);
-  }
-
-  .sim-scrub::-moz-range-thumb {
-    width: 0.75rem;
-    height: 0.75rem;
-    border: 0;
-    border-radius: 50%;
-    background-color: var(--t-accent);
-    box-shadow: var(--t-gauge-fill-glow);
-  }
-
-  .sim-scrub:focus-visible {
-    outline: 2px solid var(--t-accent);
-    outline-offset: 2px;
-  }
-
-  /* --- Simulation: the data structure under the demo run ---------------
-     Components describe MEANING here too. A cell says `data-mark="reject"`;
-     what a rejected cell looks like is the theme's business, exactly as with
-     a solved checkbox. */
-
-  .sim-cell {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: var(--t-sim-cell-size);
-    height: var(--t-sim-cell-size);
-    background-color: var(--t-sim-cell-bg);
-    border: var(--t-sim-cell-border-width) solid var(--t-sim-cell-border);
-    border-radius: var(--t-sim-cell-radius);
-    color: var(--t-sim-cell-fg);
-    font-family: var(--t-font-mono);
-    font-size: var(--t-sim-cell-text);
-    transition:
-      background-color 220ms var(--t-ease),
-      border-color 220ms var(--t-ease),
-      color 220ms var(--t-ease);
-  }
-
-  .sim-cell[data-mark="active"] {
-    background-color: var(--t-sim-active-bg);
-    border-color: var(--t-sim-active-border);
-    color: var(--t-sim-active-fg);
-    box-shadow: var(--t-sim-active-shadow);
-  }
-
-  .sim-cell[data-mark="done"] {
-    border-color: var(--t-sim-done-border);
-    color: var(--t-sim-done-fg);
-  }
-
-  .sim-cell[data-mark="reject"] {
-    color: var(--t-sim-reject-fg);
-    opacity: var(--t-sim-reject-opacity);
-  }
-
-  .sim-cell[data-mark="fill"] {
-    background-color: var(--t-sim-fill-bg);
-    border-color: var(--t-sim-fill-border);
-    color: var(--t-sim-fill-fg);
-  }
-
-  /* The layer a boundary walk (spiral, layer-by-layer matrix) is still
-     working on — a matrix cell inside the live frame reads as "in play"
-     without needing its own mark. */
-  .sim-cell[data-in-bounds="false"] {
-    opacity: var(--t-sim-reject-opacity);
-  }
-
-  /* The index printed under each cell — present so a pointer's number can be
-     believed, faint so it never competes with the value. */
-  .sim-index {
-    color: var(--t-sim-index-fg);
-    font-family: var(--t-font-mono);
-    font-size: var(--t-sim-index-text);
-    text-align: center;
-  }
-
-  /* A named cursor standing over one cell. */
-  .sim-pointer {
-    color: var(--t-sim-pointer-fg);
-    font-family: var(--t-font-mono);
-    font-size: var(--t-sim-pointer-text);
-    letter-spacing: var(--t-label-tracking);
-    text-align: center;
-  }
-
-  /* The span currently under consideration, drawn under the row. */
-  .sim-window {
-    border: var(--t-sim-window-border-width) solid var(--t-sim-window-border);
-    border-top: 0;
-    border-radius: 0 0 var(--t-sim-cell-radius) var(--t-sim-cell-radius);
-    color: var(--t-sim-window-fg);
-    font-family: var(--t-font-mono);
-    font-size: var(--t-sim-index-text);
-  }
-
-  /* Bar mode: the value's own column, with whatever has accumulated on top. */
-  .sim-bar {
-    background-color: var(--t-sim-bar-bg);
-    border: var(--t-sim-cell-border-width) solid var(--t-sim-cell-border);
-    border-bottom: 0;
-    transition: background-color 220ms var(--t-ease);
-  }
-
-  .sim-bar[data-mark="active"] {
-    background-color: var(--t-sim-active-border);
-  }
-
-  .sim-bar-fill {
-    background-color: var(--t-sim-fill-bg);
-    border: var(--t-sim-cell-border-width) solid var(--t-sim-fill-border);
-    border-bottom: 0;
-  }
-
-  /* --- Code pane: the demo code with the live line lit ------------------ */
-
-  .codeline {
-    display: block;
-    padding: 0 0.5rem;
-    border-left: var(--t-sim-codeline-marker-width) solid transparent;
-    color: var(--t-code-fg);
-    white-space: pre;
-  }
-
-  .codeline[data-active="true"] {
-    background-color: var(--t-sim-codeline-bg);
-    border-left-color: var(--t-sim-codeline-marker);
-    color: var(--t-sim-codeline-fg);
-  }
-
-  .codeline-no {
-    display: inline-block;
-    width: 2ch;
-    margin-right: 1ch;
-    color: var(--t-sim-index-fg);
-    text-align: right;
-  }
-
-  /* --- Fullscreen: the scene taking the whole screen -------------------- */
-  /* Graph and tree scenes suffocate in a column, so the block can take over
-     the viewport. It is the same component in the same place — not a route,
-     so nothing is lost on the way back. */
-
-  .sim-fullscreen {
-    position: fixed;
-    inset: 0;
-    z-index: 60;
-    overflow-y: auto;
-    background-color: var(--t-app-bg);
-    background-image: var(--t-app-bg-image, none);
-  }
-
   /* --- Modal overlay (the mobile drawer scrim) ------------------------- */
 
   .overlay {
@@ -722,8 +530,7 @@ body {
   /* Every keyboard-reachable role gets the SAME ring. Left to the browser
      default it all but vanishes on a chassis this dark. */
   .row:focus-visible,
-  .chip:focus-visible,
-  .sim-cell:focus-visible {
+  .chip:focus-visible {
     outline: 2px solid var(--t-accent);
     outline-offset: 2px;
   }

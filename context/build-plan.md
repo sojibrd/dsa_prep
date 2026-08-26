@@ -15,29 +15,6 @@
 
 ---
 
-## ফেজ ২.০ — Pattern Simulation (চলমান)
-
-প্রতিটা প্যাটার্নের demo code একটা নির্দিষ্ট ইনপুটে ধাপে ধাপে চালিয়ে দেখানো। ভিত্তি দাঁড়িয়ে গেছে; এখন ডেটা ভরার কাজ।
-
-**যে সিদ্ধান্তগুলো স্থির:**
-
-| সিদ্ধান্ত | কী ঠিক হয়েছে | কেন |
-|---|---|---|
-| স্টেপের উৎস | **হাতে লেখা** `SimStep[]`, কোড instrument করে auto-generate নয় | প্রতিটা ধাপের বাংলা ব্যাখ্যা নিখুঁত রাখা যায় |
-| ভিজ্যুয়াল | সীমিত **scene kind** + declarative ডেটা | ৫১ বার পুনরাবৃত্তি হওয়া কাজে প্রতি-বারের খরচই নির্ধারক |
-| React Flow | শুধু `TreeScene` ও `GraphScene`-এর **ভেতরে** | সেখানেই node/edge + auto-layout সত্যিই দরকার |
-| সীমারেখা | ডেটা ফাইল renderer-এর বাস্তবায়ন **জানবে না** — কোনো `position`, লাইব্রেরি টাইপ বা CSS ক্লাস নয় | renderer বদলালে একটাও ডেটা ফাইল বদলাবে না |
-| স্থান | `PatternPanel`-এর ভেতরে, আলাদা route নয় | শেখার ধারাবাহিকতা (spot → approach → code → drill) ভাঙে না |
-| ভরার ক্রম | **এক renderer এক সময়ে** — `ArrayScene` আগে, টপিক ১ দিয়ে যাচাই | ভুল অনুমান ৫১ ফাইলে ছড়ানোর আগে ধরা পড়ে |
-
-**অবস্থা:** `ArrayScene` (bar + subValues), `MatrixScene` (boundary frame), `IntervalsScene` — তিনটাই তৈরি ও টপিক ১-এর ৭টা প্যাটার্ন দিয়ে যাচাই করা।
-
-**পরের ধাপ:** টপিক ২ (Binary Search) থেকে ডেটা ভরা → `StackScene` (টপিক ৪) → `LinkedListScene` (টপিক ৩) → `TreeScene`/`GraphScene` (টপিক ৫, ৮)।
-
-> নতুন প্যাটার্নে simulation যোগ করতে: `app/lib/simulations/data/<id>-<slug>.ts` লিখুন, তারপর `app/lib/simulations/index.ts`-এর ম্যাপে যোগ করুন। ম্যাপে না থাকলে PatternPanel কিছুই দেখায় না — কোনো খালি বাক্স নয়।
-
----
-
 ## ফেজ ২ — উন্নতির তালিকা
 
 ### ২.১ UX Improvements (Priority: High)
