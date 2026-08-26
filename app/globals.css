@@ -850,6 +850,109 @@ body {
     stroke: var(--t-sim-tree-edge-on);
   }
 
+  /* --- Graph: SVG nodes, edges, arrowheads, weights --------------------- */
+  /* Named `sim-graph-*` rather than `sim-*`: `.sim-node` already belongs to
+     the linked list, and two different shapes answering to one class would
+     make the theme unreadable. */
+
+  .sim-graph-node {
+    fill: var(--t-sim-graph-node-bg);
+    stroke: var(--t-sim-graph-node-border);
+    stroke-width: var(--t-sim-graph-node-width);
+    transition: all 200ms var(--t-ease);
+  }
+
+  .sim-graph-node[data-mark="active"] {
+    fill: var(--t-sim-active-bg);
+    stroke: var(--t-sim-active-border);
+  }
+
+  .sim-graph-node[data-mark="done"] {
+    fill: var(--t-sim-done-bg);
+    stroke: var(--t-sim-done-border);
+  }
+
+  .sim-graph-node[data-mark="reject"] {
+    opacity: var(--t-sim-reject-opacity);
+  }
+
+  .sim-graph-node[data-mark="fill"] {
+    fill: var(--t-sim-fill-bg);
+    stroke: var(--t-sim-fill-border);
+  }
+
+  .sim-graph-label {
+    fill: var(--t-sim-graph-fg);
+    font-family: var(--t-font-mono);
+    font-size: var(--t-sim-graph-label-size);
+    text-anchor: middle;
+    dominant-baseline: central;
+  }
+
+  .sim-graph-annot {
+    fill: var(--t-sim-graph-annot-fg);
+    font-family: var(--t-font-mono);
+    font-size: var(--t-sim-graph-annot-size);
+    text-anchor: middle;
+  }
+
+  .sim-graph-pointer {
+    fill: var(--t-sim-graph-pointer-fg);
+    font-family: var(--t-font-mono);
+    font-size: var(--t-sim-graph-pointer-size);
+    font-weight: 700;
+    text-anchor: middle;
+  }
+
+  .sim-graph-edge {
+    stroke: var(--t-sim-graph-edge);
+    stroke-width: var(--t-sim-graph-edge-width);
+    transition: all 200ms var(--t-ease);
+  }
+
+  .sim-graph-edge[data-mark="active"] {
+    stroke: var(--t-sim-active-border);
+    stroke-width: var(--t-sim-graph-edge-active-width);
+  }
+
+  .sim-graph-edge[data-mark="done"] {
+    stroke: var(--t-sim-done-border);
+  }
+
+  .sim-graph-edge[data-mark="reject"] {
+    opacity: var(--t-sim-reject-opacity);
+  }
+
+  /* The arrowhead follows its edge, so it takes the same marks. */
+  .sim-graph-arrow {
+    fill: var(--t-sim-graph-edge);
+    transition: fill 200ms var(--t-ease);
+  }
+
+  .sim-graph-arrow[data-mark="active"] {
+    fill: var(--t-sim-active-border);
+  }
+
+  .sim-graph-arrow[data-mark="done"] {
+    fill: var(--t-sim-done-border);
+  }
+
+  .sim-graph-arrow[data-mark="reject"] {
+    opacity: var(--t-sim-reject-opacity);
+  }
+
+  .sim-graph-weight {
+    fill: var(--t-sim-graph-weight-fg);
+    font-family: var(--t-font-mono);
+    font-size: var(--t-sim-graph-weight-size);
+    text-anchor: middle;
+    dominant-baseline: central;
+  }
+
+  .sim-graph-weight[data-mark="active"] {
+    fill: var(--t-sim-active-border);
+  }
+
   /* --- Intervals: spans on a shared axis ------------------------------- */
 
   .sim-span {

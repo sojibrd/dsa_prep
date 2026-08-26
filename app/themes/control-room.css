@@ -312,6 +312,22 @@
   --t-sim-tree-edge-width: 1.5px;
   --t-sim-tree-edge-on: var(--amber);
 
+  /* Graph: the tree's SVG vocabulary, plus a weight label and an arrowhead. */
+  --t-sim-graph-node-bg: var(--raised);
+  --t-sim-graph-node-border: var(--bezel-strong);
+  --t-sim-graph-node-width: 1.5px;
+  --t-sim-graph-fg: var(--readout-soft);
+  --t-sim-graph-label-size: 0.75rem;
+  --t-sim-graph-annot-fg: var(--cyan);
+  --t-sim-graph-annot-size: 0.5625rem;
+  --t-sim-graph-pointer-fg: var(--amber);
+  --t-sim-graph-pointer-size: 0.5625rem;
+  --t-sim-graph-edge: var(--bezel-strong);
+  --t-sim-graph-edge-width: 1.5px;
+  --t-sim-graph-edge-active-width: 2.5px;
+  --t-sim-graph-weight-fg: var(--readout-faint);
+  --t-sim-graph-weight-size: 0.5625rem;
+
   --t-sim-span-height: 0.625rem;
   --t-sim-span-bg: var(--bezel-strong);
   --t-sim-span-radius: 2px;

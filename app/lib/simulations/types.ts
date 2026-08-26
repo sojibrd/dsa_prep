@@ -135,14 +135,54 @@ export interface TreeScene extends SceneBase {
   pointers?: { name: string; nodeId: string }[];
 }
 
+/** A single node in a graph scene. */
+export interface GraphNodeData {
+  id: string;
+  label: string | number;
+  mark?: CellMark;
+  /** Shown under the node — a distance, a colour, an indegree count. */
+  annotation?: string;
+}
+
+/** A single edge in a graph scene. */
+export interface GraphEdgeData {
+  id: string;
+  from: string;
+  to: string;
+  /** Omit for undirected; present for directed (arrowhead drawn at `to`). */
+  directed?: boolean;
+  weight?: number | string;
+  mark?: CellMark;
+}
+
+/**
+ * A node-link graph — cycle detection, topological sort, shortest path, MST.
+ *
+ * `TreeScene` cannot stand in: it is strictly binary, rooted, and assumes no
+ * cycles — three assumptions a graph breaks on purpose. The drawing strategy
+ * is the same though: plain SVG and a computed layout. Nodes sit on a circle
+ * at equal angles in array order, so a data file still never places anything
+ * itself, and the demo graphs here (never more than seven nodes) read clearly
+ * without pan, zoom, or a force-directed library.
+ */
+export interface GraphScene extends SceneBase {
+  kind: 'graph';
+  nodes: GraphNodeData[];
+  edges: GraphEdgeData[];
+  activeNodeId?: string;
+  activeEdgeId?: string;
+  /** Named cursors standing on nodes — e.g. Dijkstra's freshly popped node. */
+  pointers?: { name: string; nodeId: string }[];
+}
+
 export type Scene =
   | ArrayScene
   | MatrixScene
   | IntervalsScene
   | LinkedListScene
-  | TreeScene;
-/* Topic 8 adds `GraphScene`, topic 10 `TrieScene` — this union grows,
-   nothing above it changes. */
+  | TreeScene
+  | GraphScene;
+/* Topic 10 adds `TrieScene` — this union grows, nothing above it changes. */
 
 export interface SimStep {
   id: string;

@@ -32,6 +32,14 @@ import { subsetsSim } from './topic7/subsets';
 import { nQueensSim } from './topic7/n-queens';
 import { wordSearchSim } from './topic7/word-search';
 
+import { islandsSim } from './topic8/islands';
+import { cycleDetectionSim } from './topic8/cycle-detection';
+import { topologicalSortSim } from './topic8/topological-sort';
+import { unionFindSim } from './topic8/union-find';
+import { bipartiteSim } from './topic8/bipartite';
+import { dijkstraSim } from './topic8/dijkstra';
+import { mstSim } from './topic8/mst';
+
 /** Every simulation that exists. Topics land here one file at a time. */
 const ALL: PatternSimulation[] = [
   twoPointersSim,
@@ -65,6 +73,14 @@ const ALL: PatternSimulation[] = [
   subsetsSim,
   nQueensSim,
   wordSearchSim,
+
+  islandsSim,
+  cycleDetectionSim,
+  topologicalSortSim,
+  unionFindSim,
+  bipartiteSim,
+  dijkstraSim,
+  mstSim,
 ];
 
 const SIMULATIONS: Record<string, PatternSimulation> = Object.fromEntries(

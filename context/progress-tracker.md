@@ -70,7 +70,7 @@ _সর্বশেষ আপডেট: ২০২৬-০৮-২৬_
 | 4. Stacks & Queues | `array` (পুনর্ব্যবহার) | ৪/৪ | ✅ সম্পন্ন |
 | 5. Trees | + `tree` | ৫/৫ | ✅ সম্পন্ন |
 | 7. Backtracking | `array` `matrix` (পুনর্ব্যবহার) | ৩/৩ | ✅ সম্পন্ন |
-| 8. Graphs | + `graph` | 0/? | ⏳ বাকি |
+| 8. Graphs | + `graph` | ৭/৭ | ✅ সম্পন্ন |
 | 9. Dynamic Programming | `matrix` | 0/? | ⏳ বাকি |
 | 10. Greedy, Trie & Design | + `trie` | 0/? | ⏳ বাকি |
 
@@ -178,9 +178,33 @@ _সর্বশেষ আপডেট: ২০২৬-০৮-২৬_
 
 **7.1-এ কোনো consolidation নয়** — ২২টা raw event-ই ২২টা ধাপ। নাও → গভীরে যাও → ফেরত দাও, এই তালটাই তো প্যাটার্ন; গুটিয়ে ফেললে সেটাই হারায়।
 
+### ✅ টপিক ৮ — Graphs (সম্পন্ন)
+
+**নতুন scene kind `graph`** — SVG, নোড বৃত্তে সমান কোণে, layout হিসাব করা।
+
+| প্যাটার্ন | Demo | scene | ধাপ | উত্তর |
+|---|---|---|---|---|
+| 8.1 BFS/DFS Grid | Number of Islands | `matrix` | 8 | `2` |
+| 8.2 Cycle Detection | Course Schedule | `graph` | 11 | `false` |
+| 8.3 Topological Sort | Course Schedule II | `graph` | 14 | `[0,1,2,3]` |
+| 8.4 Union Find | Redundant Connection | `array` | 8 | `[2,3]` |
+| 8.5 Bipartite | Is Graph Bipartite? | `graph` | 6 | `true` |
+| 8.6 Dijkstra | Network Delay Time | `graph` | 9 | `2` |
+| 8.7 MST | Min Cost to Connect All Points | `graph` | 8 | `13` |
+
+**সিদ্ধান্ত — role class `sim-graph-*`, প্ল্যানের `sim-node` নয়।** প্ল্যান `.sim-node`/`.sim-edge` প্রস্তাব করেছিল, কিন্তু `.sim-node` টপিক ৩-এ লিংকড লিস্টের নোডে দখল হয়ে গেছে। দুটো আলাদা আকৃতি এক ক্লাসে সাড়া দিলে থিম পড়া অসম্ভব হতো, তাই `TreeScene`-এর `sim-tree-*` ধাঁচেই `sim-graph-*`।
+
+**arrowhead polygon, SVG `marker` নয়** — marker নির্ভরযোগ্যভাবে line-এর stroke রং উত্তরাধিকার পায় না। edge amber হয়ে গেলেও তীরের মাথা ধূসর থেকে গেলে ভুল বার্তা যেত, তাই তীর হিসাব করে polygon হিসেবে আঁকা।
+
+**8.1 ও 8.4 ইচ্ছাকৃতভাবে `graph`-এ যায়নি।** গ্রিড নিজেই একটা গ্রাফ, কিন্তু ৯টা ঘরকে বৃত্তে সাজালে ঠিক যে adjacency-র উপর অ্যালগরিদম দাঁড়িয়ে সেটাই হারাত। আর Union-Find-এর অবস্থা একটা `parent[]` array — সারিতে দেখলে এক নজরে পড়া যায়, node-link ছবিতে প্রতিবার লেআউট নতুন করে বুঝতে হতো।
+
+**8.5-এ দুই রঙ = দুই বিদ্যমান mark** — `+1` → `active` (amber), `−1` → `done` (সবুজ)। নতুন পঞ্চম mark উদ্ভাবনের দরকার পড়েনি, আর amber-বনাম-সবুজ এমনিতেই "দুই দল" হিসেবে পড়ে।
+
+> ⚠️ **প্ল্যান সংশোধন** — `8-graphs.md`-এ 8.3-এর লাইন ম্যাপ পুরোটা +১ শিফটেড (`queue` init আসলে লাইন ৮, ৯ নয়), আর 8.6-এর উত্তর-লাইন ১৮‑১৯, ১৭‑১৮ নয়। 8.6-এর `MinHeap` ক্লাসটা workbook-এ অনুপস্থিত টপিক ৬-এ সংজ্ঞায়িত হওয়ার কথা ছিল; কোড অপরিবর্তিত রেখে heap-কে `[dist, node]`-এর sorted তালিকা হিসেবে `table`-এ দেখানো হয়েছে, প্ল্যানের নির্দেশমতো।
+
 ## 🔄 বর্তমানে চলমান
 
-_টপিক ৮ (Graphs) শুরুর অপেক্ষায় — নতুন `graph` scene kind আনবে।_
+_টপিক ৯ (Dynamic Programming) শুরুর অপেক্ষায়।_
 
 ---
 

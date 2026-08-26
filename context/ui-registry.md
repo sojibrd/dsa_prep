@@ -29,6 +29,7 @@
 | `app/components/simulation/IntervalsScene.tsx` | `kind: 'intervals'` — সংখ্যারেখায় span | Client Component |
 | `app/components/simulation/LinkedListScene.tsx` | `kind: 'linked-list'` — নোড চেইন, jump link, cycle rail | Client Component |
 | `app/components/simulation/TreeScene.tsx` | `kind: 'tree'` — SVG, layout হিসাব করা | Client Component |
+| `app/components/simulation/GraphScene.tsx` | `kind: 'graph'` — SVG, বৃত্তাকার layout, arrowhead, weight | Client Component |
 | `app/components/simulation/SceneAside.tsx` | `table`/`output` পাশের প্যানেল (সব kind শেয়ার করে) | Client Component |
 | `app/components/simulation/CodePane.tsx` | demo code + line highlight + auto-scroll | Client Component |
 | `app/components/simulation/ExplainPanel.tsx` | `vars` চিপ + বাংলা ব্যাখ্যা | Client Component |
@@ -44,6 +45,7 @@
 | `app/lib/simulations/topic4/*.ts` | টপিক ৪-এর ৪টা যাচাই-করা ট্রেস | Data |
 | `app/lib/simulations/topic5/*.ts` | টপিক ৫-এর ৫টা যাচাই-করা ট্রেস | Data |
 | `app/lib/simulations/topic7/*.ts` | টপিক ৭-এর ৩টা যাচাই-করা ট্রেস | Data |
+| `app/lib/simulations/topic8/*.ts` | টপিক ৮-এর ৭টা যাচাই-করা ট্রেস | Data |
 | `app/lib/clueMatch.ts` | clue → problem ম্যাচিং (pure) | Utility |
 | `app/lib/parseStatement.ts` | statement পার্সার (pure) | Utility |
 | `app/utils/dsaParser.ts` | Markdown পার্সার (server-only, fs) | Utility |
@@ -123,13 +125,14 @@ Demo code একটা নির্দিষ্ট ইনপুটে ধাপ�
 
 | kind | কম্পোনেন্ট | কোথায় প্রথম লাগল |
 |---|---|---|
-| `array` | `<ArrayScene>` | 1.1 (bar মোড), 1.2, 1.3, 1.4, 1.6, 2.1–2.4, 4.1–4.4, 7.1 |
-| `matrix` | `<MatrixScene>` | 1.7 Spiral Matrix, 7.2, 7.3 |
+| `array` | `<ArrayScene>` | 1.1 (bar মোড), 1.2, 1.3, 1.4, 1.6, 2.1–2.4, 4.1–4.4, 7.1, 8.4 |
+| `matrix` | `<MatrixScene>` | 1.7 Spiral Matrix, 7.2, 7.3, 8.1 |
 | `intervals` | `<IntervalsScene>` | 1.5 Merge Intervals |
 | `linked-list` | `<LinkedListScene>` | 3.1, 3.2, 3.3 |
 | `tree` | `<TreeScene>` | 5.1–5.5 |
+| `graph` | `<GraphScene>` | 8.2, 8.3, 8.5, 8.6, 8.7 |
 
-> টপিক ৮ `graph`, ১০ `trie` যোগ করবে — `Scene` union বাড়বে, উপরের কিছুই বদলাবে না।
+> টপিক ১০ `trie` যোগ করবে — `Scene` union বাড়বে, উপরের কিছুই বদলাবে না।
 
 #### `linked-list` — তিনটে নিয়ম
 
@@ -146,6 +149,14 @@ Demo code একটা নির্দিষ্ট ইনপুটে ধাপ�
 - **SVG-তে mark = fill/stroke।** `<circle>`-এ border/background নেই, তাই একই চারটে `data-mark` fill ও stroke দিয়ে প্রকাশ পায়। অর্থ `.sim-cell`-এর সাথে অভিন্ন।
 
 > `annotation` = নোডের নিচে ছোট cyan টেক্সট। 5.3-এ parent-কে পাঠানো gain, 5.4-এ অনুমোদিত `(min, max)`, 5.5-এ কোন target মিলল। `highlightPath` = live recursion path — ওই পথের edge amber হয়ে যায়।
+
+#### `graph` — তিনটে নিয়ম
+
+- **`TreeScene` দিয়ে চলত না** — সে কড়া binary, rooted, আর চক্রহীন ধরে নেয়; গ্রাফ তিনটাই ভাঙে। তবে আঁকার কৌশল অভিন্ন: প্লেইন SVG + হিসাব করা layout। নোড বসে বৃত্তে সমান কোণে, array ক্রমে, উপর থেকে ঘড়ির কাঁটার দিকে।
+- **role class `sim-graph-*`, `sim-node` নয়** — `.sim-node` লিংকড লিস্টের দখলে। দুটো আলাদা আকৃতি এক ক্লাসে সাড়া দিলে থিম পড়া যেত না।
+- **arrowhead polygon, `marker` নয়** — SVG marker নির্ভরযোগ্যভাবে line-এর stroke রং নেয় না, তাই edge amber হলেও তীর ধূসর থেকে যেত।
+
+> `directed` না দিলে edge দিকহীন। `weight` দিলে line-এর মাঝে ছোট label, আর সেটাও edge-এর `mark` অনুসরণ করে।
 
 #### Role classes
 

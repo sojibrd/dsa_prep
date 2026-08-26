@@ -6,6 +6,7 @@ import MatrixScene from './MatrixScene';
 import IntervalsScene from './IntervalsScene';
 import LinkedListScene from './LinkedListScene';
 import TreeScene from './TreeScene';
+import GraphScene from './GraphScene';
 import SceneAside from './SceneAside';
 
 /**
@@ -24,6 +25,8 @@ function renderScene(scene: Scene) {
       return <LinkedListScene scene={scene} />;
     case 'tree':
       return <TreeScene scene={scene} />;
+    case 'graph':
+      return <GraphScene scene={scene} />;
   }
 }
 
