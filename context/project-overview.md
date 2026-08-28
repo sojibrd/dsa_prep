@@ -19,7 +19,7 @@
 | Font | ৫-ফন্ট শেল্ফ — Barlow Semi Condensed, JetBrains Mono, Noto Sans Bengali, Archivo ×২ (next/font) |
 | Data Source | `context/dsa-workbook.md` (Markdown ফাইল, server-side পার্স) |
 | State | React `useState` + `useLocalStorage` hook |
-| Storage | Google Sheet (solved, notes) + `localStorage` (নির্বাচিত প্যাটার্ন, Apps Script URL) |
+| Storage | `localStorage` — solved, revise, notes, নির্বাচিত প্যাটার্ন, rail collapse (Google Sheet সিঙ্ক ২০২৬-০৮-২৮-এ বাদ) |
 | Rendering | Server Component (`page.tsx`) + Client Component (`TrackerClient.tsx`) |
 
 ## ফাইল স্ট্রাকচার
@@ -29,12 +29,14 @@ DSA_Prep/
 ├── app/
 │   ├── layout.tsx              # Root layout, ৫-ফন্ট শেল্ফ, metadata
 │   ├── page.tsx                # Server component — dsa-workbook.md পার্স করে
-│   ├── TrackerClient.tsx       # Client component — সম্পূর্ণ UI লজিক
+│   ├── TrackerClient.tsx       # Client component — workbook পাতা (panel + TOC)
+│   ├── progress/               # /progress রুট — filter তালিকা + Export/Import
 │   ├── globals.css             # Theme Contract — role class
 │   ├── themes/
 │   │   └── control-room.css    # সক্রিয় থিম — সব `--t-*` মান
 │   ├── hooks/
-│   │   └── useLocalStorage.ts  # Custom hook — localStorage state management
+│   │   ├── useLocalStorage.ts  # Custom hook — localStorage state management
+│   │   └── useProgress.ts      # solved / revise / notes — সব per-problem state
 │   └── utils/
 │       └── dsaParser.ts        # dsa-workbook.md পার্স করার ইউটিলিটি
 ├── context/
@@ -62,9 +64,10 @@ page.tsx (Server Component)
       ↓ (props: topics)
 TrackerClient.tsx (Client Component)
       ↓
-UI: Sidebar (topics/patterns) + Main Panel (demo + problems)
+layout.tsx → Shell (rail + drawer + search)  →  page (workbook | progress)
       ↓ (user interaction)
-Google Sheet: solvedIds, notes   |   localStorage: selectedPatternId, sheetUrl
+localStorage: dsa_solved_ids, dsa_revise_ids, dsa_notes,
+              dsa_selected_pattern_id, dsa_nav_collapsed
 ```
 
 ## মূল ডেটা মডেল

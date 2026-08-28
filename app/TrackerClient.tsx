@@ -1,25 +1,25 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { Topic, Pattern, PracticeProblem } from './utils/dsaParser';
+import { Topic, Pattern } from './utils/dsaParser';
 import { useLocalStorage } from './hooks/useLocalStorage';
-import { useSheetSync } from './hooks/useSheetSync';
+import { useProgress } from './hooks/useProgress';
 import { buildClueMatches } from './lib/clueMatch';
-import Navbar from './components/Navbar';
-import Sidebar from './components/Sidebar';
-import SyncModal from './components/SyncModal';
+import { getSimulation } from './lib/simulations';
 import PatternPanel from './components/PatternPanel';
+import PatternToc from './components/PatternToc';
 
 interface TrackerClientProps {
   topics: Topic[];
 }
 
 /**
- * The tracker shell: which pattern is on screen, which panels are open, and
- * where each piece of the page goes.
+ * The workbook page: which pattern is on screen and which panels are open.
  *
- * It deliberately holds no sheet logic and no markup beyond composition —
- * `useSheetSync` owns the cloud, and the components own their own looks.
+ * The rail, the drawer and the search live in `Shell` (the layout), because
+ * the progress route needs them too. The selected pattern is shared with the
+ * rail through localStorage rather than props, so nothing has to be threaded
+ * across the route boundary.
  */
 export default function TrackerClient({ topics }: TrackerClientProps) {
   const [selectedPatternId, setSelectedPatternId] = useLocalStorage<string>(
@@ -33,67 +33,8 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
   // The clue examples are first-visit material, not every-visit material, so
   // they stay folded away until asked for.
   const [clueExamplesOpen, setClueExamplesOpen] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [showSyncModal, setShowSyncModal] = useState(false);
 
-  const [sheetUrl, setSheetUrl] = useLocalStorage<string>('dsa_sheet_script_url', '');
-
-  // Flat problem list + id index. Derived from `topics`, which never changes
-  // after the server hands it over, so this runs once rather than per render.
-  const { allProblems, problemsById } = useMemo(() => {
-    const flat: PracticeProblem[] = [];
-    const index = new Map<string, PracticeProblem>();
-    topics.forEach((t) => {
-      t.patterns.forEach((p) => {
-        p.problems.forEach((prob) => {
-          flat.push(prob);
-          index.set(prob.id, prob);
-        });
-      });
-    });
-    return { allProblems: flat, problemsById: index };
-  }, [topics]);
-
-  const {
-    solvedSet,
-    solvedCount,
-    notes,
-    initialLoading,
-    syncing,
-    syncStatus,
-    setSyncStatus,
-    toggleSolved,
-    changeNote,
-  } = useSheetSync({ sheetUrl, allProblems, problemsById });
-
-  const totalProblems = allProblems.length;
-  const progressPercent = totalProblems > 0 ? Math.round((solvedCount / totalProblems) * 100) : 0;
-
-  // Per-topic and per-pattern counters for the drawer, computed in one pass
-  // instead of re-scanning every problem for every row on every render.
-  const { byTopic, byPattern } = useMemo(() => {
-    const topicCounts = new Map<number, { solved: number; total: number }>();
-    const patternCounts = new Map<string, { solved: number; total: number }>();
-
-    topics.forEach((topic) => {
-      let topicSolved = 0;
-      let topicTotal = 0;
-
-      topic.patterns.forEach((pattern) => {
-        let patternSolved = 0;
-        pattern.problems.forEach((prob) => {
-          if (solvedSet.has(prob.id)) patternSolved++;
-        });
-        patternCounts.set(pattern.id, { solved: patternSolved, total: pattern.problems.length });
-        topicSolved += patternSolved;
-        topicTotal += pattern.problems.length;
-      });
-
-      topicCounts.set(topic.id, { solved: topicSolved, total: topicTotal });
-    });
-
-    return { byTopic: topicCounts, byPattern: patternCounts };
-  }, [topics, solvedSet]);
+  const { solvedSet, reviseSet, notes, toggleSolved, toggleRevise, changeNote } = useProgress();
 
   // Which pattern is on screen, and the topic it belongs to. Falls back to
   // the very first pattern when the stored id names one that no longer exists.
@@ -119,14 +60,10 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
   }, [topics, selectedPatternId]);
 
   const clueMatches = useMemo(() => buildClueMatches(selectedPattern), [selectedPattern]);
-
-  /** Fold every panel the previous pattern had open. */
-  const collapseAllPanels = () => {
-    setDemoStatementOpen(false);
-    setClueExamplesOpen(false);
-    setExpandedStatementId(null);
-    setExpandedProblemId(null);
-  };
+  // Sparse: most patterns have none yet, and those render nothing at all.
+  const hasSimulation = Boolean(
+    selectedPattern && getSimulation(selectedPattern.id) && selectedPattern.demoCode
+  );
 
   // Read the pattern from the URL on arrival, and follow back/forward after.
   useEffect(() => {
@@ -134,12 +71,21 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
     const patternFromUrl = params.get('pattern');
     if (patternFromUrl) setSelectedPatternId(patternFromUrl);
 
+    // Arriving with `#problem-…` means a search result sent us here.
+    const hash = window.location.hash;
+    if (hash.startsWith('#problem-')) {
+      setTimeout(
+        () =>
+          document
+            .getElementById(hash.slice(1))
+            ?.scrollIntoView({ block: 'center', behavior: 'smooth' }),
+        150
+      );
+    }
+
     const handlePopState = () => {
       const pid = new URLSearchParams(window.location.search).get('pattern');
-      if (pid) {
-        setSelectedPatternId(pid);
-        collapseAllPanels();
-      }
+      if (pid) setSelectedPatternId(pid);
     };
 
     window.addEventListener('popstate', handlePopState);
@@ -150,119 +96,23 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // The drawer covers the page; the page behind it must not scroll.
-  useEffect(() => {
-    document.body.style.overflow = sidebarOpen ? 'hidden' : '';
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [sidebarOpen]);
-
-  // With the drawer open, bring the active pattern into view.
-  useEffect(() => {
-    if (!sidebarOpen) return;
-    const timer = setTimeout(() => {
-      document
-        .getElementById(`pattern-btn-${selectedPatternId}`)
-        ?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-    }, 100);
-    return () => clearTimeout(timer);
-  }, [sidebarOpen, selectedPatternId]);
-
-  const handlePatternSelect = (patternId: string) => {
-    setSelectedPatternId(patternId);
-    setSidebarOpen(false);
-    collapseAllPanels();
-
-    const url = new URL(window.location.href);
-    url.searchParams.set('pattern', patternId);
-    window.history.pushState(null, '', url.toString());
-  };
+  /* A new pattern arrives with every panel the previous one had open still
+     expanded, which is never what is wanted. Adjusted during render rather
+     than in an effect: an effect would paint the new pattern once with the
+     old pattern's panels open before closing them. */
+  const [lastPatternId, setLastPatternId] = useState(selectedPatternId);
+  if (lastPatternId !== selectedPatternId) {
+    setLastPatternId(selectedPatternId);
+    setDemoStatementOpen(false);
+    setClueExamplesOpen(false);
+    setExpandedStatementId(null);
+    setExpandedProblemId(null);
+  }
 
   return (
-    <div className="surface-app min-h-screen flex flex-col">
-      <Navbar
-        solved={solvedCount}
-        total={totalProblems}
-        percent={progressPercent}
-        syncing={syncing}
-        onOpenSidebar={() => setSidebarOpen(true)}
-        onOpenSyncSettings={() => setShowSyncModal(true)}
-      />
-
-      {syncStatus && (
-        <div
-          role="status"
-          aria-live="polite"
-          className="px-4 sm:px-6 md:px-12 pt-3 flex justify-center"
-        >
-          <div
-            className={`${
-              syncStatus.type === 'error' ? 'callout callout--alert' : 'callout callout--accent'
-            } flex items-start justify-between gap-3 w-full max-w-3xl`}
-          >
-            <span className="t-body text-xs">{syncStatus.message}</span>
-            <button
-              type="button"
-              onClick={() => setSyncStatus(null)}
-              className="control control--quiet px-2 py-1 text-[10px] shrink-0"
-              aria-label="বার্তা বন্ধ করুন"
-            >
-              ✕
-            </button>
-          </div>
-        </div>
-      )}
-
-      {showSyncModal && (
-        <SyncModal
-          sheetUrl={sheetUrl}
-          onChange={setSheetUrl}
-          onClose={() => setShowSyncModal(false)}
-        />
-      )}
-
-      {sidebarOpen && (
-        <div className="fixed inset-0 z-50" aria-modal="true">
-          <div className="overlay absolute inset-0" onClick={() => setSidebarOpen(false)} />
-          <aside className="surface-panel absolute left-0 top-0 h-full w-[300px] sm:w-[360px] flex flex-col animate-slide-in-left">
-            <Sidebar
-              topics={topics}
-              selectedPatternId={selectedPatternId}
-              byTopic={byTopic}
-              byPattern={byPattern}
-              onSelect={handlePatternSelect}
-              onClose={() => setSidebarOpen(false)}
-              solvedCount={solvedCount}
-              totalProblems={totalProblems}
-              progressPercent={progressPercent}
-            />
-          </aside>
-        </div>
-      )}
-
-      <main className="flex-1 flex flex-col gap-6 max-w-[1100px] w-full mx-auto p-4 md:p-6 lg:p-8">
-        {!sheetUrl.trim() ? (
-          <div className="surface-panel p-8 text-center flex flex-col items-center justify-center gap-4">
-            <span className="text-4xl">☁️</span>
-            <h3 className="t-title text-lg">গুগল শিট কানেকশন প্রয়োজন</h3>
-            <p className="t-body measure text-sm">
-              অ্যাপের ডাটা সরাসরি ক্লাউডে সেভ করার জন্য প্রথমে আপনার Google Apps Script URL-টি দিতে
-              হবে। উপরে ডানদিকের মেঘ (☁️) আইকন বাটনে ক্লিক করে URL টি পেস্ট করুন।
-            </p>
-            <button
-              onClick={() => setShowSyncModal(true)}
-              className="control control--primary mt-2 py-2 px-6 text-xs"
-            >
-              Set App Script URL
-            </button>
-          </div>
-        ) : initialLoading ? (
-          <div className="surface-panel p-8 text-center flex flex-col items-center justify-center gap-3">
-            <div className="spinner t-accent w-8 h-8" />
-            <p className="t-caption">গুগল শিট থেকে প্রগ্রেস ডাটা লোড হচ্ছে...</p>
-          </div>
-        ) : selectedPattern ? (
+    <div className="flex justify-center gap-8 xl:gap-12 max-w-[1400px] w-full mx-auto p-4 md:p-6 lg:p-8">
+      <div className="w-full max-w-[1100px] min-w-0 flex flex-col gap-6">
+        {selectedPattern ? (
           <PatternPanel
             pattern={selectedPattern}
             topicName={selectedTopicName}
@@ -272,10 +122,12 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
             expandedProblemId={expandedProblemId}
             expandedStatementId={expandedStatementId}
             solvedSet={solvedSet}
+            reviseSet={reviseSet}
             notes={notes}
             onToggleClueExamples={() => setClueExamplesOpen((open) => !open)}
             onToggleDemoStatement={() => setDemoStatementOpen((open) => !open)}
             onToggleSolved={toggleSolved}
+            onToggleRevise={toggleRevise}
             onToggleNotes={(id) => setExpandedProblemId(expandedProblemId === id ? null : id)}
             onToggleStatement={(id) => setExpandedStatementId(expandedStatementId === id ? null : id)}
             onNoteChange={changeNote}
@@ -285,7 +137,15 @@ export default function TrackerClient({ topics }: TrackerClientProps) {
             কোনো প্যাটার্ন সিলেক্ট করা নেই।
           </div>
         )}
-      </main>
+      </div>
+
+      {selectedPattern && (
+        <PatternToc
+          pattern={selectedPattern}
+          hasSimulation={hasSimulation}
+          solvedSet={solvedSet}
+        />
+      )}
     </div>
   );
 }

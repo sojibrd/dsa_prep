@@ -359,6 +359,39 @@ body {
     color: var(--t-text-body);
   }
 
+  /* --- Tabs: one filter of a list at a time ---------------------------- */
+
+  .tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: var(--t-control-border-width) solid var(--t-tab-border);
+    border-radius: var(--t-control-radius);
+    background-color: var(--t-tab-bg);
+    color: var(--t-text-muted);
+    box-shadow: var(--t-tab-shadow);
+    transition: all 180ms var(--t-ease);
+  }
+
+  .tab:hover {
+    border-color: var(--t-tab-border-hover);
+    color: var(--t-text-title);
+  }
+
+  .tab[aria-selected="true"],
+  .tab[aria-pressed="true"] {
+    background-color: var(--t-tab-selected-bg);
+    border-color: var(--t-tab-selected-border);
+    color: var(--t-text-title);
+    box-shadow: var(--t-tab-selected-shadow);
+  }
+
+  .tab:focus-visible {
+    outline: 2px solid var(--t-accent);
+    outline-offset: 2px;
+  }
+
   /* --- Topic group: one topic's block in the sidebar ------------------- */
   /* Seamed off from the next topic — except the last, which has nothing to
      be separated from. Keeping the exception here spares the component a

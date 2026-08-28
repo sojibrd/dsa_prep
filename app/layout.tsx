@@ -7,6 +7,8 @@ import {
   Noto_Sans_Bengali,
 } from "next/font/google";
 import "./globals.css";
+import { parseDsaWorkbook } from "./utils/dsaParser";
+import Shell from "./components/Shell";
 
 /**
  * The font shelf. Five families are declared once, each on its own variable;
@@ -68,6 +70,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Parsed here rather than per page: the rail is part of the chassis, and
+  // both routes need the same topic tree behind it.
+  const topics = parseDsaWorkbook();
+
   return (
     <html
       lang="en"
@@ -96,7 +102,9 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="surface-app min-h-full flex flex-col">{children}</body>
+      <body className="surface-app min-h-full flex flex-col">
+        <Shell topics={topics}>{children}</Shell>
+      </body>
     </html>
   );
 }

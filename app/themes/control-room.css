@@ -180,6 +180,15 @@
   --t-callout-radius: 4px;
   --t-callout-shadow: var(--bezel-shadow);
 
+  /* --- Tabs ------------------------------------------------------------ */
+  --t-tab-bg: var(--panel);
+  --t-tab-border: var(--bezel);
+  --t-tab-border-hover: var(--bezel-strong);
+  --t-tab-shadow: var(--bezel-shadow);
+  --t-tab-selected-bg: var(--raised);
+  --t-tab-selected-border: var(--bezel-hi);
+  --t-tab-selected-shadow: var(--key-shadow), 0 0 0 1px rgb(255 176 32 / 0.4);
+
   /* --- Scrollbars ------------------------------------------------------ */
   --t-scrollbar-size: 8px;
   --t-scrollbar-track: var(--well);

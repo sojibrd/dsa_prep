@@ -16,10 +16,12 @@ interface PatternPanelProps {
   expandedProblemId: string | null;
   expandedStatementId: string | null;
   solvedSet: Set<string>;
+  reviseSet: Set<string>;
   notes: Record<string, ProblemNote>;
   onToggleClueExamples: () => void;
   onToggleDemoStatement: () => void;
   onToggleSolved: (id: string) => void;
+  onToggleRevise: (id: string) => void;
   onToggleNotes: (id: string) => void;
   onToggleStatement: (id: string) => void;
   onNoteChange: (id: string, field: keyof ProblemNote, value: string) => void;
@@ -35,10 +37,12 @@ export default function PatternPanel({
   expandedProblemId,
   expandedStatementId,
   solvedSet,
+  reviseSet,
   notes,
   onToggleClueExamples,
   onToggleDemoStatement,
   onToggleSolved,
+  onToggleRevise,
   onToggleNotes,
   onToggleStatement,
   onNoteChange,
@@ -58,7 +62,7 @@ export default function PatternPanel({
       </div>
 
       {pattern.recognize && (
-        <div className="callout callout--accent p-4 flex flex-col gap-3">
+        <div id="sec-recognize" className="callout callout--accent p-4 flex flex-col gap-3">
           <h4 className="t-label">🔎 চিনবেন কীভাবে</h4>
           <ul className="t-body measure list-disc pl-5 space-y-1 text-sm">
             {pattern.recognize.split(',').map((item, idx) => (
@@ -106,7 +110,7 @@ export default function PatternPanel({
       )}
 
       {pattern.demoName && (
-        <div className="seam-t flex flex-col gap-4 pt-6">
+        <div id="sec-demo" className="seam-t flex flex-col gap-4 pt-6">
           <div className="flex items-start sm:items-center justify-between flex-col sm:flex-row gap-2">
             <div className="flex items-center gap-2 flex-wrap">
               <h3 className="t-title text-base sm:text-lg">Demo: {pattern.demoName}</h3>
@@ -171,10 +175,12 @@ export default function PatternPanel({
       )}
 
       {simulation && pattern.demoCode && (
-        <SimulationBlock simulation={simulation} code={pattern.demoCode} />
+        <div id="sec-simulation">
+          <SimulationBlock simulation={simulation} code={pattern.demoCode} />
+        </div>
       )}
 
-      <div className="seam-t pt-6 flex flex-col gap-4">
+      <div id="sec-problems" className="seam-t pt-6 flex flex-col gap-4">
         <h3 className="t-title text-base sm:text-lg">
           Practice Problems ({pattern.problems.length})
         </h3>
@@ -184,10 +190,12 @@ export default function PatternPanel({
               key={problem.id}
               problem={problem}
               isSolved={solvedSet.has(problem.id)}
+              needsRevise={reviseSet.has(problem.id)}
               note={notes[problem.id] || { solution: '', obstacle: '' }}
               isNotesOpen={expandedProblemId === problem.id}
               isStatementOpen={expandedStatementId === problem.id}
               onToggleSolved={onToggleSolved}
+              onToggleRevise={onToggleRevise}
               onToggleNotes={onToggleNotes}
               onToggleStatement={onToggleStatement}
               onNoteChange={onNoteChange}

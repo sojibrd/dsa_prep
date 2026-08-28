@@ -13,15 +13,19 @@
 | ফাইল | উদ্দেশ্য | টাইপ |
 |------|---------|------|
 | `app/page.tsx` | Root page, data parsing | Server Component |
-| `app/TrackerClient.tsx` | শেল — state orchestration + composition | Client Component |
-| `app/types.ts` | ProblemNote / SheetRow / SyncStatus / ClueMatch | Types |
-| `app/components/Navbar.tsx` | header, progress pill, sync বাটন | Client Component |
-| `app/components/Sidebar.tsx` | drawer — topic/pattern নেভিগেশন | Client Component |
+| `app/TrackerClient.tsx` | workbook পাতা — প্যানেল + TOC | Client Component |
+| `app/components/Shell.tsx` | চ্যাসিস — rail + drawer + search + প্যাটার্ন নির্বাচন | Client Component |
+| `app/progress/page.tsx` | `/progress` রুট — প্রবলেম তালিকা flatten | Server Component |
+| `app/progress/ProgressClient.tsx` | gauge + filter tab + তালিকা + Export/Import | Client Component |
+| `app/types.ts` | ProblemNote / ClueMatch | Types |
+| `app/components/Navbar.tsx` | narrow-screen top bar (`lg:hidden`) — progress pill | Client Component |
+| `app/components/Sidebar.tsx` | rail ও drawer — topic/pattern নেভিগেশন + search | Client Component |
+| `app/components/PatternToc.tsx` | প্যানেলের সূচিপত্র — সেকশন + প্রবলেম (`xl:`) | Client Component |
+| `app/components/icons.tsx` | চ্যাসিসের inline SVG আইকন | — |
 | `app/components/PatternPanel.tsx` | recognize, demo, code, problem list | Client Component |
 | `app/components/ProblemCard.tsx` | একটি প্রবলেম row + notes + statement | Client Component |
 | `app/components/StatementBox.tsx` | statement রেন্ডার | Client Component |
 | `app/components/ProgressReadout.tsx` | gauge readout | Client Component |
-| `app/components/SyncModal.tsx` | Apps Script URL মডাল | Client Component |
 | `app/components/simulation/SimulationBlock.tsx` | সিমুলেশন প্লেয়ারের র‍্যাপার — fold + expand | Client Component |
 | `app/components/simulation/SceneView.tsx` | `scene.kind` → renderer (একমাত্র switch) | Client Component |
 | `app/components/simulation/ArrayScene.tsx` | `kind: 'array'` — cell/bar মোড | Client Component |
@@ -35,7 +39,7 @@
 | `app/components/simulation/CodePane.tsx` | demo code + line highlight + auto-scroll | Client Component |
 | `app/components/simulation/ExplainPanel.tsx` | `vars` চিপ + বাংলা ব্যাখ্যা | Client Component |
 | `app/components/simulation/SimControls.tsx` | transport — play/step/reset/speed/scrub | Client Component |
-| `app/hooks/useSheetSync.ts` | শিট load / debounce / push — সব cloud state | Custom Hook |
+| `app/hooks/useProgress.ts` | solved / revise / notes — সব per-problem state | Custom Hook |
 | `app/hooks/useLocalStorage.ts` | localStorage state hook | Custom Hook |
 | `app/hooks/usePatternSim.ts` | সিমুলেশন টাইমলাইন ইঞ্জিন | Custom Hook |
 | `app/lib/simulations/types.ts` | Scene কনট্র্যাক্ট — `Scene`/`SimStep`/`PatternSimulation` | Types |
@@ -60,23 +64,40 @@
 
 ## কম্পোনেন্ট ইনভেন্টরি
 
-> সব কম্পোনেন্ট বর্তমানে `TrackerClient.tsx`-এ monolithic আকারে আছে।
-> ভবিষ্যতে split করলে এই registry আপডেট করতে হবে।
+> চ্যাসিস (`Shell`) `layout.tsx`-এ বসে, তাই rail ও search দুই রুটেই এক।
+> নতুন কম্পোনেন্ট যোগ করলে এই registry আপডেট করতে হবে।
 
 ### 🧭 Navigation
 
+#### `<Shell>` — চ্যাসিস
+- `h-screen` + `overflow-hidden`; rail ও main আলাদা করে স্ক্রল করে
+- `lg:`-এর উপরে স্থায়ী rail (`w-80 surface-panel`), নিচে drawer (`overlay` + `animate-slide-in-left`)
+- Collapse করলে সরু `surface-panel` স্ট্রিপে শুধু `PanelLeftOpen` বাটন থাকে (`dsa_nav_collapsed`)
+- `/` ও `Ctrl+K` — rail-এর search-এ ফোকাস; সরু স্ক্রিনে drawer খোলে
+
 #### `<Navbar>` — `<header>`
-- **Roles:** `surface-app seam-b` (sticky), লোগো `t-title` + `t-caption`
-- **Contains:** হ্যামবার্গার (`control control--quiet`, `lg:hidden`), Progress pill, sync ইন্ডিকেটর (`t-label`), ক্লাউড সিঙ্ক বাটন
+- **Roles:** `surface-app seam-b`, `lg:hidden` (rail থাকলে দ্বিতীয় ব্র্যান্ড নয়)
+- **Contains:** হ্যামবার্গার (`control control--quiet`), লোগো `t-title` + `t-caption`, Progress pill
+
+#### `<ProgressReadout>`
+- শুধু বার — `gauge` / `gauge-fill`, `role="progressbar"`। সংখ্যা নেই; rail-এ ওটা ভিড় করত
+- সংখ্যা যেখানে লাগে সেখানে কলার নিজে লেখে (progress পাতা, navbar pill)
 
 #### `<ProgressPill>` (Navbar-এর ভেতরে)
 - **Roles:** `surface-raised` + `t-label` + `t-mono t-accent`
 - **Bar:** `gauge` / `gauge-fill`, `role="progressbar"` সহ
 
-#### `<Sidebar>` — `<aside>`
-- ডেস্কটপে স্থায়ী কলাম, মোবাইলে drawer (`overlay` + `animate-slide-in-left`)
-- Topic গ্রুপ `seam-b`-তে বিভক্ত; প্রতিটি প্যাটার্ন একটি `row` (`aria-current` = নির্বাচিত)
-- প্যাটার্ন বাটনের `id="pattern-btn-{id}"` — লোডে অটো-স্ক্রলের জন্য
+#### `<Sidebar>` — rail ও drawer, একই কম্পোনেন্ট
+- পার্থক্য শুধু বেরোনোর পথে: `onCollapse` = rail, `onClose` = drawer
+- মাথায় ব্র্যান্ড + `Progress` লিংক (`control--primary` = ওই রুটে আছি)
+- Search (`surface-well`) — খালি থাকলে ডানে `/` হিন্ট, নইলে বাতিল বাটন; Escape লেখা মোছে, দ্বিতীয়বারে ফোকাস ছাড়ে
+- খোঁজার সময় topic গ্রুপিং ভাঙে, ফল দুই ভাগে: **প্যাটার্ন** ও **প্রবলেম** (`t-label` শিরোনাম)
+- Topic গ্রুপ `topic-group`-এ বিভক্ত; প্রতিটি প্যাটার্ন একটি `row` (`aria-current` = নির্বাচিত)
+- প্যাটার্ন বাটনের `id="pattern-btn-{id}"` — drawer খুললে অটো-স্ক্রলের জন্য
+
+#### `<PatternToc>` — `<aside>`, `xl:` থেকে
+- `sticky top-4`; সেকশন (`sec-recognize` / `sec-demo` / `sec-simulation` / `sec-problems`) + প্রতিটি প্রবলেম (`problem-{id}`)
+- চলতি সেকশন IntersectionObserver-এ, `aria-current`-এ প্রকাশ; ২টির কম এন্ট্রি হলে রেন্ডারই হয় না
 
 ---
 
@@ -220,17 +241,21 @@ Demo code একটা নির্দিষ্ট ইনপুটে ধাপ�
 
 ---
 
-### ☁️ Google Sheets Sync Modal
-- **Scrim:** `overlay`; **প্যানেল:** `surface-panel`
-- Apps Script URL ইনপুট (`surface-well`) + সেভ/বাতিল (`control`, `control--primary`)
-- স্ট্যাটাস বার্তা সাফল্য/ব্যর্থতা অনুযায়ী
+### 📈 Progress Page — `/progress/`
+- `ProgressReadout` একটি `surface-panel`-এ, নিচে filter সারি — প্রতিটি `tab` (`aria-pressed` = সক্রিয়)
+- Filter: সব / অসমাধিত / রিভাইজ দরকার / নোটযুক্ত / 🔥 Must-do বাকি
+- প্রতিটি সারি `surface-raised` + `data-solved`; নাম `card-name` বাটন — ক্লিকে ওই প্যাটার্ন খুলে কার্ডে স্ক্রল
+- ব্যাকআপ ব্লক: Export / Import JSON (`control`), বার্তা `t-caption` + `role="status"`
 
 ---
 
 ## Custom Hooks
 
 ### `useLocalStorage<T>(key, initialValue)`
-`useState`-এর মতো, কিন্তু `localStorage`-এ persist করে।
+`useState`-এর মতো, কিন্তু `localStorage`-এ persist করে। একই key-তে সব instance একই snapshot দেখে — এভাবেই rail, panel ও progress পাতা props ছাড়াই এক নম্বর পড়ে।
+
+### `useProgress()`
+`solvedSet` / `reviseSet` / `notes` + toggle ও setter। `hasNote(note)` আলাদা export।
 
 ---
 
@@ -239,10 +264,13 @@ Demo code একটা নির্দিষ্ট ইনপুটে ধাপ�
 | Key | Type | ব্যবহার |
 |-----|------|--------|
 | `dsa_selected_pattern_id` | `string` | শেষ দেখা প্যাটার্ন |
-| `dsa_sheet_script_url` | `string` | Google Apps Script endpoint |
+| `dsa_solved_ids` | `string[]` | যেসব প্রবলেম সলভ হয়েছে |
+| `dsa_revise_ids` | `string[]` | যেসব প্রবলেম আবার দেখতে হবে |
+| `dsa_notes` | `Record<string, ProblemNote>` | প্রতি প্রবলেমের নোট |
+| `dsa_nav_collapsed` | `boolean` | rail ভাঁজ করা কি না |
 
 > `dsa_dark_mode` কী **অবসরপ্রাপ্ত** — সাইট dark-only, toggle নেই।
-> Solved ও notes এখন localStorage-এ নয়, Google Sheet-এ থাকে।
+> `dsa_sheet_script_url` **অবসরপ্রাপ্ত** — Google Sheet সিঙ্ক ২০২৬-০৮-২৮-এ বাদ; সব progress এখন এই ব্রাউজারে, ব্যাকআপ `/progress/`-এর Export JSON।
 
 ---
 

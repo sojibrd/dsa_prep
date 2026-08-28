@@ -39,6 +39,7 @@
 | Chip | `chip` + `chip--accent` `chip--alert` `chip--ok` |
 | Callout | `callout` + `callout--accent` `callout--alert`; `option` |
 | Nav | `row` `overlay` |
+| **Tab** | **`tab`** — একবারে একটা ফিল্টার (`aria-pressed` / `aria-selected`) |
 | **Measure** | **`measure`** — পাঠ্য কলামের সর্বোচ্চ প্রস্থ (`--t-measure`) |
 | **Check** | **`check`** — সলভ টগল (`aria-checked`) |
 | **Code** | **`codeblock`** / `codeblock-copy` / `code-inline` |
@@ -63,7 +64,9 @@
 | `data-window` | `.sim-cell` | window বা bounds-এর ভেতরে |
 | `data-wide` | `.sim-stage` | বড় করে দেখা |
 | `data-active` | `.codeline` | এই লাইনটা এখন চলছে |
-| `aria-pressed` | `.control` | চাপা অবস্থার বাটন (speed) |
+| `aria-pressed` | `.control` | চাপা অবস্থার বাটন (speed, রিভাইজ) |
+| `aria-pressed` / `aria-selected` | `.tab` | সক্রিয় ফিল্টার |
+| `data-solved` | `.surface-raised` (problem row) | সলভ হওয়া প্রবলেম — নাম কেটে দেখায় |
 
 > `.code-inline` ইঙ্ক নিজে ঠিক করে না — প্লেট দেয় মাত্র। রঙ কলারের (`t-ok` = input, `t-accent` = output)।
 
@@ -75,6 +78,7 @@
 
 - **Layout:** `measure`
 - **Type:** `font-sans` `font-mono` `title-family|weight|tracking|transform` `label-family|size|weight|tracking|transform` `control-family|weight|tracking|transform` `quote-style`
+- **Tabs:** `tab-bg` `tab-border` `tab-border-hover` `tab-shadow` `tab-selected-bg` `tab-selected-border` `tab-selected-shadow`
 - **Motion:** `ease` `spinner-width` `spinner-speed` `lamp-blink-animation`
 - **App:** `app-bg` `app-bg-image|size` `select-bg|fg` `overlay-bg|filter` `disabled-opacity` `hover-fill` `selected-bg|fg` `accent` `ok` `ok-soft`
 - **Text:** `text-title` `text-body` `text-label` `text-muted` `text-faint`

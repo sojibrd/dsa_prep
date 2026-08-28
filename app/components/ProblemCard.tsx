@@ -3,14 +3,17 @@
 import { PracticeProblem } from '../utils/dsaParser';
 import { ProblemNote } from '../types';
 import StatementBox from './StatementBox';
+import { RotateCcw } from './icons';
 
 interface ProblemCardProps {
   problem: PracticeProblem;
   isSolved: boolean;
+  needsRevise: boolean;
   note: ProblemNote;
   isNotesOpen: boolean;
   isStatementOpen: boolean;
   onToggleSolved: (id: string) => void;
+  onToggleRevise: (id: string) => void;
   onToggleNotes: (id: string) => void;
   onToggleStatement: (id: string) => void;
   onNoteChange: (id: string, field: keyof ProblemNote, value: string) => void;
@@ -26,16 +29,18 @@ interface ProblemCardProps {
 export default function ProblemCard({
   problem,
   isSolved,
+  needsRevise,
   note,
   isNotesOpen,
   isStatementOpen,
   onToggleSolved,
+  onToggleRevise,
   onToggleNotes,
   onToggleStatement,
   onNoteChange,
 }: ProblemCardProps) {
   return (
-    <div data-solved={isSolved} className="surface-raised">
+    <div id={`problem-${problem.id}`} data-solved={isSolved} className="surface-raised scroll-mt-4">
       <div className="p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center gap-3">
         <div className="flex items-start sm:items-center gap-3 flex-1 min-w-0">
           <input
@@ -82,6 +87,18 @@ export default function ProblemCard({
               </button>
             )}
           </span>
+
+          <button
+            onClick={() => onToggleRevise(problem.id)}
+            aria-pressed={needsRevise}
+            aria-label={`${problem.name} — রিভাইজ দরকার`}
+            title="রিভাইজ দরকার"
+            className={`control px-2 py-1 text-[10px] ${
+              needsRevise ? 'control--alert' : 'control--quiet'
+            }`}
+          >
+            <RotateCcw />
+          </button>
 
           <button
             onClick={() => onToggleNotes(problem.id)}

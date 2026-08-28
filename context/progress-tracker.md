@@ -330,11 +330,24 @@ _কিছু নেই — সিমুলেশন ফিচার সম্�
 
 ---
 
+## ✅ Rail + Search + TOC + Progress রুট (২০২৬-০৮-২৮)
+
+- [x] **Google Sheet সিঙ্ক বাদ** — `useSheetSync.ts` ও `SyncModal.tsx` মুছে ফেলা; solved / revise / notes সব `localStorage`-এ (`useProgress.ts`)
+- [x] **স্থায়ী rail ফেরানো** — `lg:`-এর উপরে `w-80` কলাম, collapse `dsa_nav_collapsed`-এ টেকে; নিচে আগের drawer। চ্যাসিস `Shell.tsx`-এ, `layout.tsx`-এ বসানো
+- [x] **Search** — rail/drawer-এর ভেতরে; প্যাটার্ন ও প্রবলেম দুটোতেই, ফল দুই ভাগে; `/` ও `Ctrl+K`
+- [x] **TOC** — `PatternToc.tsx`, `xl:` থেকে; সেকশন + প্রতিটি প্রবলেম, IntersectionObserver-এ চলতি অবস্থান
+- [x] **`/progress/` রুট** — gauge + ৫টি ফিল্টার + প্রবলেম তালিকা + Export/Import JSON
+- [x] **"রিভাইজ দরকার"** — solved-এর স্বতন্ত্র তৃতীয় ফ্ল্যাগ, ProblemCard ও progress পাতা দুটোতেই
+- [x] `.tab` role class + `--t-tab-*` টোকেন যোগ
+
+> ⚠️ পুরনো Google Sheet-এ জমা progress **আসেনি** — সচেতন সিদ্ধান্ত (migration কোড নয়)। ফেরাতে হলে সেই ডেটা Export ফরম্যাটে সাজিয়ে `/progress/`-এ Import করুন।
+
+---
+
 ## 🐛 পরিচিত সমস্যা / টেকনিক্যাল ঋণ
 
 | সমস্যা | প্রভাব | সমাধানের পথ |
 |--------|--------|------------|
-| `layout.tsx`-এ metadata এখনো default ("Create Next App") | SEO খারাপ | `metadata` object আপডেট করুন |
 | `dsa-workbook.md`-এ cross-ref এন্ট্রিগুলো (যেমন `_দেখুন **8.1**_`) পার্স হয় না | কিছু problem card-এ notesLabel অদ্ভুত দেখায় | parser-এ cross-ref detect করে skip করা |
 | ~~Mobile-এ sidebar উপরে-নিচে স্ক্যাক হয়~~ | ~~Mobile ব্যবহারকারীর অভিজ্ঞতা খারাপ~~ | ✅ সমাধান হয়েছে — slide-in drawer |
 
